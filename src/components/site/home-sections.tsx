@@ -732,24 +732,31 @@ export function InstagramFeed() {
 
         {/* social links */}
         <div
-          className="mt-10 flex flex-col items-center gap-3"
+          className="mt-12 flex flex-col items-center gap-5 sm:mt-16"
           style={{
             opacity: isInView ? 1 : 0,
             transition: "opacity 0.7s ease 1s",
           }}
         >
-          <p className="text-[13px] font-medium text-zinc-400">
-            Follow EasyMom on social media
-          </p>
-          <div className="flex items-center gap-6">
-            {["Instagram", "YouTube", "TikTok", "Twitter"].map((name) => (
-              <a
-                key={name}
-                href="#"
-                className="text-[13px] font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-primary hover:decoration-primary"
-              >
-                {name}
-              </a>
+          <div className="flex items-center gap-4">
+            <div className="h-px w-12 bg-zinc-300" />
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-400">
+              Follow EasyMom
+            </p>
+            <div className="h-px w-12 bg-zinc-300" />
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+            {["Instagram", "YouTube", "TikTok", "Twitter"].map((name, i) => (
+              <React.Fragment key={name}>
+                {i > 0 && <span className="hidden text-zinc-200 sm:block">·</span>}
+                <a
+                  href="#"
+                  className="group relative text-[14px] font-medium text-zinc-700 transition-colors hover:text-zinc-900"
+                >
+                  {name}
+                  <span className="absolute -bottom-1 left-0 h-px w-0 bg-zinc-900 transition-all duration-300 group-hover:w-full" />
+                </a>
+              </React.Fragment>
             ))}
           </div>
         </div>
