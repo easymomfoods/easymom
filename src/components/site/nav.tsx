@@ -57,7 +57,7 @@ export function Nav() {
               aria-label="EasyMom home"
             >
               <img
-                src="/brand/easymom-logo.jpeg"
+                src="/brand/easymom-logo.png"
                 alt="EasyMom"
                 className="h-20 w-auto mix-blend-multiply"
               />
@@ -253,7 +253,7 @@ function MobileNav() {
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <div className="flex items-center gap-2">
             <img
-              src="/brand/easymom-logo.jpeg"
+              src="/brand/easymom-logo.png"
               alt="EasyMom"
               className="h-9 w-auto mix-blend-multiply"
             />

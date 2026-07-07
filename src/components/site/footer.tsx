@@ -73,7 +73,7 @@ export function Footer() {
           <div className="col-span-2 lg:col-span-2">
             <button onClick={() => go({ name: "home" })} className="flex items-center gap-2">
               <img
-                src="/brand/easymom-logo.jpeg"
+                src="/brand/easymom-logo.png"
                 alt="EasyMom"
                 className="h-10 w-auto mix-blend-multiply"
               />
