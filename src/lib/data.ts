@@ -361,7 +361,7 @@ export const recipes: Recipe[] = [
     time: "5 min",
     serves: "4",
     difficulty: "Medium",
-    productSlug: "ghee-roast",
+    productSlug: "ghee-roast-masala",
     excerpt:
       "The iconic Mangalorean ghee roast — bold, rich, unforgettable. Ready in 5 minutes.",
     steps: [
@@ -379,22 +379,22 @@ export const testimonials: Testimonial[] = [
   {
     id: "t1",
     name: "Anjali Rao",
-    location: "Bengaluru",
+    location: "Bengaluru, Karnataka",
     role: "Software engineer, two kids",
     quote:
-      "The Mangalorean chicken masala is the only reason my family eats a proper dinner on weeknights. Tastes exactly like my mother's, in a quarter of the time.",
+      "The Green Curry paste is the only reason my family eats a proper dinner on weeknights. Tastes exactly like my mother's, in a quarter of the time.",
     rating: 5,
-    product: "Mangalorean Chicken Masala",
+    product: "Green Curry — Chicken or Meat",
   },
   {
     id: "t2",
     name: "Vivek Menon",
-    location: "Dubai, UAE",
-    role: "NRI, Kerala",
+    location: "Mangalore, Karnataka",
+    role: "Home cook, Kerala roots",
     quote:
-      "I'd given up on packaged sambar powder abroad. This one actually tastes like Tamil Nadu. My Dubai kitchen finally smells right.",
+      "I'd given up on packaged masala pastes. This one actually tastes like home. My kitchen finally smells right.",
     rating: 5,
-    product: "Sambar Powder",
+    product: "Palli Curry — Chicken or Meat",
   },
   {
     id: "t3",
@@ -402,9 +402,9 @@ export const testimonials: Testimonial[] = [
     location: "London, UK",
     role: "Doctor, mother of one",
     quote:
-      "The gunpowder is dangerously good. I keep a jar at my desk at the hospital. Rice, sesame oil, podi — comfort in two minutes.",
+      "The Ghee Roast is dangerously good. I keep a jar ready at all times. Rice, a drizzle of ghee, this paste — comfort in two minutes.",
     rating: 5,
-    product: "Gunpowder (Idli Podi)",
+    product: "Ghee Roast Masala",
   },
   {
     id: "t4",
@@ -414,27 +414,27 @@ export const testimonials: Testimonial[] = [
     quote:
       "Skeptical at first — premium pricing for masala? The fish curry blend earned it. My Mangalorean mother-in-law approved. That's the only review that matters.",
     rating: 5,
-    product: "Mangalorean Fish Curry Masala",
+    product: "Fish Curry Masala",
   },
   {
     id: "t5",
     name: "Lakshmi Iyer",
-    location: "Singapore",
+    location: "Chennai, Tamil Nadu",
     role: "Teacher",
     quote:
-      "The rasam kit saved a sick week in our house. Proper, peppery, restorative. Tastes like someone made it for you, not from a packet.",
+      "The Red Curry paste saved a sick week in our house. Proper, peppery, restorative. Tastes like someone made it for you, not from a packet.",
     rating: 5,
-    product: "Rasam Kit (6-Serve)",
+    product: "Red Curry — Chicken or Meat",
   },
   {
     id: "t6",
     name: "Rahul Nair",
-    location: "Kochi",
+    location: "Kochi, Kerala",
     role: "Architect",
     quote:
-      "Clean ingredients, no fillers, actual flavour. The Kerala stew masala is the gentlest, most fragrant thing in my pantry now.",
-    rating: 4,
-    product: "Kerala Chicken Stew Masala",
+      "Clean ingredients, no fillers, actual flavour. The Chicken Sukka is the most fragrant thing in my pantry now.",
+    rating: 5,
+    product: "Chicken Sukka Masala",
   },
 ];
 
@@ -450,21 +450,25 @@ export const brandValues = [
     title: "No prep needed",
     body: "The all-in-one masala paste already includes onions, tomatoes, and essential spices. No chopping, no grinding, no measuring.",
     icon: "mortar",
+    img: "/brand/box/box1.png",
   },
   {
     title: "Oil-free cooking",
     body: "The core cooking method requires no extra oil. Simply add your protein, water, and the paste — healthier without compromise.",
     icon: "leaf",
+    img: "/brand/box/box2.png",
   },
   {
     title: "Nothing to hide",
     body: "No fillers, no added colours, no preservatives. Read the back of the pouch — it reads like a recipe, because it is one.",
     icon: "shield",
+    img: "/brand/box/box3.png",
   },
   {
     title: "Ready in 5 minutes",
     body: "Cook restaurant-style curries in 5–10 minutes. Add protein, water, EasyMom paste, and simmer. Dinner is done.",
     icon: "flame",
+    img: "/brand/box/box4.png",
   },
 ];
 

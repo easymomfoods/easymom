@@ -11,7 +11,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { PackageIcon, LeafIcon, CircularArrowIcon, MortarIcon, FlameIcon, ShieldIcon } from "./icons";
-import { categories, products, recipes, testimonials, brandValues } from "@/lib/data";
+import { categories, products, recipes, testimonials, brandValues, type Product } from "@/lib/data";
 import { useUI } from "@/lib/ui-store";
 import { ProductCard } from "./product-card";
 import { SpiceVisual } from "./spice-visual";
@@ -197,8 +197,8 @@ export function BrandStory() {
       </div>
 
       {/* ── Hero ── */}
-      <div className="mx-auto max-w-[1200px] px-6 py-16 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
-        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-16">
+      <div className="mx-auto max-w-[1200px] px-5 py-10 sm:px-10 sm:py-20 lg:px-16 lg:py-24">
+        <div className="grid grid-cols-1 items-start gap-8 sm:gap-12 lg:grid-cols-12 lg:gap-16">
           {/* image */}
           <div
             data-reveal
@@ -209,30 +209,30 @@ export function BrandStory() {
               <img
                 src="/brand/story-grind.png"
                 alt="Hands grinding spices in a traditional stone mortar and pestle"
-                className="aspect-[4/3] w-full object-cover"
+                className="aspect-[16/9] w-full object-cover sm:aspect-[4/3]"
               />
             </div>
           </div>
 
           {/* text */}
-          <div className="flex flex-col gap-8 lg:col-span-5 lg:pt-4">
+          <div className="flex flex-col gap-5 sm:gap-8 lg:col-span-5 lg:pt-4">
             {/* stat */}
             <div
               ref={statRef}
               data-reveal
-              className="flex items-center gap-4"
+              className="flex items-center gap-3 sm:gap-4"
               style={{ transition: "opacity 0.7s ease 0.1s, transform 0.7s ease 0.1s", opacity: 0, transform: "translateY(20px)" }}
             >
-              <div className="relative">
-                <div className="absolute -inset-3 rounded-full border-[1.5px] border-primary/20" />
-                <div className="grid h-20 w-20 place-items-center rounded-full bg-primary/[0.07]">
-                  <span className="text-[28px] font-bold tracking-tight text-primary tabular-nums">
+              <div className="relative shrink-0">
+                <div className="absolute -inset-2 rounded-full border-[1.5px] border-primary/20 sm:-inset-3" />
+                <div className="grid h-14 w-14 place-items-center rounded-full bg-primary/[0.07] sm:h-20 sm:w-20">
+                  <span className="text-[18px] font-bold tracking-tight text-primary tabular-nums sm:text-[28px]">
                     {countDone ? "5 min" : `${count} min`}
                   </span>
                 </div>
               </div>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
-                Cook time<br />avg
+              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400 sm:text-[11px]">
+                Cook time avg
               </span>
             </div>
 
@@ -240,17 +240,17 @@ export function BrandStory() {
               data-reveal
               style={{ transition: "opacity 0.7s ease 0.15s, transform 0.7s ease 0.15s", opacity: 0, transform: "translateY(20px)" }}
             >
-              <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-primary">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary sm:text-[12px]">
                 Why EasyMom
               </p>
-              <h2 className="mt-3 text-[30px] font-semibold leading-[1.08] tracking-[-0.02em] text-zinc-900 sm:text-[38px] lg:text-[42px]">
-                Restaurant-style curry,<br />ready in 5 minutes
+              <h2 className="mt-2 text-[22px] font-semibold leading-[1.15] tracking-[-0.02em] text-zinc-900 sm:mt-3 sm:text-[30px] lg:text-[42px]">
+                Restaurant-style curry, ready in 5 minutes
               </h2>
             </div>
 
             <p
               data-reveal
-              className="hidden text-[15px] leading-[1.7] text-zinc-500 sm:block"
+              className="text-[13px] leading-[1.7] text-zinc-500 sm:text-[15px]"
               style={{ transition: "opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s", opacity: 0, transform: "translateY(20px)" }}
             >
               The all-in-one masala paste includes onions, tomatoes, and essential spices. No chopping, no grinding, no oil. Just add your protein, water, and EasyMom — dinner in 5 minutes.
@@ -260,18 +260,19 @@ export function BrandStory() {
       </div>
 
       {/* ── Features ── */}
-      <div className="mx-auto max-w-[1200px] px-6 pb-20 sm:px-10 sm:pb-24 lg:px-16 lg:pb-28">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto max-w-[1200px] px-5 pb-14 sm:px-10 sm:pb-24 lg:px-16 lg:pb-28">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           {brandValues.map((v, i) => {
             const Icon = ICONS[v.icon] ?? LeafIcon;
-            const span = i < 2 ? "sm:col-span-2 lg:col-span-2" : "sm:col-span-1 lg:col-span-1";
+            const hasImg = "img" in v && v.img;
+            const span = i < 2 ? "lg:col-span-2" : "lg:col-span-1";
             const tall = i === 1;
             const rotations = ["-0.4deg", "0.3deg", "-0.2deg"];
             return (
               <div
                 key={v.title}
                 data-reveal
-                className={`group relative flex flex-col justify-between rounded-sm border border-zinc-200 bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-zinc-200/60 ${span} ${tall ? "sm:row-span-2" : ""}`}
+                className={`group relative overflow-hidden rounded-sm border border-zinc-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-zinc-200/60 ${span} ${tall ? "lg:row-span-2" : ""} ${!hasImg ? "p-4 sm:p-7" : "min-h-[160px] sm:min-h-[250px] lg:min-h-[320px]"}`}
                 style={{
                   transition: `opacity 0.6s ease ${0.05 * i}s, transform 0.6s ease ${0.05 * i}s`,
                   opacity: 0,
@@ -281,14 +282,30 @@ export function BrandStory() {
                     : {}),
                 }}
               >
-                <div>
-                  <div className="mb-5 grid h-10 w-10 place-items-center rounded-sm bg-primary/[0.07]">
-                    <Icon className="h-[18px] w-[18px] text-primary" strokeWidth={1.75} />
-                  </div>
-                  <h4 className="text-[16px] font-semibold leading-snug text-zinc-900">{v.title}</h4>
-                  <p className="mt-2.5 text-[14px] leading-[1.65] text-zinc-500">{v.body}</p>
-                </div>
-                <div className="mt-6 h-px w-8 bg-zinc-200 transition-all duration-300 group-hover:w-14 group-hover:bg-primary/30" />
+                {hasImg ? (
+                  <>
+                    <div className="absolute inset-0 animate-shimmer" />
+                    <img
+                      src={v.img}
+                      alt={v.title}
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      onLoad={(e) => {
+                        (e.currentTarget.previousElementSibling as HTMLElement).style.opacity = "0";
+                      }}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <div className="mb-3 grid h-8 w-8 place-items-center rounded-sm bg-primary/[0.07] sm:mb-5 sm:h-10 sm:w-10">
+                        <Icon className="h-3.5 w-3.5 text-primary sm:h-[18px] sm:w-[18px]" strokeWidth={1.75} />
+                      </div>
+                      <h4 className="text-[13px] font-semibold leading-snug text-zinc-900 sm:text-[16px]">{v.title}</h4>
+                      <p className="mt-1.5 text-[11px] leading-[1.6] text-zinc-500 sm:mt-2.5 sm:text-[14px]">{v.body}</p>
+                    </div>
+                    <div className="mt-4 h-px w-6 bg-zinc-200 transition-all duration-300 group-hover:w-14 group-hover:bg-primary/30 sm:mt-6 sm:w-8" />
+                  </>
+                )}
               </div>
             );
           })}
@@ -366,11 +383,10 @@ export function Recipes() {
           >
             <div className="relative flex-1 overflow-hidden">
               <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.03]">
-                <SpiceVisual
-                  hue={featured.hue}
-                  name={featured.title}
-                  seed={featured.id}
-                  className="h-full w-full"
+                <img
+                  src={products.find((p) => p.slug === featured.productSlug)?.img || ""}
+                  alt={featured.title}
+                  className="h-full w-full object-cover"
                 />
               </div>
               <div className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-sm bg-white/90 px-2.5 py-1 text-[11px] font-medium text-zinc-700 backdrop-blur-sm">
@@ -413,11 +429,10 @@ export function Recipes() {
             >
               <div className="relative aspect-[5/3] overflow-hidden">
                 <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.03]">
-                  <SpiceVisual
-                    hue={r.hue}
-                    name={r.title}
-                    seed={r.id}
-                    className="h-full w-full"
+                  <img
+                    src={products.find((p) => p.slug === r.productSlug)?.img || ""}
+                    alt={r.title}
+                    className="h-full w-full object-cover"
                   />
                 </div>
                 <div className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-sm bg-white/90 px-2.5 py-1 text-[11px] font-medium text-zinc-700 backdrop-blur-sm">
@@ -561,7 +576,9 @@ const IG_CARDS = [
 ];
 
 const CARD_W = 200;
+const CARD_W_MOBILE = 140;
 const FAN_SPREAD = 100;
+const FAN_SPREAD_MOBILE = 60;
 const ROTATIONS = [-5, -3, -1.5, 0, 1.5, 3, 5];
 const VERTICAL_DROP = [30, 18, 8, 0, 8, 18, 30];
 const Z_INDEX = [4, 5, 6, 7, 6, 5, 4];
@@ -583,10 +600,10 @@ function getDefaultShadow(i: number) {
 }
 
 function getHoverValues(i: number, hovered: number) {
-  if (i === hovered) {
-    return { x: 0, y: 0, r: 0, s: 1.05, z: 100, o: 1, shadow: "0 30px 70px -10px rgba(0,0,0,0.22), 0 50px 110px -25px rgba(0,0,0,0.28)" };
-  }
   const fan = getFanValues(i);
+  if (i === hovered) {
+    return { x: fan.x, y: fan.y, r: 0, s: 1.05, z: 100, o: 1, shadow: "0 30px 70px -10px rgba(0,0,0,0.22), 0 50px 110px -25px rgba(0,0,0,0.28)" };
+  }
   const away = i < hovered ? -1 : 1;
   const dist = Math.max(Math.abs(i - hovered), 1);
   const shift = dist === 1 ? 26 : dist === 2 ? 16 : 8;
@@ -607,6 +624,14 @@ export function InstagramFeed() {
   const [hovered, setHovered] = React.useState<number | null>(null);
   const [revealedPairs, setRevealedPairs] = React.useState(0);
   const [animDone, setAnimDone] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   React.useEffect(() => {
     if (!isInView) return;
@@ -616,7 +641,14 @@ export function InstagramFeed() {
   }, [isInView]);
 
   function getCardState(i: number) {
-    const fan = getFanValues(i);
+    const fanSpread = isMobile ? FAN_SPREAD_MOBILE : FAN_SPREAD;
+    const cardW = isMobile ? CARD_W_MOBILE : CARD_W;
+    const fan = {
+      x: (i - CENTER) * fanSpread,
+      y: VERTICAL_DROP[i],
+      r: ROTATIONS[i],
+      z: Z_INDEX[i],
+    };
     const dist = Math.abs(i - CENTER);
 
     if (i === CENTER) {
@@ -654,7 +686,7 @@ export function InstagramFeed() {
 
         <div
           className="relative mx-auto flex items-end justify-center"
-          style={{ height: "420px", maxWidth: "780px" }}
+          style={{ height: isMobile ? "280px" : "420px", maxWidth: isMobile ? "400px" : "780px" }}
         >
           {IG_CARDS.map((card, i) => {
             const s = getCardState(i);
@@ -666,10 +698,10 @@ export function InstagramFeed() {
                 key={card.id}
                 className="absolute"
                 style={{
-                  width: CARD_W,
+                  width: isMobile ? CARD_W_MOBILE : CARD_W,
                   bottom: 0,
                   left: "50%",
-                  marginLeft: -CARD_W / 2,
+                  marginLeft: -(isMobile ? CARD_W_MOBILE : CARD_W) / 2,
                   cursor: animDone ? "pointer" : "default",
                 }}
                 animate={{

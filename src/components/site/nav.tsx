@@ -46,7 +46,7 @@ export function Nav() {
           <div className="flex items-center gap-3">
             <button
               onClick={toggleMobileNav}
-              className="grid h-9 w-9 place-items-center rounded-[4px] text-foreground/80 transition hover:bg-foreground/5 lg:hidden"
+                className="grid h-11 w-11 place-items-center rounded-[4px] text-foreground/80 transition hover:bg-foreground/5 lg:hidden"
               aria-label="Open menu"
             >
               <Menu className="h-5 w-5" strokeWidth={1.75} />
@@ -59,7 +59,7 @@ export function Nav() {
               <img
                 src="/brand/easymom-logo.png"
                 alt="EasyMom"
-                className="h-24 w-auto mix-blend-multiply"
+                className="h-20 sm:h-20 lg:h-24 w-auto mix-blend-multiply"
               />
             </button>
             {/* desktop nav */}
@@ -131,7 +131,7 @@ export function Nav() {
             </button>
             <button
               onClick={openCart}
-              className="relative grid h-9 w-9 place-items-center rounded-[4px] transition text-foreground/80 hover:bg-foreground/5"
+              className="relative grid h-11 w-11 place-items-center rounded-[4px] transition text-foreground/80 hover:bg-foreground/5"
               aria-label="Cart"
             >
               <ShoppingBag className="h-[18px] w-[18px]" strokeWidth={1.75} />
@@ -260,7 +260,7 @@ function MobileNav() {
           </div>
           <button
             onClick={() => setMobileNav(false)}
-            className="grid h-9 w-9 place-items-center rounded-[4px] hover:bg-foreground/5"
+            className="grid h-11 w-11 place-items-center rounded-[4px] hover:bg-foreground/5"
             aria-label="Close menu"
           >
             <X className="h-5 w-5" />
@@ -274,7 +274,7 @@ function MobileNav() {
             <button
               key={link.label}
               onClick={() => go(link.view)}
-              className="flex w-full items-center justify-between rounded-[6px] px-3 py-3 text-left text-[15px] font-medium text-foreground transition hover:bg-secondary"
+              className="flex w-full items-center justify-between rounded-[6px] px-3 py-3.5 text-left text-[15px] font-medium text-foreground transition hover:bg-secondary"
             >
               {link.label}
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -287,7 +287,7 @@ function MobileNav() {
             <button
               key={c.id}
               onClick={() => go({ name: "shop", categoryId: c.id })}
-              className="flex w-full items-center justify-between rounded-[6px] px-3 py-2.5 text-left text-[14px] text-foreground/80 transition hover:bg-secondary"
+              className="flex w-full items-center justify-between rounded-[6px] px-3 py-3 text-left text-[14px] text-foreground/80 transition hover:bg-secondary"
             >
               {c.name}
               <span className="text-[12px] text-muted-foreground">{c.count}</span>

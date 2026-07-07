@@ -55,14 +55,21 @@ export function Hero() {
   }, []);
 
   return (
-    <section ref={heroRef} className="relative mt-8 h-[calc(100vh-112px)] min-h-[500px] overflow-hidden bg-zinc-950">
+    <section ref={heroRef} className="relative mt-16 h-[calc(100vh-64px)] min-h-[400px] overflow-hidden bg-zinc-950">
       {/* ── Full-bleed image ── */}
       <div className="absolute inset-0">
         <div className="grain h-full w-full">
           <img
             src="/brand/easymom-banner.png"
             alt="EasyMom — Authentic South Indian masala spices"
-            className="h-full w-full object-cover"
+            className="hidden h-full w-full object-cover sm:block"
+            fetchPriority="high"
+          />
+          <img
+            src="/brand/easymom-hero-mobile.png"
+            alt="EasyMom — Authentic South Indian masala spices"
+            className="block h-[110%] w-full object-cover sm:hidden"
+            style={{ transform: "translateY(-1%)" }}
             fetchPriority="high"
           />
         </div>
@@ -73,7 +80,7 @@ export function Hero() {
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 
       {/* ── Main content ── */}
-      <div className="absolute bottom-0 left-0 z-10 w-full px-6 pb-12 sm:px-10 lg:px-16">
+      <div className="absolute bottom-0 left-0 z-10 w-full px-5 pb-8 sm:px-10 sm:pb-12 lg:px-16">
         <div className="mx-auto max-w-[1200px]">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
             {/* stat + scroll hint */}
@@ -84,7 +91,7 @@ export function Hero() {
             >
               <div ref={statRef} className="flex items-center gap-4">
                 <div className="text-right">
-                  <div className="text-[38px] font-bold leading-none text-white tabular-nums sm:text-[46px]">
+                  <div className="text-[28px] font-bold leading-none text-white tabular-nums sm:text-[38px] lg:text-[46px]">
                     {countDone ? "42,000+" : count === 0 ? "0" : `${count},000+`}
                   </div>
                   <div className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-white/45">
