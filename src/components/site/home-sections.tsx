@@ -560,50 +560,55 @@ const IG_CARDS = [
   { id: "ig7", img: "/brand/products/palli-curry1.png", label: "Palli Curry" },
 ];
 
-const CARD_W = 150;
-const FAN_X = 78;
-const ROTATIONS = [-6, -4.5, -3, 0, 3, 4.5, 6];
+const CARD_W = 260;
+const FAN_SPREAD = 130;
+const ROTATIONS = [-5, -3, -1.5, 0, 1.5, 3, 5];
+const VERTICAL_DROP = [30, 18, 8, 0, 8, 18, 30];
+const Z_INDEX = [4, 5, 6, 7, 6, 5, 4];
 
 function fanState(i: number, total: number, hovered: number | null) {
-  const baseX = (i - (total - 1) / 2) * FAN_X;
+  const baseX = (i - (total - 1) / 2) * FAN_SPREAD;
   const baseR = ROTATIONS[i];
-  const center = (total - 1) / 2;
+  const baseY = VERTICAL_DROP[i];
 
   if (hovered === null) {
-    const fromCenter = Math.abs(i - center);
     return {
       x: baseX,
+      y: baseY,
       r: baseR,
-      s: fromCenter === 0 ? 1.05 : 1,
-      z: total - fromCenter,
+      s: i === (total - 1) / 2 ? 1.04 : 1,
+      z: Z_INDEX[i],
       o: 1,
-      shadow: fromCenter === 0
-        ? "0 12px 32px -6px rgba(0,0,0,0.25), 0 2px 8px -2px rgba(0,0,0,0.1)"
-        : `0 ${6 + (3 - fromCenter) * 2}px ${16 + (3 - fromCenter) * 4}px -${4 + fromCenter}px rgba(0,0,0,${0.18 - fromCenter * 0.03})`,
+      shadow:
+        i === (total - 1) / 2
+          ? "0 25px 60px -10px rgba(0,0,0,0.18), 0 40px 100px -20px rgba(0,0,0,0.22)"
+          : "0 15px 40px -8px rgba(0,0,0,0.12), 0 25px 70px -15px rgba(0,0,0,0.15)",
     };
   }
 
   if (i === hovered) {
     return {
       x: 0,
+      y: 0,
       r: 0,
       s: 1.05,
       z: 100,
       o: 1,
-      shadow: "0 20px 44px -10px rgba(0,0,0,0.32), 0 4px 12px -4px rgba(0,0,0,0.12)",
+      shadow: "0 30px 70px -10px rgba(0,0,0,0.22), 0 50px 110px -25px rgba(0,0,0,0.28)",
     };
   }
 
   const away = i < hovered ? -1 : 1;
   const dist = Math.max(Math.abs(i - hovered), 1);
-  const shift = dist === 1 ? 28 : dist === 2 ? 18 : 10;
+  const shift = dist === 1 ? 26 : dist === 2 ? 16 : 8;
   return {
     x: baseX + away * shift,
+    y: baseY + 4,
     r: baseR,
-    s: 0.96,
-    z: total - Math.abs(i - center),
-    o: 0.5,
-    shadow: `0 4px 12px -4px rgba(0,0,0,0.1)`,
+    s: 0.97,
+    z: Z_INDEX[i],
+    o: 0.45,
+    shadow: "0 8px 24px -6px rgba(0,0,0,0.1), 0 14px 40px -10px rgba(0,0,0,0.12)",
   };
 }
 
@@ -614,10 +619,10 @@ export function InstagramFeed() {
   const n = IG_CARDS.length;
 
   return (
-    <section ref={sectionRef} className="overflow-hidden bg-zinc-50/60 py-20 sm:py-28 lg:py-36">
+    <section ref={sectionRef} className="overflow-hidden bg-zinc-50/60 py-24 sm:py-32 lg:py-44">
       <div className="mx-auto max-w-[1200px] px-6 sm:px-10 lg:px-16">
         <div
-          className="mb-14 text-center sm:mb-20"
+          className="mb-16 text-center sm:mb-24"
           style={{
             opacity: isInView ? 1 : 0,
             transform: isInView ? "translateY(0)" : "translateY(20px)",
@@ -632,7 +637,10 @@ export function InstagramFeed() {
           </h2>
         </div>
 
-        <div className="relative mx-auto flex items-end justify-center" style={{ height: "460px", maxWidth: "660px" }}>
+        <div
+          className="relative mx-auto flex items-end justify-center"
+          style={{ height: "540px", maxWidth: "920px" }}
+        >
           {IG_CARDS.map((card, i) => {
             const p = fanState(i, n, hovered);
             return (
@@ -645,11 +653,12 @@ export function InstagramFeed() {
                   left: "50%",
                   marginLeft: -CARD_W / 2,
                 }}
-                initial={{ x: 0, rotate: 0, scale: 0.94, opacity: 0 }}
+                initial={{ x: 0, y: 40, rotate: 0, scale: 0.95, opacity: 0 }}
                 animate={
                   isInView
                     ? {
                         x: p.x,
+                        y: p.y,
                         rotate: p.r,
                         scale: p.s,
                         zIndex: p.z,
@@ -659,17 +668,17 @@ export function InstagramFeed() {
                 }
                 transition={{
                   ease: [0.33, 1, 0.68, 1],
-                  duration: 0.85,
-                  delay: isInView ? i * 0.05 : 0,
+                  duration: 1.3,
+                  delay: isInView ? i * 0.06 : 0,
                 }}
                 onHoverStart={() => setHovered(i)}
                 onHoverEnd={() => setHovered(null)}
               >
                 <div
-                  className="overflow-hidden rounded-[28px] sm:rounded-[32px]"
+                  className="overflow-hidden rounded-[30px]"
                   style={{
                     boxShadow: p.shadow,
-                    transition: "box-shadow 0.5s cubic-bezier(0.33,1,0.68,1)",
+                    transition: "box-shadow 0.55s cubic-bezier(0.33,1,0.68,1)",
                   }}
                 >
                   <div className="relative aspect-[9/16] overflow-hidden bg-zinc-100">
@@ -690,15 +699,15 @@ export function InstagramFeed() {
                       }}
                     />
                     <div
-                      className="absolute bottom-0 left-0 right-0 p-4"
+                      className="absolute bottom-0 left-0 right-0 p-5"
                       style={{
                         opacity: hovered === i ? 1 : 0,
                         transform: hovered === i ? "translateY(0)" : "translateY(4px)",
                         transition: "opacity 0.35s ease 0.06s, transform 0.35s ease 0.06s",
                       }}
                     >
-                      <p className="text-[13px] font-medium text-white">{card.label}</p>
-                      <p className="mt-0.5 text-[11px] text-white/55">View on Instagram</p>
+                      <p className="text-[14px] font-medium text-white">{card.label}</p>
+                      <p className="mt-1 text-[11px] text-white/55">View on Instagram</p>
                     </div>
                   </div>
                 </div>
