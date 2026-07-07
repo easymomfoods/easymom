@@ -560,8 +560,8 @@ const IG_CARDS = [
   { id: "ig7", img: "/brand/products/palli-curry1.png", label: "Palli Curry" },
 ];
 
-const CARD_W = 260;
-const FAN_SPREAD = 130;
+const CARD_W = 200;
+const FAN_SPREAD = 100;
 const ROTATIONS = [-5, -3, -1.5, 0, 1.5, 3, 5];
 const VERTICAL_DROP = [30, 18, 8, 0, 8, 18, 30];
 const Z_INDEX = [4, 5, 6, 7, 6, 5, 4];
@@ -639,7 +639,7 @@ export function InstagramFeed() {
 
         <div
           className="relative mx-auto flex items-end justify-center"
-          style={{ height: "540px", maxWidth: "920px" }}
+          style={{ height: "420px", maxWidth: "780px" }}
         >
           {IG_CARDS.map((card, i) => {
             const p = fanState(i, n, hovered);
@@ -667,9 +667,9 @@ export function InstagramFeed() {
                     : undefined
                 }
                 transition={{
-                  ease: [0.33, 1, 0.68, 1],
-                  duration: 1.3,
-                  delay: isInView ? i * 0.06 : 0,
+                  ease: [0.22, 1, 0.36, 1],
+                  duration: 1.8,
+                  delay: isInView ? 0.3 + i * 0.09 : 0,
                 }}
                 onHoverStart={() => setHovered(i)}
                 onHoverEnd={() => setHovered(null)}
