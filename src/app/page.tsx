@@ -11,6 +11,7 @@ import {
   BrandStory,
   Recipes,
   Testimonials,
+  InstagramFeed,
   TrustStrip,
 } from "@/components/site/home-sections";
 import { Footer } from "@/components/site/footer";
@@ -69,6 +70,7 @@ export default function Home() {
             <BrandStory />
             <Recipes />
             <Testimonials />
+            <InstagramFeed />
             <TrustStrip />
           </Suspense>
         )}

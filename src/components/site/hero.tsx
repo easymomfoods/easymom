@@ -15,14 +15,22 @@ export function Hero() {
         if (!e.isIntersecting) return;
         o.disconnect();
         let cur = 0;
-        const id = setInterval(() => {
-          cur++;
+        const target = 42;
+        const duration = 1600;
+        const startTime = performance.now();
+        const step = (now: number) => {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          cur = Math.round(eased * target);
           setCount(cur);
-          if (cur >= 42) {
-            clearInterval(id);
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          } else {
             setCountDone(true);
           }
-        }, 35);
+        };
+        requestAnimationFrame(step);
       },
       { threshold: 0.5 }
     );
@@ -77,7 +85,7 @@ export function Hero() {
               <div ref={statRef} className="flex items-center gap-4">
                 <div className="text-right">
                   <div className="text-[38px] font-bold leading-none text-white tabular-nums sm:text-[46px]">
-                    {countDone ? "42,000+" : `${count.toLocaleString()}+`}
+                    {countDone ? "42,000+" : count === 0 ? "0" : `${count},000+`}
                   </div>
                   <div className="mt-1.5 text-[11px] font-medium uppercase tracking-[0.14em] text-white/45">
                     Kitchens trust&nbsp;us

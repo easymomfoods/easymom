@@ -75,7 +75,7 @@ export function Footer() {
               <img
                 src="/brand/easymom-logo.png"
                 alt="EasyMom"
-                className="h-10 w-auto mix-blend-multiply"
+                className="h-24 w-auto mix-blend-multiply"
               />
             </button>
             <p className="mt-4 max-w-xs text-[14px] leading-relaxed text-muted-foreground">

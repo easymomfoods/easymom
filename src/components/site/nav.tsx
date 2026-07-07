@@ -59,7 +59,7 @@ export function Nav() {
               <img
                 src="/brand/easymom-logo.png"
                 alt="EasyMom"
-                className="h-20 w-auto mix-blend-multiply"
+                className="h-24 w-auto mix-blend-multiply"
               />
             </button>
             {/* desktop nav */}
