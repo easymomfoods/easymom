@@ -11,6 +11,39 @@ export type View =
   | { name: "about" }
   | { name: "faq" };
 
+function viewToPath(v: View): string {
+  switch (v.name) {
+    case "home":
+      return "/";
+    case "shop":
+      return v.categoryId ? `/shop/${v.categoryId}` : "/shop";
+    case "product":
+      return `/product/${v.slug}`;
+    case "recipes":
+      return "/recipes";
+    case "about":
+      return "/about";
+    case "faq":
+      return "/faq";
+    default:
+      return "/";
+  }
+}
+
+function pathToView(pathname: string): View {
+  const parts = pathname.split("/").filter(Boolean);
+  if (parts.length === 0) return { name: "home" };
+  if (parts[0] === "shop") {
+    if (parts[1]) return { name: "shop", categoryId: parts[1] };
+    return { name: "shop" };
+  }
+  if (parts[0] === "product" && parts[1]) return { name: "product", slug: parts[1] };
+  if (parts[0] === "recipes") return { name: "recipes" };
+  if (parts[0] === "about") return { name: "about" };
+  if (parts[0] === "faq") return { name: "faq" };
+  return { name: "home" };
+}
+
 type UIState = {
   view: View;
   cartOpen: boolean;
@@ -19,7 +52,6 @@ type UIState = {
   quickView: Product | null;
   checkoutOpen: boolean;
   orderConfirmed: boolean;
-  // filters for shop
   activeLevels: SpiceLevel[];
   maxPrice: number;
   sortBy: "featured" | "price-asc" | "price-desc" | "rating";
@@ -42,7 +74,7 @@ type UIState = {
 };
 
 export const useUI = create<UIState>((set, get) => ({
-  view: { name: "home" },
+  view: typeof window !== "undefined" ? pathToView(window.location.pathname) : { name: "home" },
   cartOpen: false,
   searchOpen: false,
   mobileNavOpen: false,
@@ -54,6 +86,11 @@ export const useUI = create<UIState>((set, get) => ({
   sortBy: "featured",
   wishlistOpen: false,
   go: (v) => {
+    const path = viewToPath(v);
+    const currentPath = window.location.pathname;
+    if (path !== currentPath) {
+      window.history.pushState(v, "", path);
+    }
     set({ view: v, mobileNavOpen: false, searchOpen: false });
     requestAnimationFrame(() => {
       window.scrollTo({ top: 0, behavior: "instant" });
@@ -80,3 +117,10 @@ export const useUI = create<UIState>((set, get) => ({
   setSortBy: (s) => set({ sortBy: s }),
   setWishlistOpen: (v) => set({ wishlistOpen: v }),
 }));
+
+if (typeof window !== "undefined") {
+  window.addEventListener("popstate", (e) => {
+    const view = e.state && e.state.name ? (e.state as View) : pathToView(window.location.pathname);
+    useUI.setState({ view, mobileNavOpen: false, searchOpen: false });
+  });
+}

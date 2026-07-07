@@ -59,19 +59,15 @@ export function Hero() {
       {/* ── Full-bleed image ── */}
       <div className="absolute inset-0">
         <div className="grain h-full w-full">
-          <img
-            src="/brand/easymom-banner.png"
-            alt="EasyMom — Authentic South Indian masala spices"
-            className="hidden h-full w-full object-cover sm:block"
-            fetchPriority="high"
-          />
-          <img
-            src="/brand/easymom-hero-mobile.png"
-            alt="EasyMom — Authentic South Indian masala spices"
-            className="block h-[110%] w-full object-cover sm:hidden"
-            style={{ transform: "translateY(-1%)" }}
-            fetchPriority="high"
-          />
+          <picture>
+            <source media="(max-width: 639px)" srcSet="/brand/easymom-hero-mobile.png" />
+            <img
+              src="/brand/easymom-banner.png"
+              alt="EasyMom — Authentic South Indian masala spices"
+              className="h-full w-full object-cover"
+              fetchPriority="high"
+            />
+          </picture>
         </div>
       </div>
 
