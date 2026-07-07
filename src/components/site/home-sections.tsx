@@ -171,11 +171,11 @@ export function BrandStory() {
         const id = setInterval(() => {
           cur++;
           setCount(cur);
-          if (cur >= 20) {
+          if (cur >= 5) {
             clearInterval(id);
             setCountDone(true);
           }
-        }, 80);
+        }, 200);
       },
       { threshold: 0.5 }
     );
@@ -194,7 +194,7 @@ export function BrandStory() {
                 key={i}
                 className="whitespace-nowrap text-[42px] font-bold leading-none tracking-[-0.03em] text-zinc-[0.06] select-none sm:text-[64px] lg:text-[80px]"
               >
-                GROUND IN BATCHES UNDER 20KG&nbsp;&nbsp;·&nbsp;&nbsp;
+                NO PREP · NO OIL · READY IN 5 MINUTES&nbsp;&nbsp;·&nbsp;&nbsp;
               </span>
             ))}
           </div>
@@ -232,12 +232,12 @@ export function BrandStory() {
                 <div className="absolute -inset-3 rounded-full border-[1.5px] border-primary/20" />
                 <div className="grid h-20 w-20 place-items-center rounded-full bg-primary/[0.07]">
                   <span className="text-[28px] font-bold tracking-tight text-primary tabular-nums">
-                    {countDone ? "20+" : `${count}+`}
+                    {countDone ? "5 min" : `${count} min`}
                   </span>
                 </div>
               </div>
               <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-zinc-400">
-                Max batch<br />size
+                Cook time<br />avg
               </span>
             </div>
 
@@ -249,7 +249,7 @@ export function BrandStory() {
                 Why EasyMom
               </p>
               <h2 className="mt-3 text-[30px] font-semibold leading-[1.08] tracking-[-0.02em] text-zinc-900 sm:text-[38px] lg:text-[42px]">
-                Ground the way it keeps its soul
+                Restaurant-style curry,<br />ready in 5 minutes
               </h2>
             </div>
 
@@ -258,7 +258,7 @@ export function BrandStory() {
               className="hidden text-[15px] leading-[1.7] text-zinc-500 sm:block"
               style={{ transition: "opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s", opacity: 0, transform: "translateY(20px)" }}
             >
-              Industrial masala is pulverised at speed — volatile oils vanish, flavour flattens. We grind in batches under 20kg on slow stones, the way a home kitchen would, just scaled enough to reach yours.
+              The all-in-one masala paste includes onions, tomatoes, and essential spices. No chopping, no grinding, no oil. Just add your protein, water, and EasyMom — dinner in 5 minutes.
             </p>
           </div>
         </div>
@@ -309,7 +309,7 @@ export function BrandStory() {
                 key={i}
                 className="whitespace-nowrap text-[13px] font-medium uppercase tracking-[0.2em] text-zinc-300 select-none"
               >
-                Small-batch · Stone-ground · Sourced from origin · Nothing to hide · Built for the modern stove&nbsp;&nbsp;
+                No prep · No oil · Ready in 5 minutes · All-in-one paste · Nothing to hide&nbsp;&nbsp;
               </span>
             ))}
           </div>
