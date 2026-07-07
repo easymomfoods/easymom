@@ -8,25 +8,20 @@ import {
   Clock,
   Users,
   MapPin,
-  ShieldCheck,
-  Leaf,
-  Flame,
-  CookingPot,
   ChevronRight,
-  Truck,
-  RefreshCw,
 } from "lucide-react";
+import { PackageIcon, LeafIcon, CircularArrowIcon, MortarIcon, FlameIcon, ShieldIcon } from "./icons";
 import { categories, products, recipes, testimonials, brandValues } from "@/lib/data";
 import { useUI } from "@/lib/ui-store";
 import { ProductCard } from "./product-card";
 import { SpiceVisual } from "./spice-visual";
 import { inr } from "@/lib/format";
 
-const ICONS: Record<string, typeof Leaf> = {
-  mortar: CookingPot,
-  leaf: Leaf,
-  shield: ShieldCheck,
-  flame: Flame,
+const ICONS: Record<string, typeof LeafIcon> = {
+  mortar: MortarIcon,
+  leaf: LeafIcon,
+  shield: ShieldIcon,
+  flame: FlameIcon,
 };
 
 export function BrandStrip() {
@@ -268,7 +263,7 @@ export function BrandStory() {
       <div className="mx-auto max-w-[1200px] px-6 pb-20 sm:px-10 sm:pb-24 lg:px-16 lg:pb-28">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {brandValues.map((v, i) => {
-            const Icon = ICONS[v.icon] ?? Leaf;
+            const Icon = ICONS[v.icon] ?? LeafIcon;
             const span = i < 2 ? "sm:col-span-2 lg:col-span-2" : "sm:col-span-1 lg:col-span-1";
             const tall = i === 1;
             const rotations = ["-0.4deg", "0.3deg", "-0.2deg"];
@@ -576,17 +571,17 @@ export function TrustStrip() {
 
   const items = [
     {
-      icon: Truck,
+      icon: PackageIcon,
       title: "Free shipping over ₹499",
       sub: "Dispatched in 24 hours",
     },
     {
-      icon: ShieldCheck,
+      icon: LeafIcon,
       title: "No preservatives, ever",
       sub: "Read the label — it's a recipe",
     },
     {
-      icon: RefreshCw,
+      icon: CircularArrowIcon,
       title: "Easy returns",
       sub: "Not right? We'll make it right",
     },
@@ -605,7 +600,7 @@ export function TrustStrip() {
             style={{ transition: `opacity 0.6s ease ${i * 0.1}s, transform 0.6s ease ${i * 0.1}s`, opacity: 0, transform: "translateY(12px)" }}
           >
             <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-primary/[0.06]">
-              <item.icon className="h-5 w-5 text-primary" strokeWidth={1.75} />
+              <item.icon className="h-5 w-5 text-primary" />
             </div>
             <div>
               <div className="text-[14px] font-semibold text-zinc-900">{item.title}</div>
