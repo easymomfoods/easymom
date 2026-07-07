@@ -729,6 +729,30 @@ export function InstagramFeed() {
             );
           })}
         </div>
+
+        {/* social links */}
+        <div
+          className="mt-10 flex flex-col items-center gap-3"
+          style={{
+            opacity: isInView ? 1 : 0,
+            transition: "opacity 0.7s ease 1s",
+          }}
+        >
+          <p className="text-[13px] font-medium text-zinc-400">
+            Follow EasyMom on social media
+          </p>
+          <div className="flex items-center gap-6">
+            {["Instagram", "YouTube", "TikTok", "Twitter"].map((name) => (
+              <a
+                key={name}
+                href="#"
+                className="text-[13px] font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-4 transition-colors hover:text-primary hover:decoration-primary"
+              >
+                {name}
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
