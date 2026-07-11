@@ -177,11 +177,58 @@ export function FeaturedProducts() {
   );
 }
 
+const FALLBACK_BRAND_STORY = {
+  marqueeText: "NO PREP · NO OIL · READY IN 5 MINUTES",
+  heroImage: "/brand/story-grind.png",
+  heroAlt: "Hands grinding spices in a traditional stone mortar and pestle",
+  cookTime: "5 min",
+  cookTimeLabel: "Cook time avg",
+  eyebrow: "Why EasyMom",
+  title: "Restaurant-style curry, ready in 5 minutes",
+  description: "The all-in-one masala paste includes onions, tomatoes, and essential spices. No chopping, no grinding, no oil. Just add your protein, water, and EasyMom — dinner in 5 minutes.",
+  bottomMarqueeText: "No prep · No oil · Ready in 5 minutes · All-in-one paste · Nothing to hide",
+  features: brandValues,
+};
+
 export function BrandStory() {
   const [count, setCount] = React.useState(0);
   const [countDone, setCountDone] = React.useState(false);
   const statRef = React.useRef<HTMLDivElement>(null);
   const revealRef = React.useRef<HTMLDivElement>(null);
+
+  const [marqueeText, setMarqueeText] = React.useState(FALLBACK_BRAND_STORY.marqueeText);
+  const [heroImage, setHeroImage] = React.useState(FALLBACK_BRAND_STORY.heroImage);
+  const [heroAlt, setHeroAlt] = React.useState(FALLBACK_BRAND_STORY.heroAlt);
+  const [cookTime, setCookTime] = React.useState(FALLBACK_BRAND_STORY.cookTime);
+  const [cookTimeLabel, setCookTimeLabel] = React.useState(FALLBACK_BRAND_STORY.cookTimeLabel);
+  const [eyebrow, setEyebrow] = React.useState(FALLBACK_BRAND_STORY.eyebrow);
+  const [title, setTitle] = React.useState(FALLBACK_BRAND_STORY.title);
+  const [description, setDescription] = React.useState(FALLBACK_BRAND_STORY.description);
+  const [bottomMarqueeText, setBottomMarqueeText] = React.useState(FALLBACK_BRAND_STORY.bottomMarqueeText);
+  const [features, setFeatures] = React.useState(FALLBACK_BRAND_STORY.features);
+
+  React.useEffect(() => {
+    fetch("/api/site-content/brand-story")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.value) {
+          try {
+            const parsed = JSON.parse(d.value);
+            if (parsed.marqueeText) setMarqueeText(parsed.marqueeText);
+            if (parsed.heroImage) setHeroImage(parsed.heroImage);
+            if (parsed.heroAlt) setHeroAlt(parsed.heroAlt);
+            if (parsed.cookTime) setCookTime(parsed.cookTime);
+            if (parsed.cookTimeLabel) setCookTimeLabel(parsed.cookTimeLabel);
+            if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+            if (parsed.title) setTitle(parsed.title);
+            if (parsed.description) setDescription(parsed.description);
+            if (parsed.bottomMarqueeText) setBottomMarqueeText(parsed.bottomMarqueeText);
+            if (parsed.features) setFeatures(parsed.features);
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   React.useEffect(() => {
     if (!revealRef.current) return;
@@ -251,8 +298,8 @@ export function BrandStory() {
           >
             <div className="grain">
               <img
-                src="/brand/story-grind.png"
-                alt="Hands grinding spices in a traditional stone mortar and pestle"
+                src={heroImage}
+                alt={heroAlt}
                 className="aspect-[16/9] w-full object-cover sm:aspect-[4/3]"
               />
             </div>
@@ -271,12 +318,12 @@ export function BrandStory() {
                 <div className="absolute -inset-2 rounded-full border-[1.5px] border-primary/20 sm:-inset-3" />
                 <div className="grid h-14 w-14 place-items-center rounded-full bg-primary/[0.07] sm:h-20 sm:w-20">
                   <span className="text-[18px] font-bold tracking-tight text-primary tabular-nums sm:text-[28px]">
-                    {countDone ? "5 min" : `${count} min`}
+                    {countDone ? cookTime : `${count} min`}
                   </span>
                 </div>
               </div>
               <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-400 sm:text-[11px]">
-                Cook time avg
+                {cookTimeLabel}
               </span>
             </div>
 
@@ -285,10 +332,10 @@ export function BrandStory() {
               style={{ transition: "opacity 0.7s ease 0.15s, transform 0.7s ease 0.15s", opacity: 0, transform: "translateY(20px)" }}
             >
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary sm:text-[12px]">
-                Why EasyMom
+                {eyebrow}
               </p>
               <h2 className="mt-2 text-[22px] font-semibold leading-[1.15] tracking-[-0.02em] text-zinc-900 sm:mt-3 sm:text-[30px] lg:text-[42px]">
-                Restaurant-style curry, ready in 5 minutes
+                {title}
               </h2>
             </div>
 
@@ -297,7 +344,7 @@ export function BrandStory() {
               className="text-[13px] leading-[1.7] text-zinc-500 sm:text-[15px]"
               style={{ transition: "opacity 0.7s ease 0.2s, transform 0.7s ease 0.2s", opacity: 0, transform: "translateY(20px)" }}
             >
-              The all-in-one masala paste includes onions, tomatoes, and essential spices. No chopping, no grinding, no oil. Just add your protein, water, and EasyMom — dinner in 5 minutes.
+              {description}
             </p>
           </div>
         </div>
@@ -306,7 +353,7 @@ export function BrandStory() {
       {/* ── Features ── */}
       <div className="mx-auto max-w-[1200px] px-5 pb-14 sm:px-10 sm:pb-24 lg:px-16 lg:pb-28">
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-          {brandValues.map((v, i) => {
+          {features.map((v, i) => {
             const Icon = ICONS[v.icon] ?? LeafIcon;
             const hasImg = "img" in v && v.img;
             const span = i < 2 ? "lg:col-span-2" : "lg:col-span-1";
@@ -365,7 +412,7 @@ export function BrandStory() {
                 key={i}
                 className="whitespace-nowrap text-[13px] font-medium uppercase tracking-[0.2em] text-zinc-300 select-none"
               >
-                No prep · No oil · Ready in 5 minutes · All-in-one paste · Nothing to hide&nbsp;&nbsp;
+                {bottomMarqueeText}&nbsp;&nbsp;
               </span>
             ))}
           </div>
