@@ -46,7 +46,7 @@ export default function Home() {
   const go = useUI((s) => s.go);
   const syncFromURL = useUI((s) => s.syncFromURL);
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
-  const [adminChecking, setAdminChecking] = useState(true);
+  const [adminChecking, setAdminChecking] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Mark as mounted after hydration, and sync view from URL
@@ -55,9 +55,10 @@ export default function Home() {
     setMounted(true);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Check admin session once on mount — not on every view change
+  // Check admin session when view is an admin route
   useEffect(() => {
-    if (view.name.startsWith("admin")) {
+    if (mounted && view.name.startsWith("admin")) {
+      setAdminChecking(true);
       fetch("/api/admin/stats")
         .then((res) => {
           setAdminLoggedIn(res.ok);
@@ -65,7 +66,7 @@ export default function Home() {
         .catch(() => setAdminLoggedIn(false))
         .finally(() => setAdminChecking(false));
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [mounted, view.name]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // close overlays on ESC
   useEffect(() => {
