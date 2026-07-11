@@ -15,6 +15,7 @@ import {
   X,
   Filter,
 } from "lucide-react";
+import ImageUpload from "./ImageUpload";
 
 interface Product {
   id: string;
@@ -469,8 +470,12 @@ function ProductEditModal({
               </select>
             </div>
             <div className="col-span-2">
-              <label className={labelCls}>Image URL</label>
-              <input type="text" value={form.img} onChange={(e) => setForm({ ...form, img: e.target.value })} className={inputCls} placeholder="/brand/products/green-curry1.png" />
+              <ImageUpload
+                value={form.img}
+                onChange={(url) => setForm({ ...form, img: url })}
+                folder="easymom/products"
+                label="Product Image"
+              />
             </div>
             <div className="col-span-2">
               <label className={labelCls}>Short Description</label>

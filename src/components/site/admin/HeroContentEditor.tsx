@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Save,
-  Upload,
   Eye,
   RotateCcw,
   ImageIcon,
@@ -11,6 +10,7 @@ import {
   Hash,
   Sparkles,
 } from "lucide-react";
+import ImageUpload from "./ImageUpload";
 
 interface HeroData {
   desktopImage: string;
@@ -163,51 +163,20 @@ export default function HeroContentEditor() {
                 Images
               </h3>
 
-              {/* Desktop Image */}
-              <div className="mb-4">
-                <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                  Desktop Image
-                </label>
-                <div className="relative rounded-xl overflow-hidden border border-stone-200 h-44 bg-stone-50">
-                  <img
-                    src={data.desktopImage}
-                    alt="Desktop hero"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <input
-                  type="text"
-                  value={data.desktopImage}
-                  onChange={(e) =>
-                    setData({ ...data, desktopImage: e.target.value })
-                  }
-                  className="mt-2 w-full h-10 px-3 rounded-lg border border-stone-200 text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-[#891816]/10 focus:border-[#891816]/30"
-                  placeholder="/brand/easymom-banner.png"
-                />
-              </div>
+              <ImageUpload
+                value={data.desktopImage}
+                onChange={(url) => setData({ ...data, desktopImage: url })}
+                folder="easymom/hero"
+                label="Desktop Image"
+                className="mb-4"
+              />
 
-              {/* Mobile Image */}
-              <div>
-                <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-2">
-                  Mobile Image
-                </label>
-                <div className="relative rounded-xl overflow-hidden border border-stone-200 h-44 bg-stone-50">
-                  <img
-                    src={data.mobileImage}
-                    alt="Mobile hero"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-                <input
-                  type="text"
-                  value={data.mobileImage}
-                  onChange={(e) =>
-                    setData({ ...data, mobileImage: e.target.value })
-                  }
-                  className="mt-2 w-full h-10 px-3 rounded-lg border border-stone-200 text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-[#891816]/10 focus:border-[#891816]/30"
-                  placeholder="/brand/easymom-hero-mobile.png"
-                />
-              </div>
+              <ImageUpload
+                value={data.mobileImage}
+                onChange={(url) => setData({ ...data, mobileImage: url })}
+                folder="easymom/hero"
+                label="Mobile Image"
+              />
             </div>
           </div>
 
@@ -304,8 +273,8 @@ export default function HeroContentEditor() {
                 <Sparkles className="h-4 w-4 text-[#891816] mt-0.5 shrink-0" />
                 <p className="text-[13px] text-stone-600 leading-relaxed">
                   Changes save to the database and appear on the live site
-                  immediately. Use image paths from <code className="text-[12px] bg-white px-1 rounded">/public/brand/</code> or
-                  external URLs.
+                  immediately. Drag & drop images to upload to Cloudinary, or
+                  paste any image URL.
                 </p>
               </div>
             </div>
