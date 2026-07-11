@@ -48,6 +48,7 @@ import AdminRecipes from "@/components/site/admin/AdminRecipes";
 import AdminTestimonials from "@/components/site/admin/AdminTestimonials";
 import InstagramFeedEditor from "@/components/site/admin/InstagramFeedEditor";
 import TrustStripEditor from "@/components/site/admin/TrustStripEditor";
+import FooterEditor from "@/components/site/admin/FooterEditor";
 
 export default function Home() {
   const view = useUI((s) => s.view);
@@ -136,6 +137,7 @@ export default function Home() {
         {view.name === "admin-testimonials" && <AdminTestimonials />}
         {view.name === "admin-instagram" && <InstagramFeedEditor />}
         {view.name === "admin-trust-strip" && <TrustStripEditor />}
+        {view.name === "admin-footer" && <FooterEditor />}
       </AdminLayout>
     );
   }

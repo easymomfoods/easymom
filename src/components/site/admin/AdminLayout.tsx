@@ -21,6 +21,7 @@ import {
   Heart,
   BookOpenCheck,
   Shield,
+  ArrowUpRight,
 } from "lucide-react";
 
 const navItems = [
@@ -35,6 +36,7 @@ const navItems = [
   { id: "recipes-section", label: "Recipes Section", icon: BookOpen },
   { id: "instagram", label: "Instagram Feed", icon: Image },
   { id: "trust-strip", label: "Trust Strip", icon: Shield },
+  { id: "footer", label: "Footer", icon: ArrowUpRight },
   { id: "brand-story", label: "Brand Story", icon: BookOpenCheck },
   { id: "featured", label: "Most Loved", icon: Heart },
   { id: "our-products", label: "Our Products", icon: LayoutList },

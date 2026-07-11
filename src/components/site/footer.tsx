@@ -11,6 +11,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { useUI } from "@/lib/ui-store";
+import { useEffect, useState } from "react";
 
 const SHOP_LINKS = [
   { label: "Green Curry", view: { name: "shop" as const, categoryId: "green-curry" } },
@@ -34,14 +35,42 @@ const POLICY_LINKS = [
   { label: "Terms of service", view: { name: "faq" as const } },
 ];
 
-const SOCIALS = [
-  { icon: Instagram, label: "Instagram", href: "#" },
-  { icon: Twitter, label: "Twitter", href: "#" },
-  { icon: Youtube, label: "YouTube", href: "#" },
-];
+const SOCIAL_ICONS: Record<string, typeof Instagram> = {
+  instagram: Instagram,
+  youtube: Youtube,
+  twitter: Twitter,
+};
+
+const DEFAULTS = {
+  tagline: "Authentic South Indian masalas, ground fresh in small batches. Homemade flavour, built for the modern stove.",
+  email: "hello@easymom.in",
+  phone: "+91 80 1234 5678",
+  address: "Mangalore, Karnataka 575001",
+  socials: [
+    { platform: "instagram", label: "Instagram", href: "#" },
+    { platform: "youtube", label: "YouTube", href: "#" },
+    { platform: "twitter", label: "Twitter", href: "#" },
+  ],
+  fssai: "10024051000678",
+};
 
 export function Footer() {
   const go = useUI((s) => s.go);
+  const [footer, setFooter] = useState(DEFAULTS);
+
+  useEffect(() => {
+    fetch("/api/site-content/footer")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.value) {
+          try {
+            const parsed = JSON.parse(d.value);
+            setFooter({ ...DEFAULTS, ...parsed });
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <footer className="border-t border-zinc-100 bg-white">
@@ -60,36 +89,38 @@ export function Footer() {
               />
             </button>
             <p className="mt-5 max-w-sm text-[14px] leading-[1.7] text-zinc-500">
-              Authentic South Indian masalas, ground fresh in small batches.
-              Homemade flavour, built for the modern stove.
+              {footer.tagline}
             </p>
 
             {/* Contact */}
             <div className="mt-6 space-y-2.5 text-[13px] text-zinc-500">
-              <a href="mailto:hello@easymom.in" className="flex items-center gap-2.5 transition hover:text-zinc-900">
-                <Mail className="h-4 w-4 text-primary" /> hello@easymom.in
+              <a href={`mailto:${footer.email}`} className="flex items-center gap-2.5 transition hover:text-zinc-900">
+                <Mail className="h-4 w-4 text-primary" /> {footer.email}
               </a>
-              <a href="tel:+918012345678" className="flex items-center gap-2.5 transition hover:text-zinc-900">
-                <Phone className="h-4 w-4 text-primary" /> +91 80 1234 5678
+              <a href={`tel:${footer.phone.replace(/\s/g, "")}`} className="flex items-center gap-2.5 transition hover:text-zinc-900">
+                <Phone className="h-4 w-4 text-primary" /> {footer.phone}
               </a>
               <p className="flex items-center gap-2.5">
-                <MapPin className="h-4 w-4 text-primary" /> Mangalore, Karnataka 575001
+                <MapPin className="h-4 w-4 text-primary" /> {footer.address}
               </p>
             </div>
 
             {/* Socials */}
             <div className="mt-6 flex gap-2">
-              {SOCIALS.map((s) => (
-                <a
-                  key={s.label}
-                  href={s.href}
-                  onClick={(e) => e.preventDefault()}
-                  className="grid h-11 w-11 place-items-center rounded-full border border-zinc-200 text-zinc-400 transition-all duration-200 hover:border-primary/40 hover:text-primary hover:shadow-sm"
-                  aria-label={s.label}
-                >
-                  <s.icon className="h-[16px] w-[16px]" strokeWidth={1.75} />
-                </a>
-              ))}
+              {footer.socials.map((s) => {
+                const Icon = SOCIAL_ICONS[s.platform] || Instagram;
+                return (
+                  <a
+                    key={s.platform}
+                    href={s.href}
+                    onClick={(e) => { if (s.href === "#") e.preventDefault(); }}
+                    className="grid h-11 w-11 place-items-center rounded-full border border-zinc-200 text-zinc-400 transition-all duration-200 hover:border-primary/40 hover:text-primary hover:shadow-sm"
+                    aria-label={s.label}
+                  >
+                    <Icon className="h-[16px] w-[16px]" strokeWidth={1.75} />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
@@ -166,7 +197,7 @@ export function Footer() {
               © {new Date().getFullYear()} EasyMom Foods Pvt. Ltd. · Made in Mangalore.
             </p>
             <div className="flex items-center gap-4 text-[12px] text-zinc-400">
-              <span>FSSAI Lic. 10024051000678</span>
+              <span>FSSAI Lic. {footer.fssai}</span>
               <span className="h-3 w-px bg-zinc-200" />
               <span className="flex items-center gap-1.5">
                 <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" /> Secure checkout
