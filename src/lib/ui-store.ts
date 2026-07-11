@@ -97,10 +97,11 @@ type UIState = {
   setMaxPrice: (n: number) => void;
   setSortBy: (s: UIState["sortBy"]) => void;
   setWishlistOpen: (v: boolean) => void;
+  syncFromURL: () => void;
 };
 
 export const useUI = create<UIState>((set, get) => ({
-  view: typeof window !== "undefined" ? pathToView(window.location.pathname) : { name: "home" },
+  view: { name: "home" } as View,
   cartOpen: false,
   searchOpen: false,
   mobileNavOpen: false,
@@ -142,6 +143,10 @@ export const useUI = create<UIState>((set, get) => ({
   setMaxPrice: (n) => set({ maxPrice: n }),
   setSortBy: (s) => set({ sortBy: s }),
   setWishlistOpen: (v) => set({ wishlistOpen: v }),
+  syncFromURL: () => {
+    const view = pathToView(window.location.pathname);
+    set({ view });
+  },
 }));
 
 if (typeof window !== "undefined") {

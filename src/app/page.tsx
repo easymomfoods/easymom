@@ -44,14 +44,16 @@ import HeroContentEditor from "@/components/site/admin/HeroContentEditor";
 export default function Home() {
   const view = useUI((s) => s.view);
   const go = useUI((s) => s.go);
+  const syncFromURL = useUI((s) => s.syncFromURL);
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
   const [adminChecking, setAdminChecking] = useState(true);
   const [mounted, setMounted] = useState(false);
 
-  // Mark as mounted after hydration
+  // Mark as mounted after hydration, and sync view from URL
   useEffect(() => {
+    syncFromURL();
     setMounted(true);
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Check admin session once on mount — not on every view change
   useEffect(() => {
