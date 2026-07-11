@@ -44,6 +44,7 @@ import OurProductsEditor from "@/components/site/admin/OurProductsEditor";
 import FeaturedEditor from "@/components/site/admin/FeaturedEditor";
 import BrandStoryEditor from "@/components/site/admin/BrandStoryEditor";
 import RecipesSectionEditor from "@/components/site/admin/RecipesSectionEditor";
+import AdminRecipes from "@/components/site/admin/AdminRecipes";
 
 export default function Home() {
   const view = useUI((s) => s.view);
@@ -128,6 +129,7 @@ export default function Home() {
         {view.name === "admin-featured" && <FeaturedEditor />}
         {view.name === "admin-brand-story" && <BrandStoryEditor />}
         {view.name === "admin-recipes-section" && <RecipesSectionEditor />}
+        {view.name === "admin-recipes" && <AdminRecipes />}
       </AdminLayout>
     );
   }
