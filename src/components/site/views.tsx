@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   SlidersHorizontal,
@@ -329,6 +329,14 @@ export function ProductView() {
   const [loadingProduct, setLoadingProduct] = useState(true);
   const [allProducts, setAllProducts] = useState(DEFAULT_PRODUCTS);
   const [allCategories, setAllCategories] = useState(DEFAULT_CATEGORIES);
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewPage, setReviewPage] = useState(1);
+  const [hasMoreReviews, setHasMoreReviews] = useState(false);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ name: "", email: "", rating: 5, title: "", body: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const slug = view.name === "product" ? view.slug : "";
 
   // Try database first, fallback to hardcoded
@@ -371,6 +379,56 @@ export function ProductView() {
       })
       .catch(() => {});
   }, []);
+
+  const fetchReviews = useCallback(async (productId: string, page: number, append = false) => {
+    setLoadingReviews(true);
+    try {
+      const res = await fetch(`/api/reviews?productId=${productId}&page=${page}`);
+      const data = await res.json();
+      if (data.reviews) {
+        setReviews((prev) => (append ? [...prev, ...data.reviews] : data.reviews));
+        setHasMoreReviews(data.hasMore);
+      }
+    } catch {}
+    setLoadingReviews(false);
+  }, []);
+
+  useEffect(() => {
+    if (p?.id) {
+      setReviews([]);
+      setReviewPage(1);
+      fetchReviews(p.id, 1);
+    }
+  }, [p?.id, fetchReviews]);
+
+  function loadMoreReviews() {
+    if (!p?.id) return;
+    const next = reviewPage + 1;
+    setReviewPage(next);
+    fetchReviews(p.id, next, true);
+  }
+
+  async function submitReview() {
+    if (!p?.id) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId: p.id, ...reviewForm }),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+        setShowReviewForm(false);
+        setReviewForm({ name: "", email: "", rating: 5, title: "", body: "" });
+        fetchReviews(p.id, 1);
+        fetch(`/api/products/${slug}`)
+          .then((r) => r.json())
+          .then((d) => { if (d.product) setDbProduct(d.product); });
+      }
+    } catch {}
+    setSubmitting(false);
+  }
 
   if (!p) {
     return (
@@ -536,6 +594,187 @@ export function ProductView() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-20">
+        <div className="flex items-end justify-between mb-6">
+          <div>
+            <h2 className="text-[24px] font-semibold tracking-tight">Customer Reviews</h2>
+            <p className="mt-1 text-[14px] text-muted-foreground">
+              {p.reviewCount > 0 ? `${p.reviewCount} review${p.reviewCount !== 1 ? "s" : ""} · ${p.rating} average` : "No reviews yet"}
+            </p>
+          </div>
+          <button
+            onClick={() => setShowReviewForm(!showReviewForm)}
+            className="rounded-[4px] border border-border bg-card px-4 py-2.5 text-[13px] font-semibold text-foreground transition hover:bg-secondary"
+          >
+            Write a review
+          </button>
+        </div>
+
+        {/* Review Form */}
+        <AnimatePresence>
+          {showReviewForm && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden mb-8"
+            >
+              <div className="rounded-[6px] border border-border bg-card p-6 space-y-4">
+                <h3 className="text-[16px] font-semibold">Share your experience</h3>
+                {/* Star Rating */}
+                <div>
+                  <label className="block text-[13px] font-medium text-foreground mb-2">Rating</label>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                        className="transition hover:scale-110"
+                      >
+                        <Star
+                          className={`h-7 w-7 ${
+                            star <= reviewForm.rating
+                              ? "fill-turmeric text-turmeric"
+                              : "text-border"
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[13px] font-medium text-foreground mb-1.5">Name *</label>
+                    <input
+                      type="text"
+                      value={reviewForm.name}
+                      onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
+                      className="w-full h-10 px-3 rounded-[4px] border border-border bg-background text-[14px] focus:outline-none focus:border-primary"
+                      placeholder="Your name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-medium text-foreground mb-1.5">Email (optional)</label>
+                    <input
+                      type="email"
+                      value={reviewForm.email}
+                      onChange={(e) => setReviewForm({ ...reviewForm, email: e.target.value })}
+                      className="w-full h-10 px-3 rounded-[4px] border border-border bg-background text-[14px] focus:outline-none focus:border-primary"
+                      placeholder="you@example.com"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-[13px] font-medium text-foreground mb-1.5">Review title *</label>
+                  <input
+                    type="text"
+                    value={reviewForm.title}
+                    onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
+                    className="w-full h-10 px-3 rounded-[4px] border border-border bg-background text-[14px] focus:outline-none focus:border-primary"
+                    placeholder="Sum it up in a sentence"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-[13px] font-medium text-foreground mb-1.5">Your review *</label>
+                  <textarea
+                    value={reviewForm.body}
+                    onChange={(e) => setReviewForm({ ...reviewForm, body: e.target.value })}
+                    className="w-full px-3 py-2.5 rounded-[4px] border border-border bg-background text-[14px] focus:outline-none focus:border-primary resize-none"
+                    rows={4}
+                    placeholder="What did you like or dislike? How did you use it?"
+                    required
+                  />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowReviewForm(false)}
+                    className="px-4 py-2.5 border border-border text-[13px] font-medium rounded-[4px] hover:bg-secondary transition"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={submitReview}
+                    disabled={submitting || !reviewForm.name || !reviewForm.title || !reviewForm.body}
+                    className="px-5 py-2.5 bg-primary text-primary-foreground text-[13px] font-semibold rounded-[4px] hover:bg-primary/90 transition disabled:opacity-50"
+                  >
+                    {submitting ? "Submitting..." : "Submit Review"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {submitted && (
+          <div className="mb-6 rounded-[6px] bg-leaf/10 border border-leaf/20 p-4 text-[14px] text-leaf">
+            Thanks! Your review has been submitted and will appear after approval.
+          </div>
+        )}
+
+        {/* Reviews List */}
+        {reviews.length > 0 ? (
+          <div className="space-y-4">
+            {reviews.map((review) => (
+              <div key={review.id} className="rounded-[6px] border border-border bg-card p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="grid h-9 w-9 place-items-center rounded-full bg-primary/10 text-primary text-[14px] font-semibold">
+                      {review.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <p className="text-[14px] font-semibold text-foreground">{review.name}</p>
+                      <p className="text-[12px] text-muted-foreground">
+                        {new Date(review.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        className={`h-3.5 w-3.5 ${s <= review.rating ? "fill-turmeric text-turmeric" : "text-border"}`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <h4 className="mt-3 text-[14px] font-semibold text-foreground">{review.title}</h4>
+                <p className="mt-1.5 text-[14px] leading-relaxed text-foreground/80">{review.body}</p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          !showReviewForm && (
+            <div className="rounded-[6px] border border-dashed border-border py-12 text-center">
+              <p className="text-[15px] text-muted-foreground">No reviews yet. Be the first to share your experience!</p>
+            </div>
+          )
+        )}
+
+        {hasMoreReviews && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={loadMoreReviews}
+              disabled={loadingReviews}
+              className="inline-flex items-center gap-2 px-5 py-2.5 border border-border text-[13px] font-semibold rounded-[4px] hover:bg-secondary transition disabled:opacity-50"
+            >
+              {loadingReviews && (
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              )}
+              {loadingReviews ? "Loading..." : "Load more reviews"}
+            </button>
+          </div>
+        )}
       </div>
 
       {/* related */}

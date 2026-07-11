@@ -51,6 +51,7 @@ model Product {
   active       Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  reviews      Review[]
 }
 
 model Recipe {
@@ -128,4 +129,17 @@ model SiteContent {
   key       String   @id
   value     String
   updatedAt DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  name      String
+  email     String?
+  rating    Int
+  title     String
+  body      String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
 }
