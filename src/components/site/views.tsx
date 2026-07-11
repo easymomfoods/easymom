@@ -627,8 +627,41 @@ export function RecipesView() {
   );
 }
 
+const DEFAULT_ABOUT = {
+  eyebrow: "Our story",
+  heading: "A South Indian kitchen, made effortless.",
+  paragraph1:
+    "EasyMom began in a Mangalore kitchen in 2019, when a working mother ground her mother's chicken masala blend into a pouch so her sister in Dubai could taste home on a Wednesday. The pouch kept getting passed around — to colleagues, neighbours, friends abroad — until it became clear this was bigger than one family.",
+  paragraph2:
+    "Today we work with small spice co-ops across Karnataka, Kerala and Tamil Nadu, grinding in batches under 20kg on slow stones. Every blend is a real recipe from a real kitchen — built so a 15-minute cook still tastes like a 90-minute one.",
+  image: "/brand/story-grind.png",
+  imageAlt: "Grinding spices in a stone mortar",
+  stats: [
+    { value: "42k+", label: "Households served" },
+    { value: "100%", label: "No preservatives" },
+    { value: "9", label: "South Indian regions" },
+    { value: "4.8★", label: "Across 3,200 reviews" },
+  ],
+};
+
 export function AboutView() {
   const go = useUI((s) => s.go);
+  const [about, setAbout] = useState(DEFAULT_ABOUT);
+
+  useEffect(() => {
+    fetch("/api/site-content/about")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.value) {
+          try {
+            const parsed = JSON.parse(d.value);
+            setAbout({ ...DEFAULT_ABOUT, ...parsed });
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="mx-auto max-w-[1280px] px-4 pb-20 pt-24 sm:px-6 lg:px-8 lg:pt-28">
       <nav className="mb-6 flex items-center gap-1.5 text-[12px] text-muted-foreground">
@@ -639,33 +672,28 @@ export function AboutView() {
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-16">
         <div>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-primary">Our story</p>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-primary">{about.eyebrow}</p>
           <h1 className="mt-3 text-[40px] font-semibold leading-[1.06] tracking-tight sm:text-[56px]">
-            A South Indian kitchen, made effortless.
+            {about.heading}
           </h1>
           <p className="mt-5 text-[16px] leading-relaxed text-foreground/80">
-            EasyMom began in a Mangalore kitchen in 2019, when a working mother
-            ground her mother's chicken masala blend into a pouch so her sister
-            in Dubai could taste home on a Wednesday. The pouch kept getting
-            passed around — to colleagues, neighbours, friends abroad — until it
-            became clear this was bigger than one family.
+            {about.paragraph1}
           </p>
-          <p className="mt-4 text-[16px] leading-relaxed text-foreground/80">
-            Today we work with small spice co-ops across Karnataka, Kerala and
-            Tamil Nadu, grinding in batches under 20kg on slow stones. Every
-            blend is a real recipe from a real kitchen — built so a 15-minute
-            cook still tastes like a 90-minute one.
-          </p>
+          {about.paragraph2 && (
+            <p className="mt-4 text-[16px] leading-relaxed text-foreground/80">
+              {about.paragraph2}
+            </p>
+          )}
         </div>
         <div className="overflow-hidden rounded-[6px] shadow-premium">
-          <img src="/brand/story-grind.png" alt="Grinding spices in a stone mortar" className="aspect-[4/5] w-full object-cover" />
+          <img src={about.image} alt={about.imageAlt} className="aspect-[4/5] w-full object-cover" />
         </div>
       </div>
 
       {/* stats */}
       <div className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-[6px] border border-border lg:grid-cols-4">
-        {brandStats.map((s) => (
-          <div key={s.label} className="bg-card p-6 text-center">
+        {about.stats.map((s, i) => (
+          <div key={i} className="bg-card p-6 text-center">
             <div className="text-[32px] font-semibold tracking-tight text-foreground">{s.value}</div>
             <div className="mt-1 text-[12px] uppercase tracking-wide text-muted-foreground">{s.label}</div>
           </div>
