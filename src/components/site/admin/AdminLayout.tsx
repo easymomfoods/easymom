@@ -148,12 +148,14 @@ export default function AdminLayout({
               <span className="absolute top-2 right-2 h-2 w-2 bg-[#891816] rounded-full" />
             </button>
             <button className="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-stone-100 transition-colors">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#891816] to-[#6d1311] flex items-center justify-center">
-                <span className="text-xs font-bold text-white">A</span>
+              <div className="flex flex-col items-center">
+                <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#891816] to-[#6d1311] flex items-center justify-center">
+                  <span className="text-sm font-bold text-white">A</span>
+                </div>
               </div>
-              <div className="hidden sm:block text-left">
-                <p className="text-[13px] font-semibold text-stone-800 leading-tight">Welcome,</p>
-                <p className="text-[12px] text-stone-500 leading-tight">Admin</p>
+              <div className="hidden sm:block text-left leading-tight">
+                <p className="text-[11px] text-stone-500">Welcome,</p>
+                <p className="text-[13px] font-semibold text-stone-800">Admin</p>
               </div>
               <ChevronDown className="h-3.5 w-3.5 text-stone-400 hidden sm:block" />
             </button>
