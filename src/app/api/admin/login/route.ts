@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { verifyPassword, createSession } from "@/lib/auth";
+import { verifyPassword, createAdminSession } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    const token = await createSession(username);
+    const token = await createAdminSession(username);
 
     const response = NextResponse.json({ ok: true, username });
     response.cookies.set("easymom_admin_session", token, {

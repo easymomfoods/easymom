@@ -1,9 +1,9 @@
 // EasyMom Foods — Admin auth helpers
-// Simple cookie-based session for single admin user.
+// Cookie-based session with Upstash Redis persistence.
 
 import { createHash, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
-import { db } from "./db";
+import { createSession, getSession, deleteSession as deleteRedisSession } from "./session-store";
 
 const SESSION_COOKIE = "easymom_admin_session";
 const SESSION_SECRET = process.env.SESSION_SECRET || "easymom-dev-secret-change-in-prod";
@@ -21,46 +21,34 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   }
 }
 
-export async function createSession(username: string): Promise<string> {
+export async function createAdminSession(username: string): Promise<string> {
   const token = createHash("sha256")
     .update(username + Date.now() + Math.random().toString())
     .digest("hex");
 
-  const store = await import("@/lib/session-store");
-  store.sessionStore.set(token, { username, createdAt: Date.now() });
-
+  await createSession(token, { username, createdAt: Date.now() });
   return token;
 }
 
-export async function getSession(): Promise<{ username: string } | null> {
+export async function getAdminSession(): Promise<{ username: string } | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (!token) return null;
 
-  const store = await import("@/lib/session-store");
-  const session = store.sessionStore.get(token);
-  if (!session) return null;
-
-  // Session expires after 24 hours
-  if (Date.now() - session.createdAt > 24 * 60 * 60 * 1000) {
-    store.sessionStore.delete(token);
-    return null;
-  }
-
-  return { username: session.username };
+  const session = await getSession(token);
+  return session ? { username: session.username } : null;
 }
 
-export async function deleteSession(): Promise<void> {
+export async function deleteAdminSession(): Promise<void> {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (token) {
-    const store = await import("@/lib/session-store");
-    store.sessionStore.delete(token);
+    await deleteRedisSession(token);
   }
 }
 
 export async function requireAdmin(): Promise<{ username: string }> {
-  const session = await getSession();
+  const session = await getAdminSession();
   if (!session) {
     throw new Error("Unauthorized");
   }
