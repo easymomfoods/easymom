@@ -112,7 +112,7 @@ export default function Home() {
       >
         {view.name === "admin" && <DashboardContent />}
         {view.name === "admin-orders" && <AdminOrders onBack={() => go({ name: "admin" })} />}
-        {view.name === "admin-products" && <AdminProducts onBack={() => go({ name: "admin" })} />}
+        {view.name === "admin-products" && <AdminProducts />}
       </AdminLayout>
     );
   }
