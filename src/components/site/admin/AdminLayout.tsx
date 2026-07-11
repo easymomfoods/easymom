@@ -142,7 +142,7 @@ export default function AdminLayout({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto">
             <button className="relative p-2.5 rounded-xl hover:bg-stone-100 transition-colors">
               <Bell className="h-5 w-5 text-stone-500" />
               <span className="absolute top-2 right-2 h-2 w-2 bg-[#891816] rounded-full" />

@@ -84,11 +84,14 @@ export default function Home() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Admin views — no nav/footer (only render after client mount to avoid hydration mismatch)
+  // For admin routes, only render after client mount
+  // Server always renders public layout (view defaults to "home")
+  // Client initially also renders public layout (mounted=false)
+  // After mount, client switches to admin layout
   if (mounted && view.name.startsWith("admin")) {
     if (adminChecking) {
       return (
-        <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="min-h-screen bg-[#f5f3ee] flex items-center justify-center" suppressHydrationWarning>
           <div className="animate-pulse text-stone-400">Loading...</div>
         </div>
       );
@@ -115,9 +118,9 @@ export default function Home() {
     );
   }
 
-  // Public views
+  // Public views — suppressHydrationWarning because Zustand view state may differ server/client
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-background" suppressHydrationWarning>
       <Nav />
 
       <main className="flex-1">
