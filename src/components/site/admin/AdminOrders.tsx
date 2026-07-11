@@ -139,10 +139,7 @@ export default function AdminOrders({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
-      <div className="flex items-center gap-4 mb-6">
-        <button onClick={onBack} className="text-stone-500 hover:text-stone-900 transition-colors">
-          ← Back
-        </button>
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-stone-900">Orders</h1>
           <p className="text-sm text-stone-500">{orders.length} total orders</p>

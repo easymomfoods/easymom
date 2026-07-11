@@ -106,14 +106,9 @@ export default function AdminProducts({ onBack }: { onBack: () => void }) {
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <button onClick={onBack} className="text-stone-500 hover:text-stone-900 transition-colors">
-            ← Back
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-stone-900">Products</h1>
-            <p className="text-sm text-stone-500">{products.length} products</p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-stone-900">Products</h1>
+          <p className="text-sm text-stone-500">{products.length} products</p>
         </div>
         <button
           onClick={() => setShowAddForm(true)}

@@ -34,7 +34,8 @@ import {
   FaqSkeleton,
 } from "@/components/site/page-skeletons";
 import AdminLogin from "@/components/site/admin/AdminLogin";
-import AdminDashboard from "@/components/site/admin/AdminDashboard";
+import AdminLayout from "@/components/site/admin/AdminLayout";
+import DashboardContent from "@/components/site/admin/DashboardContent";
 import AdminOrders from "@/components/site/admin/AdminOrders";
 import AdminProducts from "@/components/site/admin/AdminProducts";
 
@@ -97,12 +98,20 @@ export default function Home() {
       return <AdminLogin onLogin={() => setAdminLoggedIn(true)} />;
     }
 
+    const adminPage = view.name === "admin" ? "dashboard" : view.name.replace("admin-", "");
+
     return (
-      <div className="min-h-screen bg-stone-50">
-        {view.name === "admin" && <AdminDashboard onNavigate={(v) => go({ name: v as any })} />}
+      <AdminLayout
+        activePage={adminPage}
+        onNavigate={(page) => {
+          if (page === "dashboard") go({ name: "admin" });
+          else go({ name: `admin-${page}` as any });
+        }}
+      >
+        {view.name === "admin" && <DashboardContent />}
         {view.name === "admin-orders" && <AdminOrders onBack={() => go({ name: "admin" })} />}
         {view.name === "admin-products" && <AdminProducts onBack={() => go({ name: "admin" })} />}
-      </div>
+      </AdminLayout>
     );
   }
 
