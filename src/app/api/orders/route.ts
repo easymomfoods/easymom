@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
       shipping,
       total,
       couponCode,
+      paymentMethod,
       itemsJson,
     } = body;
 
@@ -45,26 +46,14 @@ export async function POST(req: NextRequest) {
         shipping: Number(shipping) || 0,
         total: Number(total) || 0,
         couponCode: couponCode ?? null,
+        paymentMethod: paymentMethod === "upi_qr" ? "upi_qr" : "cod",
+        paymentStatus: "pending",
         itemsJson: typeof itemsJson === "string" ? itemsJson : JSON.stringify(itemsJson ?? []),
-        paymentRef: "demo_" + id,
         status: "confirmed",
       },
     });
 
     return NextResponse.json({ ok: true, orderId: order.orderId, id: order.id });
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "Unknown error";
-    return NextResponse.json({ error: msg }, { status: 500 });
-  }
-}
-
-export async function GET() {
-  try {
-    const orders = await db.order.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 50,
-    });
-    return NextResponse.json({ orders });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({ error: msg }, { status: 500 });

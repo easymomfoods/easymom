@@ -10,6 +10,7 @@ export type CartLine = {
   slug: string;
   price: number;
   weight: string;
+  img: string;
   hue: number;
   qty: number;
 };

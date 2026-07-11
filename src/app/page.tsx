@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, Suspense } from "react";
+import { useEffect, Suspense, useState } from "react";
 import { useUI } from "@/lib/ui-store";
 import { Nav } from "@/components/site/nav";
 import { Hero } from "@/components/site/hero";
@@ -33,9 +33,29 @@ import {
   AboutSkeleton,
   FaqSkeleton,
 } from "@/components/site/page-skeletons";
+import AdminLogin from "@/components/site/admin/AdminLogin";
+import AdminDashboard from "@/components/site/admin/AdminDashboard";
+import AdminOrders from "@/components/site/admin/AdminOrders";
+import AdminProducts from "@/components/site/admin/AdminProducts";
 
 export default function Home() {
   const view = useUI((s) => s.view);
+  const go = useUI((s) => s.go);
+  const [adminLoggedIn, setAdminLoggedIn] = useState(false);
+  const [adminChecking, setAdminChecking] = useState(true);
+
+  // Check admin session on mount
+  useEffect(() => {
+    if (view.name.startsWith("admin")) {
+      fetch("/api/admin/stats")
+        .then((res) => {
+          if (res.ok) setAdminLoggedIn(true);
+          else setAdminLoggedIn(false);
+        })
+        .catch(() => setAdminLoggedIn(false))
+        .finally(() => setAdminChecking(false));
+    }
+  }, [view.name]);
 
   // close overlays on ESC
   useEffect(() => {
@@ -57,6 +77,30 @@ export default function Home() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
+  // Admin views — no nav/footer
+  if (view.name.startsWith("admin")) {
+    if (adminChecking) {
+      return (
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <div className="animate-pulse text-stone-400">Loading...</div>
+        </div>
+      );
+    }
+
+    if (!adminLoggedIn) {
+      return <AdminLogin onLogin={() => setAdminLoggedIn(true)} />;
+    }
+
+    return (
+      <div className="min-h-screen bg-stone-50">
+        {view.name === "admin" && <AdminDashboard onNavigate={(v) => go({ name: v as any })} />}
+        {view.name === "admin-orders" && <AdminOrders onBack={() => go({ name: "admin" })} />}
+        {view.name === "admin-products" && <AdminProducts onBack={() => go({ name: "admin" })} />}
+      </div>
+    );
+  }
+
+  // Public views
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Nav />

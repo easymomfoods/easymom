@@ -1,6 +1,5 @@
 // EasyMom Foods — Prisma schema
-// SQLite for local dev. The storefront reads from a typed catalog in
-// src/lib/data.ts; orders placed via guest checkout are persisted here.
+// SQLite for local dev. Turso for production.
 
 generator client {
   provider = "prisma-client-js"
@@ -11,37 +10,116 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Order {
-  id           String   @id @default(cuid())
-  orderId      String   @unique // human-friendly e.g. EM-XXXXXX
-  email        String
+model Category {
+  id          String    @id
+  name        String
+  tagline     String
+  description String
+  count       Int       @default(1)
+  accent      String
+  hue         Int
+  sortOrder   Int       @default(0)
+  products    Product[]
+}
+
+model Product {
+  id           String   @id
   name         String
-  phone        String
-  address      String
-  city         String
-  state        String
-  pincode      String
-  notes        String?
-  subtotal     Int
-  discount     Int      @default(0)
-  shipping     Int      @default(0)
-  total        Int
-  couponCode   String?
-  paymentRef   String?
-  status       String   @default("confirmed") // confirmed | packed | shipped | delivered
-  itemsJson    String // JSON string of cart lines
+  slug         String   @unique
+  categoryId   String
+  category     Category @relation(fields: [categoryId], references: [id])
+  price        Int
+  mrp          Int
+  weight       String
+  rating       Float    @default(0)
+  reviewCount  Int      @default(0)
+  badge        String?
+  bestSeller   Boolean  @default(false)
+  isNew        Boolean  @default(false)
+  img          String?
+  images       String   @default("[]") // JSON array of image paths
+  shortDesc    String
+  description  String
+  ingredients  String   @default("[]") // JSON array
+  origin       String
+  shelfLife    String
+  spiceLevel   String
+  cookingTime  String
+  servings     String
+  tags         String   @default("[]") // JSON array
+  hue          Int
+  active       Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+model Recipe {
+  id          String   @id
+  title       String
+  region      String
+  time        String
+  serves      String
+  difficulty  String
+  productSlug String
+  excerpt     String
+  steps       String   @default("[]") // JSON array
+  hue         Int
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Testimonial {
+  id        String  @id
+  name      String
+  location  String
+  role      String
+  quote     String
+  rating    Int
+  product   String
+  active    Boolean @default(true)
+}
+
+model Order {
+  id            String   @id @default(cuid())
+  orderId       String   @unique
+  email         String
+  name          String
+  phone         String
+  address       String
+  city          String
+  state         String
+  pincode       String
+  notes         String?
+  subtotal      Int
+  discount      Int      @default(0)
+  shipping      Int      @default(0)
+  total         Int
+  couponCode    String?
+  paymentMethod String   @default("cod") // cod | upi_qr
+  paymentRef    String?
+  paymentStatus String   @default("pending") // pending | paid
+  status        String   @default("confirmed") // confirmed | packed | shipped | delivered | cancelled
+  itemsJson     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Coupon {
   code        String   @id
   discountPct Int
-  active       Boolean  @default(true)
+  active      Boolean  @default(true)
+  usageLimit  Int?
 }
 
 model NewsletterSub {
   id        String   @id @default(cuid())
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
 }

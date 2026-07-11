@@ -34,6 +34,7 @@ export function Checkout() {
     pincode: "",
     notes: "",
   });
+  const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi_qr">("cod");
   const [placedOrder, setPlacedOrder] = useState<{ id: string; total: number } | null>(null);
 
   const subtotal = cartSubtotal(lines);
@@ -59,11 +60,12 @@ export function Checkout() {
           shipping,
           total,
           couponCode: coupon?.code,
+          paymentMethod,
           itemsJson: JSON.stringify(lines),
         }),
       });
       const data = await res.json();
-      // simulate payment + processing
+      // simulate processing
       await new Promise((r) => setTimeout(r, 1200));
       setPlacedOrder({ id: data.orderId || orderId(), total });
       setOrderConfirmed(true);
@@ -207,34 +209,85 @@ export function Checkout() {
                             </button>
                           </div>
 
+                          {/* Payment Method Selection */}
                           <div className="rounded-[6px] border border-border p-4">
                             <div className="mb-3 flex items-center gap-2">
                               <CreditCard className="h-4 w-4 text-primary" />
-                              <p className="text-[14px] font-semibold">Razorpay secured payment</p>
+                              <p className="text-[14px] font-semibold">Payment method</p>
                             </div>
-                            <div className="space-y-2.5">
-                              <Field label="Card number">
-                                <input className={inputCls} placeholder="4111 1111 1111 1111" inputMode="numeric" />
-                              </Field>
-                              <div className="grid grid-cols-2 gap-3">
-                                <Field label="Expiry">
-                                  <input className={inputCls} placeholder="MM / YY" />
-                                </Field>
-                                <Field label="CVV">
-                                  <input className={inputCls} placeholder="123" type="password" />
-                                </Field>
+
+                            <div className="space-y-3">
+                              {/* COD Option */}
+                              <label
+                                className={`flex items-center gap-3 rounded-[4px] border p-3 cursor-pointer transition-all ${
+                                  paymentMethod === "cod"
+                                    ? "border-primary bg-primary/5"
+                                    : "border-border hover:border-primary/50"
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name="payment"
+                                  value="cod"
+                                  checked={paymentMethod === "cod"}
+                                  onChange={() => setPaymentMethod("cod")}
+                                  className="accent-[#891816]"
+                                />
+                                <div className="flex-1">
+                                  <p className="text-[13px] font-semibold text-foreground">Cash on Delivery</p>
+                                  <p className="text-[11px] text-muted-foreground">Pay when your order arrives</p>
+                                </div>
+                                <span className="text-lg">💵</span>
+                              </label>
+
+                              {/* UPI QR Option */}
+                              <label
+                                className={`flex items-center gap-3 rounded-[4px] border p-3 cursor-pointer transition-all ${
+                                  paymentMethod === "upi_qr"
+                                    ? "border-primary bg-primary/5"
+                                    : "border-border hover:border-primary/50"
+                                }`}
+                              >
+                                <input
+                                  type="radio"
+                                  name="payment"
+                                  value="upi_qr"
+                                  checked={paymentMethod === "upi_qr"}
+                                  onChange={() => setPaymentMethod("upi_qr")}
+                                  className="accent-[#891816]"
+                                />
+                                <div className="flex-1">
+                                  <p className="text-[13px] font-semibold text-foreground">Pay via UPI</p>
+                                  <p className="text-[11px] text-muted-foreground">Scan QR code with any UPI app</p>
+                                </div>
+                                <span className="text-lg">📱</span>
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* UPI QR Instructions */}
+                          {paymentMethod === "upi_qr" && (
+                            <div className="rounded-[6px] border border-border bg-amber-50 p-4">
+                              <p className="text-[13px] font-semibold text-amber-800 mb-2">UPI Payment Instructions</p>
+                              <ol className="text-[12px] text-amber-700 space-y-1.5 list-decimal list-inside">
+                                <li>Open any UPI app (Google Pay, PhonePe, Paytm, etc.)</li>
+                                <li>Scan the QR code or send payment to UPI ID: <strong>easymom@upi</strong></li>
+                                <li>Enter amount: <strong>{inr(total)}</strong></li>
+                                <li>In reference/note, type your order ID (shown after placing order)</li>
+                                <li>Click &quot;I&apos;ve paid&quot; below after completing payment</li>
+                              </ol>
+                              <div className="mt-3 flex items-center gap-2 text-[11px] text-amber-600">
+                                <ShieldCheck className="h-3.5 w-3.5" />
+                                Your order will be confirmed after payment verification
                               </div>
                             </div>
-                            <p className="mt-3 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                              <ShieldCheck className="h-3.5 w-3.5 text-leaf" /> This is a demo — no real charge is made.
-                            </p>
-                          </div>
+                          )}
 
                           <button
                             onClick={placeOrder}
                             className="flex w-full items-center justify-center gap-2 rounded-[4px] bg-primary py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
                           >
-                            Pay {inr(total)} & place order
+                            {paymentMethod === "cod" ? `Place Order — ${inr(total)}` : `I've Paid — ${inr(total)}`}
                           </button>
                         </div>
                       )}
