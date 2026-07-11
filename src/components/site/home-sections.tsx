@@ -735,7 +735,7 @@ export function Testimonials() {
   );
 }
 
-const IG_CARDS = [
+const DEFAULT_IG_CARDS = [
   { id: "ig1", img: "/brand/products/red-curry1.png", label: "Red Curry" },
   { id: "ig2", img: "/brand/products/green-curry1.png", label: "Green Curry" },
   { id: "ig3", img: "/brand/products/chicken-sukka-masala1.png", label: "Chicken Sukka" },
@@ -796,6 +796,30 @@ export function InstagramFeed() {
   const [animDone, setAnimDone] = React.useState(false);
   const [isMobile, setIsMobile] = React.useState(false);
 
+  const [eyebrow, setEyebrow] = React.useState("@easymomfoods");
+  const [title, setTitle] = React.useState("Instagram Feeds");
+  const [followText, setFollowText] = React.useState("Follow EasyMom");
+  const [socialLinks, setSocialLinks] = React.useState(["Instagram", "YouTube", "TikTok", "Twitter"]);
+  const [igCards, setIgCards] = React.useState(DEFAULT_IG_CARDS);
+
+  React.useEffect(() => {
+    fetch("/api/site-content/instagram-feed")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.value) {
+          try {
+            const parsed = JSON.parse(d.value);
+            if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+            if (parsed.title) setTitle(parsed.title);
+            if (parsed.followText) setFollowText(parsed.followText);
+            if (parsed.socialLinks) setSocialLinks(parsed.socialLinks);
+            if (parsed.cards && parsed.cards.length > 0) setIgCards(parsed.cards);
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   React.useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
     check();
@@ -847,10 +871,10 @@ export function InstagramFeed() {
           }}
         >
           <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-primary">
-            @easymomfoods
+            {eyebrow}
           </p>
           <h2 className="mt-3 text-[30px] font-semibold leading-[1.08] tracking-[-0.02em] text-zinc-900 sm:text-[38px] lg:text-[42px]">
-            Instagram Feeds
+            {title}
           </h2>
         </div>
 
@@ -858,7 +882,7 @@ export function InstagramFeed() {
           className="relative mx-auto flex items-end justify-center"
           style={{ height: isMobile ? "280px" : "420px", maxWidth: isMobile ? "400px" : "780px" }}
         >
-          {IG_CARDS.map((card, i) => {
+          {igCards.map((card, i) => {
             const s = getCardState(i);
             const dist = Math.abs(i - CENTER);
             const pairDelay = dist * 0.07;
@@ -943,12 +967,12 @@ export function InstagramFeed() {
           <div className="flex items-center gap-4">
             <div className="h-px w-12 bg-zinc-300" />
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-400">
-              Follow EasyMom
+              {followText}
             </p>
             <div className="h-px w-12 bg-zinc-300" />
           </div>
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
-            {["Instagram", "YouTube", "TikTok", "Twitter"].map((name, i) => (
+            {socialLinks.map((name, i) => (
               <React.Fragment key={name}>
                 {i > 0 && <span className="hidden text-zinc-200 sm:block">·</span>}
                 <a

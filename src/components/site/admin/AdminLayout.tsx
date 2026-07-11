@@ -32,6 +32,7 @@ const navItems = [
   { id: "recipes", label: "Recipes", icon: BookOpen },
   { id: "testimonials", label: "Reviews", icon: Star },
   { id: "recipes-section", label: "Recipes Section", icon: BookOpen },
+  { id: "instagram", label: "Instagram Feed", icon: Image },
   { id: "brand-story", label: "Brand Story", icon: BookOpenCheck },
   { id: "featured", label: "Most Loved", icon: Heart },
   { id: "our-products", label: "Our Products", icon: LayoutList },
