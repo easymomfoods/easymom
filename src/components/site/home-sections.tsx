@@ -102,30 +102,74 @@ export function Categories() {
   );
 }
 
+const FALLBACK_FEATURED = {
+  eyebrow: "Most loved",
+  title: "The blends people reorder",
+  description: "The four that earned their place in 42,000 kitchens — and keep earning it.",
+  productSlugs: [] as string[],
+};
+
 export function FeaturedProducts() {
   const go = useUI((s) => s.go);
-  const featured = products.filter((p) => p.bestSeller).slice(0, 4);
+  const [eyebrow, setEyebrow] = React.useState(FALLBACK_FEATURED.eyebrow);
+  const [title, setTitle] = React.useState(FALLBACK_FEATURED.title);
+  const [description, setDescription] = React.useState(FALLBACK_FEATURED.description);
+  const [productSlugs, setProductSlugs] = React.useState<string[]>(FALLBACK_FEATURED.productSlugs);
+  const [dbProducts, setDbProducts] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    Promise.all([
+      fetch("/api/site-content/featured").then((r) => r.json()),
+      fetch("/api/products").then((r) => r.json()),
+    ])
+      .then(([contentData, productsData]) => {
+        if (contentData.value) {
+          try {
+            const parsed = JSON.parse(contentData.value);
+            if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+            if (parsed.title) setTitle(parsed.title);
+            if (parsed.description) setDescription(parsed.description);
+            if (parsed.productSlugs) setProductSlugs(parsed.productSlugs);
+          } catch {}
+        }
+        if (productsData.products) {
+          setDbProducts(productsData.products);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Use selected slugs if available, otherwise fallback to bestSellers
+  const featured = productSlugs.length > 0
+    ? productSlugs
+        .map((slug) => dbProducts.find((p: any) => p.slug === slug))
+        .filter(Boolean)
+        .slice(0, 4)
+    : dbProducts.length > 0
+      ? dbProducts.filter((p: any) => p.bestSeller).slice(0, 4)
+      : products.filter((p) => p.bestSeller).slice(0, 4);
+
   return (
     <section className="bg-secondary/30">
       <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeader
             align="left"
-            eyebrow="Most loved"
-            title="The blends people reorder"
-            description="The four that earned their place in 42,000 kitchens — and keep earning it."
+            eyebrow={eyebrow}
+            title={title}
+            description={description}
           />
           <button
             onClick={() => go({ name: "shop" })}
             className="group inline-flex items-center gap-1.5 rounded-[4px] border border-border bg-card px-4 py-2.5 text-[13px] font-semibold text-foreground transition hover:border-foreground/30"
           >
-            View all {products.length} blends
+            View all {dbProducts.length || products.length} blends
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
         <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
-          {featured.map((p, i) => (
-            <ProductCard key={p.id} product={p} index={i} />
+          {featured.map((p: any, i: number) => (
+            <ProductCard key={p.id || p.slug} product={p} index={i} />
           ))}
         </div>
       </div>

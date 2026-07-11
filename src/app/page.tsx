@@ -41,6 +41,7 @@ import AdminProducts from "@/components/site/admin/AdminProducts";
 import AnalyticsContent from "@/components/site/admin/AnalyticsContent";
 import HeroContentEditor from "@/components/site/admin/HeroContentEditor";
 import OurProductsEditor from "@/components/site/admin/OurProductsEditor";
+import FeaturedEditor from "@/components/site/admin/FeaturedEditor";
 
 export default function Home() {
   const view = useUI((s) => s.view);
@@ -122,6 +123,7 @@ export default function Home() {
         {view.name === "admin-analytics" && <AnalyticsContent />}
         {view.name === "admin-hero" && <HeroContentEditor />}
         {view.name === "admin-our-products" && <OurProductsEditor />}
+        {view.name === "admin-featured" && <FeaturedEditor />}
       </AdminLayout>
     );
   }

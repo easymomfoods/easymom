@@ -18,6 +18,7 @@ import {
   Search,
   Image,
   LayoutList,
+  Heart,
 } from "lucide-react";
 
 const navItems = [
@@ -29,6 +30,7 @@ const navItems = [
   { id: "marketing", label: "Marketing", icon: Megaphone },
   { id: "recipes", label: "Recipes", icon: BookOpen },
   { id: "reviews", label: "Reviews", icon: Star },
+  { id: "featured", label: "Most Loved", icon: Heart },
   { id: "our-products", label: "Our Products", icon: LayoutList },
   { id: "hero", label: "Hero", icon: Image },
   { id: "settings", label: "Settings", icon: Settings },
