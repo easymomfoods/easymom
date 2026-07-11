@@ -33,7 +33,7 @@ async function main() {
   const products = [
     {
       id: "p1", name: "Green Curry — Chicken or Meat", slug: "green-curry", categoryId: "green-curry",
-      price: 129, mrp: 199, weight: "100 g", rating: 4.9, reviewCount: 120,
+      price: 129, mrp: 199, weight: "100 g", rating: 0, reviewCount: 0,
       badge: "Signature", bestSeller: true, isNew: false,
       img: "/brand/products/green-curry1.png",
       images: JSON.stringify(["/brand/products/green-curry1.png", "/brand/products/green-curry2.png", "/brand/products/green-curry3.jpeg"]),
@@ -46,7 +46,7 @@ async function main() {
     },
     {
       id: "p2", name: "Ghee Roast Masala", slug: "ghee-roast-masala", categoryId: "ghee-roast",
-      price: 139, mrp: 209, weight: "100 g", rating: 4.8, reviewCount: 98,
+      price: 139, mrp: 209, weight: "100 g", rating: 0, reviewCount: 0,
       badge: "Signature", bestSeller: true, isNew: false,
       img: "/brand/products/ghee-roast1.png",
       images: JSON.stringify(["/brand/products/ghee-roast1.png", "/brand/products/ghee-roast2.png", "/brand/products/ghee-roast3.jpeg"]),
@@ -59,7 +59,7 @@ async function main() {
     },
     {
       id: "p3", name: "Fish Curry Masala", slug: "fish-curry-masala", categoryId: "fish-curry",
-      price: 129, mrp: 199, weight: "100 g", rating: 4.8, reviewCount: 178,
+      price: 129, mrp: 199, weight: "100 g", rating: 0, reviewCount: 0,
       badge: "Signature", bestSeller: false, isNew: false,
       img: "/brand/products/fish-curry1.png",
       images: JSON.stringify(["/brand/products/fish-curry1.png", "/brand/products/fish-curry2.png", "/brand/products/fish-curry3.jpeg"]),
@@ -72,7 +72,7 @@ async function main() {
     },
     {
       id: "p4", name: "Fish Fry Masala", slug: "fish-fry-masala", categoryId: "fish-fry",
-      price: 129, mrp: 199, weight: "100 g", rating: 4.7, reviewCount: 112,
+      price: 129, mrp: 199, weight: "100 g", rating: 0, reviewCount: 0,
       badge: null, bestSeller: false, isNew: false,
       img: "/brand/products/fish-fry1.png",
       images: JSON.stringify(["/brand/products/fish-fry1.png", "/brand/products/fish-fry2.png", "/brand/products/fish-fry3.jpeg"]),
@@ -85,7 +85,7 @@ async function main() {
     },
     {
       id: "p5", name: "Red Curry — Chicken or Meat", slug: "red-curry", categoryId: "red-curry",
-      price: 129, mrp: 199, weight: "100 g", rating: 4.9, reviewCount: 200,
+      price: 129, mrp: 199, weight: "100 g", rating: 0, reviewCount: 0,
       badge: "Bestseller", bestSeller: true, isNew: false,
       img: "/brand/products/red-curry1.png",
       images: JSON.stringify(["/brand/products/red-curry1.png", "/brand/products/red-curry2.png", "/brand/products/red-curry3.jpeg"]),
@@ -98,7 +98,7 @@ async function main() {
     },
     {
       id: "p6", name: "Chicken Sukka Masala", slug: "chicken-sukka-masala", categoryId: "chicken-sukka",
-      price: 129, mrp: 199, weight: "100 g", rating: 4.8, reviewCount: 145,
+      price: 129, mrp: 199, weight: "100 g", rating: 0, reviewCount: 0,
       badge: null, bestSeller: false, isNew: false,
       img: "/brand/products/chicken-sukka-masala1.png",
       images: JSON.stringify(["/brand/products/chicken-sukka-masala1.png", "/brand/products/chicken-sukka-masala2.png", "/brand/products/chicken-sukka-masala3.jpeg"]),
@@ -111,7 +111,7 @@ async function main() {
     },
     {
       id: "p7", name: "Palli Curry — Chicken or Meat", slug: "palli-curry", categoryId: "palli-curry",
-      price: 139, mrp: 209, weight: "100 g", rating: 4.7, reviewCount: 88,
+      price: 139, mrp: 209, weight: "100 g", rating: 0, reviewCount: 0,
       badge: null, bestSeller: false, isNew: false,
       img: "/brand/products/palli-curry1.png",
       images: JSON.stringify(["/brand/products/palli-curry1.png", "/brand/products/palli-curry2.png", "/brand/products/palli-curry3.jpeg"]),
