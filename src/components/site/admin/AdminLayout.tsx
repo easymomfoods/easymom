@@ -17,18 +17,20 @@ import {
   ChevronDown,
   Search,
   Image,
+  LayoutList,
 } from "lucide-react";
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "products", label: "Products", icon: Package },
   { id: "orders", label: "Orders", icon: ShoppingCart },
-  { id: "hero", label: "Hero", icon: Image },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
   { id: "customers", label: "Customers", icon: Users },
   { id: "marketing", label: "Marketing", icon: Megaphone },
   { id: "recipes", label: "Recipes", icon: BookOpen },
   { id: "reviews", label: "Reviews", icon: Star },
+  { id: "our-products", label: "Our Products", icon: LayoutList },
+  { id: "hero", label: "Hero", icon: Image },
   { id: "settings", label: "Settings", icon: Settings },
 ];
 

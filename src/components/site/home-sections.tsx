@@ -860,7 +860,7 @@ export function TrustStrip() {
   );
 }
 
-const OUR_PRODUCTS = [
+const FALLBACK_PRODUCTS = [
   { slug: "red-curry", name: "Red Curry", img: "/brand/category/product-1.png" },
   { slug: "fish-curry-masala", name: "Fish Curry", img: "/brand/category/product-2.png" },
   { slug: "green-curry", name: "Green Curry", img: "/brand/category/product-3.png" },
@@ -869,16 +869,35 @@ const OUR_PRODUCTS = [
 
 export function OurProducts() {
   const go = useUI((s) => s.go);
+  const [eyebrow, setEyebrow] = React.useState("Shop by category");
+  const [title, setTitle] = React.useState("Our Products");
+  const [items, setItems] = React.useState(FALLBACK_PRODUCTS);
+
+  React.useEffect(() => {
+    fetch("/api/site-content/our-products")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.value) {
+          try {
+            const parsed = JSON.parse(d.value);
+            if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+            if (parsed.title) setTitle(parsed.title);
+            if (parsed.items && parsed.items.length > 0) setItems(parsed.items);
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
   return (
     <section className="bg-white px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-[1280px]">
         <SectionHeader
           align="left"
-          eyebrow="Shop by category"
-          title="Our Products"
+          eyebrow={eyebrow}
+          title={title}
         />
         <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-          {OUR_PRODUCTS.map((p, i) => {
+          {items.map((p, i) => {
             const shadows = [
               "8px 8px 50px 20px rgba(137,24,22,0.35)",
               "-6px 10px 25px 6px rgba(137,24,22,0.15)",
