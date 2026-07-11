@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   SlidersHorizontal,
@@ -21,7 +21,6 @@ import {
   RotateCcw,
   Quote,
 } from "lucide-react";
-import { useState } from "react";
 import { useUI } from "@/lib/ui-store";
 import { useCart } from "@/lib/store";
 import {
@@ -39,6 +38,34 @@ import { SpiceVisual } from "./spice-visual";
 import { inr } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+
+type ProductData = {
+  id: string;
+  name: string;
+  slug: string;
+  categoryId: string;
+  price: number;
+  mrp: number;
+  weight: string;
+  rating: number;
+  reviewCount: number;
+  badge: string | null;
+  bestSeller: boolean;
+  isNew: boolean;
+  img: string | null;
+  images: string[];
+  shortDesc: string;
+  description: string;
+  ingredients: string[];
+  origin: string;
+  shelfLife: string;
+  spiceLevel: string;
+  cookingTime: string;
+  servings: string;
+  tags: string[];
+  hue: number;
+  active: boolean;
+};
 
 const LEVELS: SpiceLevel[] = ["Medium", "Hot"];
 
@@ -262,8 +289,28 @@ export function ProductView() {
   const { add, wishlist, toggleWishlist } = useCart();
   const [qty, setQty] = useState(1);
   const [selectedImg, setSelectedImg] = useState(0);
+  const [dbProduct, setDbProduct] = useState<ProductData | null>(null);
+  const [loadingProduct, setLoadingProduct] = useState(true);
   const slug = view.name === "product" ? view.slug : "";
-  const p = getProductBySlug(slug);
+
+  // Try database first, fallback to hardcoded
+  const hardcoded = getProductBySlug(slug);
+  const p = dbProduct || hardcoded;
+
+  useEffect(() => {
+    if (!slug) return;
+    setLoadingProduct(true);
+    setDbProduct(null);
+    fetch(`/api/products/${slug}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.product) {
+          setDbProduct(d.product);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoadingProduct(false));
+  }, [slug]);
 
   if (!p) {
     return (
