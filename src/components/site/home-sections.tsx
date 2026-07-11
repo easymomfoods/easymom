@@ -991,8 +991,38 @@ export function InstagramFeed() {
   );
 }
 
+const DEFAULT_TRUST_ITEMS = [
+  { icon: "package", title: "Free shipping over ₹499", sub: "Dispatched in 24 hours" },
+  { icon: "leaf", title: "No preservatives, ever", sub: "Read the label — it's a recipe" },
+  { icon: "circular-arrow", title: "Easy returns", sub: "Not right? We'll make it right" },
+];
+
+const TRUST_ICONS: Record<string, typeof LeafIcon> = {
+  package: PackageIcon,
+  leaf: LeafIcon,
+  "circular-arrow": CircularArrowIcon,
+  mortar: MortarIcon,
+  flame: FlameIcon,
+  shield: ShieldIcon,
+};
+
 export function TrustStrip() {
   const ref = React.useRef<HTMLDivElement>(null);
+  const [trustItems, setTrustItems] = React.useState(DEFAULT_TRUST_ITEMS);
+
+  React.useEffect(() => {
+    fetch("/api/site-content/trust-strip")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.value) {
+          try {
+            const parsed = JSON.parse(d.value);
+            if (parsed.items && parsed.items.length > 0) setTrustItems(parsed.items);
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   React.useEffect(() => {
     if (!ref.current) return;
@@ -1010,23 +1040,10 @@ export function TrustStrip() {
     return () => o.disconnect();
   }, []);
 
-  const items = [
-    {
-      icon: PackageIcon,
-      title: "Free shipping over ₹499",
-      sub: "Dispatched in 24 hours",
-    },
-    {
-      icon: LeafIcon,
-      title: "No preservatives, ever",
-      sub: "Read the label — it's a recipe",
-    },
-    {
-      icon: CircularArrowIcon,
-      title: "Easy returns",
-      sub: "Not right? We'll make it right",
-    },
-  ];
+  const items = trustItems.map((item) => ({
+    ...item,
+    icon: TRUST_ICONS[item.icon] || PackageIcon,
+  }));
 
   return (
     <section ref={ref} className="border-y border-zinc-200 bg-white">
