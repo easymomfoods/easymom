@@ -16,14 +16,16 @@ import {
   Bell,
   ChevronDown,
   Search,
+  Image,
 } from "lucide-react";
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "products", label: "Products", icon: Package },
   { id: "orders", label: "Orders", icon: ShoppingCart },
-  { id: "customers", label: "Customers", icon: Users },
+  { id: "hero", label: "Hero", icon: Image },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "customers", label: "Customers", icon: Users },
   { id: "marketing", label: "Marketing", icon: Megaphone },
   { id: "recipes", label: "Recipes", icon: BookOpen },
   { id: "reviews", label: "Reviews", icon: Star },

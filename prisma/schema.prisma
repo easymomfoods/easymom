@@ -123,3 +123,9 @@ model AdminUser {
   passwordHash String
   createdAt    DateTime @default(now())
 }
+
+model SiteContent {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
