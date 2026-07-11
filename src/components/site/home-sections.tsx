@@ -422,9 +422,45 @@ export function BrandStory() {
   );
 }
 
+const FALLBACK_RECIPES_SECTION = {
+  eyebrow: "From the kitchen",
+  title: "Recipes built around the blend",
+  description: "Three dishes that show what a proper masala can do — each tested, each under 30 minutes.",
+  recipeIds: [] as string[],
+};
+
 export function Recipes() {
   const go = useUI((s) => s.go);
   const ref = React.useRef<HTMLDivElement>(null);
+
+  const [eyebrow, setEyebrow] = React.useState(FALLBACK_RECIPES_SECTION.eyebrow);
+  const [title, setTitle] = React.useState(FALLBACK_RECIPES_SECTION.title);
+  const [description, setDescription] = React.useState(FALLBACK_RECIPES_SECTION.description);
+  const [recipeIds, setRecipeIds] = React.useState<string[]>(FALLBACK_RECIPES_SECTION.recipeIds);
+  const [dbRecipes, setDbRecipes] = React.useState<any[]>([]);
+  const [dbProducts, setDbProducts] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    Promise.all([
+      fetch("/api/site-content/recipes-section").then((r) => r.json()),
+      fetch("/api/recipes").then((r) => r.json()),
+      fetch("/api/products").then((r) => r.json()),
+    ])
+      .then(([contentData, recipesData, productsData]) => {
+        if (contentData.value) {
+          try {
+            const parsed = JSON.parse(contentData.value);
+            if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+            if (parsed.title) setTitle(parsed.title);
+            if (parsed.description) setDescription(parsed.description);
+            if (parsed.recipeIds) setRecipeIds(parsed.recipeIds);
+          } catch {}
+        }
+        if (recipesData.recipes) setDbRecipes(recipesData.recipes);
+        if (productsData.products) setDbProducts(productsData.products);
+      })
+      .catch(() => {});
+  }, []);
 
   React.useEffect(() => {
     if (!ref.current) return;
@@ -442,7 +478,19 @@ export function Recipes() {
     return () => o.disconnect();
   }, []);
 
-  const [featured, ...rest] = recipes;
+  // Use selected recipeIds if available, otherwise fallback to all DB recipes, then hardcoded
+  const activeRecipes = recipeIds.length > 0
+    ? recipeIds.map((id) => dbRecipes.find((r: any) => r.id === id)).filter(Boolean)
+    : dbRecipes.length > 0
+      ? dbRecipes
+      : recipes;
+
+  const [featured, ...rest] = activeRecipes;
+
+  function getProductImg(productSlug: string) {
+    const p = dbProducts.find((x: any) => x.slug === productSlug);
+    return p?.img || "";
+  }
 
   return (
     <section ref={ref} className="bg-zinc-50/60">
@@ -453,13 +501,13 @@ export function Recipes() {
           style={{ transition: "opacity 0.6s ease, transform 0.6s ease", opacity: 0, transform: "translateY(20px)" }}
         >
           <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-primary">
-            From the kitchen
+            {eyebrow}
           </p>
           <h2 className="mt-3 text-[30px] font-semibold leading-[1.08] tracking-[-0.02em] text-zinc-900 sm:text-[38px] lg:text-[42px]">
-            Recipes built around the blend
+            {title}
           </h2>
           <p className="mt-3 max-w-lg text-[15px] leading-[1.7] text-zinc-500">
-            Three dishes that show what a proper masala can do — each tested, each under 30 minutes.
+            {description}
           </p>
         </div>
 
@@ -475,7 +523,7 @@ export function Recipes() {
             <div className="relative flex-1 overflow-hidden">
               <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.03]">
                 <img
-                  src={products.find((p) => p.slug === featured.productSlug)?.img || ""}
+                  src={getProductImg(featured.productSlug) || products.find((p) => p.slug === featured.productSlug)?.img || ""}
                   alt={featured.title}
                   className="h-full w-full object-cover"
                 />
@@ -521,7 +569,7 @@ export function Recipes() {
               <div className="relative aspect-[5/3] overflow-hidden">
                 <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.03]">
                   <img
-                    src={products.find((p) => p.slug === r.productSlug)?.img || ""}
+                    src={getProductImg(r.productSlug) || products.find((p) => p.slug === r.productSlug)?.img || ""}
                     alt={r.title}
                     className="h-full w-full object-cover"
                   />
