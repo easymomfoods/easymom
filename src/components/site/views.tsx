@@ -505,8 +505,14 @@ export function ProductView() {
           <div className="mt-3 flex flex-wrap items-center gap-3 text-[13px]">
             <span className="flex items-center gap-1">
               <Star className="h-4 w-4 fill-turmeric text-turmeric" />
-              <strong className="font-semibold">{p.rating}</strong>
-              <span className="text-muted-foreground">({p.reviewCount} reviews)</span>
+              {p.reviewCount > 0 ? (
+                <>
+                  <strong className="font-semibold">{p.rating}</strong>
+                  <span className="text-muted-foreground">({p.reviewCount} review{p.reviewCount !== 1 ? "s" : ""})</span>
+                </>
+              ) : (
+                <span className="text-muted-foreground">No reviews yet</span>
+              )}
             </span>
             <span className="h-3 w-px bg-border" />
             <span className="flex items-center gap-1 text-muted-foreground"><MapPin className="h-3.5 w-3.5" /> {p.origin}</span>
