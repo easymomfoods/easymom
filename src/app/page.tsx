@@ -51,18 +51,17 @@ export default function Home() {
     setMounted(true);
   }, []);
 
-  // Check admin session on mount
+  // Check admin session once on mount — not on every view change
   useEffect(() => {
     if (view.name.startsWith("admin")) {
       fetch("/api/admin/stats")
         .then((res) => {
-          if (res.ok) setAdminLoggedIn(true);
-          else setAdminLoggedIn(false);
+          setAdminLoggedIn(res.ok);
         })
         .catch(() => setAdminLoggedIn(false))
         .finally(() => setAdminChecking(false));
     }
-  }, [view.name]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // close overlays on ESC
   useEffect(() => {
