@@ -69,14 +69,50 @@ type ProductData = {
 
 const LEVELS: SpiceLevel[] = ["Medium", "Hot"];
 
+const DEFAULT_PRODUCTS = products;
+const DEFAULT_CATEGORIES = categories;
+
 export function ShopView() {
   const { view, go, activeLevels, toggleLevel, clearLevels, maxPrice, setMaxPrice, sortBy, setSortBy } = useUI();
   const categoryId = view.name === "shop" ? view.categoryId : undefined;
-  const category = categoryId ? getCategoryById(categoryId) : undefined;
   const [showFilters, setShowFilters] = useState(false);
+  const [shopProducts, setShopProducts] = useState(DEFAULT_PRODUCTS);
+  const [shopCategories, setShopCategories] = useState(DEFAULT_CATEGORIES);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.products && d.products.length > 0) {
+          setShopProducts(d.products);
+          // compute categories from products
+          const catMap = new Map<string, { id: string; name: string; count: number }>();
+          for (const p of d.products) {
+            const existing = catMap.get(p.categoryId);
+            if (existing) {
+              existing.count++;
+            } else {
+              catMap.set(p.categoryId, { id: p.categoryId, name: p.categoryId.replace(/-/g, " "), count: 1 });
+            }
+          }
+          const computed = Array.from(catMap.values()).map((c) => ({
+            ...c,
+            name: c.name.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+            tagline: "",
+            description: "",
+            accent: "zinc",
+            hue: 0,
+          }));
+          setShopCategories(computed);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const category = categoryId ? shopCategories.find((c) => c.id === categoryId) : undefined;
 
   const filtered = useMemo(() => {
-    let list = products.slice();
+    let list = shopProducts.slice();
     if (categoryId) list = list.filter((p) => p.categoryId === categoryId);
     if (activeLevels.length) list = list.filter((p) => activeLevels.includes(p.spiceLevel));
     list = list.filter((p) => p.price <= maxPrice);
@@ -94,7 +130,7 @@ export function ShopView() {
         list.sort((a, b) => Number(b.bestSeller) - Number(a.bestSeller));
     }
     return list;
-  }, [categoryId, activeLevels, maxPrice, sortBy]);
+  }, [shopProducts, categoryId, activeLevels, maxPrice, sortBy]);
 
   const Filters = (
     <div className="space-y-6">
@@ -108,9 +144,9 @@ export function ShopView() {
               !categoryId ? "bg-secondary font-semibold text-foreground" : "text-muted-foreground hover:bg-secondary/60"
             )}
           >
-            All blends <span className="text-[11px]">{products.length}</span>
+            All blends <span className="text-[11px]">{shopProducts.length}</span>
           </button>
-          {categories.map((c) => (
+          {shopCategories.map((c) => (
             <button
               key={c.id}
               onClick={() => go({ name: "shop", categoryId: c.id })}
@@ -291,6 +327,8 @@ export function ProductView() {
   const [selectedImg, setSelectedImg] = useState(0);
   const [dbProduct, setDbProduct] = useState<ProductData | null>(null);
   const [loadingProduct, setLoadingProduct] = useState(true);
+  const [allProducts, setAllProducts] = useState(DEFAULT_PRODUCTS);
+  const [allCategories, setAllCategories] = useState(DEFAULT_CATEGORIES);
   const slug = view.name === "product" ? view.slug : "";
 
   // Try database first, fallback to hardcoded
@@ -312,6 +350,28 @@ export function ProductView() {
       .finally(() => setLoadingProduct(false));
   }, [slug]);
 
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.products && d.products.length > 0) {
+          setAllProducts(d.products);
+          const catMap = new Map<string, { id: string; name: string; count: number }>();
+          for (const pr of d.products) {
+            const existing = catMap.get(pr.categoryId);
+            if (existing) existing.count++;
+            else catMap.set(pr.categoryId, { id: pr.categoryId, name: pr.categoryId.replace(/-/g, " "), count: 1 });
+          }
+          setAllCategories(Array.from(catMap.values()).map((c) => ({
+            ...c,
+            name: c.name.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" "),
+            tagline: "", description: "", accent: "zinc", hue: 0,
+          })));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   if (!p) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-32 text-center">
@@ -321,8 +381,8 @@ export function ProductView() {
     );
   }
 
-  const category = getCategoryById(p.categoryId);
-  const related = products.filter((x) => x.categoryId === p.categoryId && x.id !== p.id).slice(0, 4);
+  const category = allCategories.find((c) => c.id === p.categoryId);
+  const related = allProducts.filter((x) => x.categoryId === p.categoryId && x.id !== p.id).slice(0, 4);
   const discount = Math.round(((p.mrp - p.price) / p.mrp) * 100);
 
   return (
