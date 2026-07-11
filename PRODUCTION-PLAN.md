@@ -9,13 +9,14 @@
 | Framework | Next.js 16 + React 19 + TypeScript |
 | Styling | Tailwind CSS 4 |
 | State | Zustand (client-side, localStorage persistence) |
-| Database | Prisma + SQLite (barely used — orders + newsletter only) |
+| Database | Prisma + SQLite (8 tables, seeded with all data) |
 | Routing | Custom SPA router (window.history.pushState) |
-| Products | Hardcoded arrays in src/lib/data.ts |
+| Products | Database-backed (7 products, seeded) |
 | Cart | Client-side only (Zustand + localStorage) |
-| Payment | Fake/demo — no real integration |
-| Admin | None |
-| Auth | None (next-auth installed but not configured) |
+| Payment | COD + UPI QR (manual verification) |
+| Admin | Full admin panel at /admin (login, dashboard, orders, products) |
+| Auth | Session-based (cookie + Upstash Redis for production) |
+| API Routes | 14 routes (7 public + 7 admin) |
 | Hosting | Vercel Hobby (free) |
 | Domain | easymom.vercel.app (temporary) |
 
@@ -311,22 +312,19 @@ confirmed → packed → shipped → delivered
 
 ---
 
-## Phase 6: Bug Fixes
+## Phase 6: Bug Fixes (Completed)
 
 ### 1. CartLine Missing img Field
 **File:** src/lib/store.ts
-**Issue:** CartLine type lacks `img` field but overlays.tsx references `l.img`
-**Fix:** Add `img: string` to CartLine type
+**Status:** Fixed — added `img: string` to CartLine type
 
 ### 2. DATABASE_URL Hardcoded Path
-**File:** prisma/schema.prisma
-**Issue:** `file:/home/z/my-project/db/custom.db` — Linux absolute path
-**Fix:** Use relative path: `file:./dev.db` for dev, Turso URL for production
+**File:** .env
+**Status:** Fixed — changed to `file:./db/custom.db`
 
 ### 3. Orders API Has No Auth
 **File:** src/app/api/orders/route.ts
-**Issue:** GET endpoint returns all orders to anyone
-**Fix:** Add admin auth check to GET endpoint
+**Status:** Fixed — public POST only, admin GET requires auth
 
 ---
 
@@ -406,23 +404,22 @@ Also update `add()` function in store.ts to include `img: product.img` when buil
 
 ## Implementation Order
 
-| Step | Task | Est. Time |
-|---|---|---|
-| 1 | Fix CartLine bug + DATABASE_URL | 15 min |
-| 2 | Update Prisma schema (all tables) | 30 min |
-| 3 | Create seed script | 30 min |
-| 4 | Setup Turso + migrate DB | 30 min |
-| 5 | Build public API routes | 1 hour |
-| 6 | Build admin auth (login + session) | 1 hour |
-| 7 | Build admin API routes | 1 hour |
-| 8 | Build admin dashboard UI | 2 hours |
-| 9 | Build admin orders page | 1.5 hours |
-| 10 | Build admin products page | 1.5 hours |
-| 11 | Update checkout flow (COD + UPI QR) | 1 hour |
-| 12 | Setup Cloudinary + image upload | 1 hour |
-| 13 | Deploy to Vercel + Turso | 30 min |
-| 14 | Test everything end-to-end | 1 hour |
-| **Total** | | **~13 hours** |
+| Step | Task | Est. Time | Status |
+|---|---|---|---|
+| 1 | Fix CartLine bug + DATABASE_URL | 15 min | Done |
+| 2 | Update Prisma schema (all tables) | 30 min | Done |
+| 3 | Create seed script | 30 min | Done |
+| 4 | Setup Turso + migrate DB | 30 min | Pending |
+| 5 | Build public API routes | 1 hour | Done |
+| 6 | Build admin auth (login + session) | 1 hour | Done |
+| 7 | Build admin API routes | 1 hour | Done |
+| 8 | Build admin dashboard UI | 2 hours | Done |
+| 9 | Build admin orders page | 1.5 hours | Done |
+| 10 | Build admin products page | 1.5 hours | Done |
+| 11 | Update checkout flow (COD + UPI QR) | 1 hour | Done |
+| 12 | Setup Cloudinary + image upload | 1 hour | Pending |
+| 13 | Deploy to Vercel + Turso | 30 min | Pending |
+| 14 | Test everything end-to-end | 1 hour | Pending |
 
 ---
 
@@ -430,12 +427,15 @@ Also update `add()` function in store.ts to include `img: product.img` when buil
 
 ```env
 # Database
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="file:./db/custom.db"
 # DATABASE_URL="libsql://easymom-xxx.turso.io?authToken=xxx" # production
 
-# Admin
-ADMIN_USERNAME="admin"
-ADMIN_PASSWORD_HASH="$2b$12$..." # bcrypt hash of your password
+# Upstash Redis (for admin sessions)
+UPSTASH_REDIS_REST_URL="YOUR_URL_HERE"
+UPSTASH_REDIS_REST_TOKEN="YOUR_TOKEN_HERE"
+
+# Session secret (change in production)
+SESSION_SECRET="easymom-dev-secret-change-in-prod"
 
 # Cloudinary (future)
 # CLOUDINARY_CLOUD_NAME="xxx"
@@ -458,7 +458,7 @@ src/
 ├── app/
 │   ├── api/
 │   │   ├── products/
-│   │   │   ├── route.ts              (GET list, POST create)
+│   │   │   ├── route.ts              (GET list)
 │   │   │   └── [slug]/
 │   │   │       └── route.ts          (GET single)
 │   │   ├── categories/
@@ -474,43 +474,45 @@ src/
 │   │   └── admin/
 │   │       ├── login/
 │   │       │   └── route.ts          (POST login)
+│   │       ├── logout/
+│   │       │   └── route.ts          (POST logout)
 │   │       ├── orders/
-│   │       │   ├── route.ts          (GET list)
+│   │       │   ├── route.ts          (GET list — auth required)
 │   │       │   └── [id]/
-│   │       │       └── route.ts      (PATCH update)
+│   │       │       └── route.ts      (GET detail, PATCH update)
 │   │       ├── products/
-│   │       │   ├── route.ts          (GET/POST)
+│   │       │   ├── route.ts          (GET list, POST create)
 │   │       │   └── [id]/
-│   │       │       └── route.ts      (PUT/DELETE)
+│   │       │       └── route.ts      (PUT update, DELETE)
 │   │       └── stats/
-│   │           └── route.ts          (GET dashboard)
-│   ├── page.tsx                      (SPA entry — existing)
+│   │           └── route.ts          (GET dashboard stats)
+│   ├── page.tsx                      (SPA entry — admin + public views)
 │   ├── [...slug]/
-│   │   └── page.tsx                  (catch-all — existing)
-│   └── layout.tsx                    (existing)
+│   │   └── page.tsx                  (catch-all for page reload)
+│   └── layout.tsx
 ├── components/
 │   └── site/
 │       ├── admin/
-│       │   ├── AdminLogin.tsx
-│       │   ├── AdminDashboard.tsx
-│       │   ├── AdminOrders.tsx
-│       │   ├── AdminOrderDetail.tsx
-│       │   ├── AdminProducts.tsx
-│       │   └── AdminLayout.tsx
+│       │   ├── AdminLogin.tsx         (login form)
+│       │   ├── AdminDashboard.tsx     (stats + quick actions)
+│       │   ├── AdminOrders.tsx        (order list + detail modal)
+│       │   └── AdminProducts.tsx      (product list + edit/add modal)
 │       ├── (existing components)
 │       └── ...
 ├── lib/
-│   ├── data.ts                       (existing — keep as fallback)
-│   ├── store.ts                      (fix CartLine bug)
-│   ├── ui-store.ts                   (existing)
-│   ├── prisma.ts                     (Prisma client singleton)
-│   ├── auth.ts                       (session helpers)
-│   ├── seed.ts                       (DB seed script)
+│   ├── data.ts                       (existing — fallback catalog)
+│   ├── store.ts                      (cart + CartLine type)
+│   ├── ui-store.ts                   (view state + URL routing)
+│   ├── db.ts                         (Prisma client singleton)
+│   ├── auth.ts                       (session helpers + password hashing)
+│   ├── session-store.ts              (Upstash Redis / in-memory fallback)
+│   ├── format.ts                     (inr, orderId helpers)
 │   └── ...
 prisma/
-└── schema.prisma                     (updated with all tables)
-db/
-└── custom.db                         (SQLite — development)
+├── schema.prisma                     (8 tables)
+├── seed.ts                           (database seed script)
+└── db/
+    └── custom.db                     (SQLite — development)
 ```
 
 ---
@@ -523,3 +525,6 @@ db/
 - Auth is basic password-based — no OAuth needed for a single admin
 - UPI QR is static — no payment gateway integration required
 - This setup handles 1000 orders/month comfortably within free tiers
+- Admin sessions use Upstash Redis (production) with in-memory fallback (local dev)
+- Admin credentials: admin / easymom2024
+- Seed script populates all 7 products, 7 categories, 3 recipes, 6 testimonials, 1 admin user, 1 coupon (WELCOME10)
