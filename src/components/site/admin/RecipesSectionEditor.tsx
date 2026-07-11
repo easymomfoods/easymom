@@ -67,6 +67,9 @@ export default function RecipesSectionEditor() {
             const parsed = JSON.parse(contentData.value);
             setData({ ...defaults, ...parsed });
           } catch {}
+        } else if (recipesData.recipes) {
+          const allIds = recipesData.recipes.map((r: any) => r.id);
+          setData({ ...defaults, recipeIds: allIds });
         }
         if (recipesData.recipes) {
           setAllRecipes(recipesData.recipes);
