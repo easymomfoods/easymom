@@ -510,7 +510,32 @@ function Stat({ icon: Icon, label, value }: { icon: typeof Clock; label: string;
 
 export function RecipesView() {
   const go = useUI((s) => s.go);
-  const [open, setOpen] = useState<string | null>(recipes[0]?.id ?? null);
+  const [dbRecipes, setDbRecipes] = useState<any[]>([]);
+  const [dbProducts, setDbProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState<string | null>(null);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/recipes").then((r) => r.json()),
+      fetch("/api/products").then((r) => r.json()),
+    ])
+      .then(([recipesData, productsData]) => {
+        const r = recipesData.recipes || [];
+        setDbRecipes(r);
+        setDbProducts(productsData.products || []);
+        if (r.length > 0) setOpen(r[0].id);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const activeRecipes = dbRecipes.length > 0 ? dbRecipes : recipes;
+
+  function getProductImg(productSlug: string) {
+    const p = dbProducts.find((x: any) => x.slug === productSlug);
+    return p?.img || products.find((x) => x.slug === productSlug)?.img || "";
+  }
   return (
     <div className="mx-auto max-w-[1280px] px-4 pb-20 pt-24 sm:px-6 lg:px-8 lg:pt-28">
       <nav className="mb-6 flex items-center gap-1.5 text-[12px] text-muted-foreground">
@@ -530,7 +555,7 @@ export function RecipesView() {
       </div>
 
       <div className="mt-12 space-y-6">
-        {recipes.map((r, i) => {
+        {activeRecipes.map((r: any, i: number) => {
           const isOpen = open === r.id;
           return (
             <motion.article
@@ -542,7 +567,7 @@ export function RecipesView() {
             >
               <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.3fr]">
                 <div className="relative aspect-[5/3] lg:aspect-auto">
-                  <img src={products.find((p) => p.slug === r.productSlug)?.img || ""} alt={r.title} className="h-full w-full object-cover" />
+                  <img src={getProductImg(r.productSlug)} alt={r.title} className="h-full w-full object-cover" />
                   <div className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-[4px] bg-card/90 px-2.5 py-1 text-[11px] font-medium backdrop-blur-sm">
                     <MapPin className="h-3 w-3 text-primary" /> {r.region}
                   </div>
