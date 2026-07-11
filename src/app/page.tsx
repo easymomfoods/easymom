@@ -43,6 +43,12 @@ export default function Home() {
   const go = useUI((s) => s.go);
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
   const [adminChecking, setAdminChecking] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  // Mark as mounted after hydration
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Check admin session on mount
   useEffect(() => {
@@ -77,8 +83,8 @@ export default function Home() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Admin views — no nav/footer
-  if (view.name.startsWith("admin")) {
+  // Admin views — no nav/footer (only render after client mount to avoid hydration mismatch)
+  if (mounted && view.name.startsWith("admin")) {
     if (adminChecking) {
       return (
         <div className="min-h-screen bg-white flex items-center justify-center">
