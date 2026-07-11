@@ -63,6 +63,15 @@ export default function FeaturedEditor() {
             const parsed = JSON.parse(contentData.value);
             setData({ ...defaults, ...parsed });
           } catch {}
+        } else {
+          // No saved content yet — preload bestSellers from DB as defaults
+          if (productsData.products) {
+            const bestSlugs = productsData.products
+              .filter((p: any) => p.bestSeller)
+              .slice(0, 4)
+              .map((p: any) => p.slug);
+            setData({ ...defaults, productSlugs: bestSlugs });
+          }
         }
         if (productsData.products) {
           setAllProducts(productsData.products);
