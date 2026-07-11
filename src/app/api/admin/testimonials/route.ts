@@ -1,0 +1,37 @@
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/auth";
+
+export const runtime = "nodejs";
+
+export async function GET() {
+  try {
+    const testimonials = await db.testimonial.findMany({ orderBy: { id: "asc" } });
+    return NextResponse.json({ testimonials });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Unknown error";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}
+
+export async function POST(req: Request) {
+  try {
+    await requireAdmin();
+    const body = await req.json();
+    const testimonial = await db.testimonial.create({
+      data: {
+        name: body.name || "",
+        location: body.location || "",
+        role: body.role || "",
+        quote: body.quote || "",
+        rating: body.rating || 5,
+        product: body.product || "",
+        active: body.active !== false,
+      },
+    });
+    return NextResponse.json({ ok: true, testimonial });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Unknown error";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
+}

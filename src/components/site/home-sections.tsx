@@ -609,8 +609,39 @@ export function Recipes() {
   );
 }
 
+const FALLBACK_TESTIMONIALS_SECTION = {
+  eyebrow: "Trusted in 42,000 kitchens",
+  title: "What families actually say",
+  description: "From Bengaluru to Dubai to London — the reviews that keep us grinding.",
+};
+
 export function Testimonials() {
   const ref = React.useRef<HTMLDivElement>(null);
+  const [eyebrow, setEyebrow] = React.useState(FALLBACK_TESTIMONIALS_SECTION.eyebrow);
+  const [title, setTitle] = React.useState(FALLBACK_TESTIMONIALS_SECTION.title);
+  const [description, setDescription] = React.useState(FALLBACK_TESTIMONIALS_SECTION.description);
+  const [dbTestimonials, setDbTestimonials] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    Promise.all([
+      fetch("/api/site-content/testimonials-section").then((r) => r.json()),
+      fetch("/api/testimonials").then((r) => r.json()),
+    ])
+      .then(([contentData, testimonialsData]) => {
+        if (contentData.value) {
+          try {
+            const parsed = JSON.parse(contentData.value);
+            if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+            if (parsed.title) setTitle(parsed.title);
+            if (parsed.description) setDescription(parsed.description);
+          } catch {}
+        }
+        if (testimonialsData.testimonials) {
+          setDbTestimonials(testimonialsData.testimonials);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   React.useEffect(() => {
     if (!ref.current) return;
@@ -628,7 +659,7 @@ export function Testimonials() {
     return () => o.disconnect();
   }, []);
 
-  const [featured, ...rest] = testimonials;
+  const activeTestimonials = dbTestimonials.length > 0 ? dbTestimonials : testimonials;
 
   return (
     <section ref={ref} className="bg-white">
@@ -639,13 +670,13 @@ export function Testimonials() {
           style={{ transition: "opacity 0.6s ease, transform 0.6s ease", opacity: 0, transform: "translateY(20px)" }}
         >
           <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-primary">
-            Trusted in 42,000 kitchens
+            {eyebrow}
           </p>
           <h2 className="mt-3 text-[30px] font-semibold leading-[1.08] tracking-[-0.02em] text-zinc-900 sm:text-[38px] lg:text-[42px]">
-            What families actually say
+            {title}
           </h2>
           <p className="mt-3 max-w-lg text-[15px] leading-[1.7] text-zinc-500">
-            From Bengaluru to Dubai to London — the reviews that keep us grinding.
+            {description}
           </p>
         </div>
 
@@ -655,7 +686,7 @@ export function Testimonials() {
           className="mt-14 [column-fill:_balance] columns-1 gap-5 sm:columns-2 lg:columns-3"
           style={{ transition: "opacity 0.7s ease 0.1s, transform 0.7s ease 0.1s", opacity: 0, transform: "translateY(24px)" }}
         >
-          {testimonials.map((t, i) => {
+          {activeTestimonials.map((t: any, i: number) => {
             const isFeatured = i === 0;
             const hue = [0, 27, 145, 80, 45, 145][i % 6];
             const bgTint = `oklch(0.975 0.012 ${hue})`;

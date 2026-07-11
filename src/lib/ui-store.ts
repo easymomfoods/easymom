@@ -20,7 +20,8 @@ export type View =
   | { name: "admin-featured" }
   | { name: "admin-brand-story" }
   | { name: "admin-recipes-section" }
-  | { name: "admin-recipes" };
+  | { name: "admin-recipes" }
+  | { name: "admin-testimonials" };
 
 function viewToPath(v: View): string {
   switch (v.name) {
@@ -58,6 +59,8 @@ function viewToPath(v: View): string {
       return "/admin/recipes-section";
     case "admin-recipes":
       return "/admin/recipes";
+    case "admin-testimonials":
+      return "/admin/testimonials";
     default:
       return "/";
   }
@@ -85,6 +88,7 @@ function pathToView(pathname: string): View {
     if (parts[1] === "brand-story") return { name: "admin-brand-story" };
     if (parts[1] === "recipes-section") return { name: "admin-recipes-section" };
     if (parts[1] === "recipes") return { name: "admin-recipes" };
+    if (parts[1] === "testimonials") return { name: "admin-testimonials" };
     return { name: "admin" };
   }
   return { name: "home" };
