@@ -1,11 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Heart, Plus, Star } from "lucide-react";
+import { Heart, Plus, Star, ShoppingBag } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import type { Product } from "@/lib/data";
 import { useCart } from "@/lib/store";
-import { useUI } from "@/lib/ui-store";
 import { inr } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { SpiceVisual } from "./spice-visual";
@@ -22,9 +21,6 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
   const add = useCart((s) => s.add);
   const wishlist = useCart((s) => s.wishlist);
   const toggleWishlist = useCart((s) => s.toggleWishlist);
-  const go = useUI((s) => s.go);
-  const setQuickView = useUI((s) => s.setQuickView);
-
   const wished = wishlist.includes(product.id);
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
 
@@ -58,16 +54,13 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, delay: (index % 4) * 0.06, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative flex flex-col overflow-hidden rounded-[6px] border border-border bg-card transition-shadow duration-300 hover:shadow-premium"
+      className={cn(
+        "group relative flex flex-col overflow-hidden rounded-[6px] border bg-card transition-shadow duration-300",
+        product.active ? "border-border hover:shadow-premium" : "border-stone-200 opacity-70"
+      )}
     >
       {/* visual */}
-      <button
-        onClick={() => go({ name: "product", slug: product.slug })}
-        onMouseEnter={handleEnter}
-        onMouseLeave={handleLeave}
-        className="relative block aspect-[4/5] w-full overflow-hidden"
-        aria-label={`View ${product.name}`}
-      >
+      <div className={cn("relative block aspect-[4/5] w-full overflow-hidden", !product.active && "pointer-events-none")}>
         {images ? (
           <div className="relative h-full w-full overflow-hidden">
             {images.map((img, i) => (
@@ -76,7 +69,8 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
                 src={img}
                 alt={`${product.name} ${i + 1}`}
                 className={cn(
-                  "absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out group-hover:scale-105",
+                  "absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out",
+                  product.active ? "group-hover:scale-105" : "grayscale",
                   i === hoverIdx ? "opacity-100" : "opacity-0"
                 )}
               />
@@ -86,42 +80,58 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           <img
             src={product.img}
             alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            className={cn(
+              "h-full w-full object-cover transition-transform duration-700 ease-out",
+              product.active ? "group-hover:scale-105" : " grayscale"
+            )}
           />
         ) : (
-          <img
-            src={product.img}
-            alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          />
+          <div className="h-full w-full bg-stone-100 flex items-center justify-center">
+            <ShoppingBag className="h-10 w-10 text-stone-300" />
+          </div>
         )}
+
+        {/* Out of Stock overlay */}
+        {!product.active && (
+          <>
+            <div className="absolute inset-0 bg-white/40 z-10" />
+            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 flex justify-center">
+              <div className="bg-stone-900/80 backdrop-blur-sm px-5 py-2 rounded-full">
+                <span className="text-[11px] font-bold text-white uppercase tracking-[0.2em]">Out of Stock</span>
+              </div>
+            </div>
+          </>
+        )}
+
         {/* badges */}
-        <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-          {product.bestSeller && (
-            <span className="rounded-[4px] bg-foreground/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
-              Bestseller
-            </span>
-          )}
-          {product.isNew && (
-            <span className="rounded-[4px] bg-turmeric px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-turmeric-foreground">
-              New
-            </span>
-          )}
-          {discount > 0 && (
-            <span className="rounded-[4px] bg-primary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground">
-              {discount}% off
-            </span>
-          )}
-        </div>
+        {product.active && (
+          <div className="absolute left-3 top-3 flex flex-col gap-1.5">
+            {product.bestSeller && (
+              <span className="rounded-[4px] bg-foreground/90 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
+                Bestseller
+              </span>
+            )}
+            {product.isNew && (
+              <span className="rounded-[4px] bg-turmeric px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-turmeric-foreground">
+                New
+              </span>
+            )}
+            {discount > 0 && (
+              <span className="rounded-[4px] bg-primary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary-foreground">
+                {discount}% off
+              </span>
+            )}
+          </div>
+        )}
         {/* price tag */}
-        {discount > 0 && (
+        {discount > 0 && product.active && (
           <div className="absolute bottom-0 right-0 rounded-tl-[6px] bg-foreground/90 px-2.5 py-1.5 backdrop-blur-sm">
             <span className="text-[14px] font-semibold text-white">{inr(product.price)}</span>
             <span className="ml-1 text-[11px] text-white/60 line-through">{inr(product.mrp)}</span>
           </div>
         )}
         {/* image dots indicator */}
-        {images && (
+        {images && product.active && (
           <div className="absolute inset-x-0 bottom-2 flex justify-center gap-1">
             {images.map((_, i) => (
               <span
@@ -134,21 +144,22 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
             ))}
           </div>
         )}
-      </button>
-
-      {/* wishlist */}
-      <button
-        onClick={() => {
-          toggleWishlist(product.id);
-          toast(wished ? "Removed from wishlist" : "Saved to wishlist", {
-            description: product.name,
-          });
-        }}
-        className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-card/85 text-foreground/70 backdrop-blur-sm transition hover:text-primary"
-        aria-label="Toggle wishlist"
-      >
-        <Heart className={cn("h-4 w-4 transition", wished && "fill-primary text-primary")} />
-      </button>
+        {/* wishlist */}
+        {product.active && (
+          <button
+            onClick={() => {
+              toggleWishlist(product.id);
+              toast(wished ? "Removed from wishlist" : "Saved to wishlist", {
+                description: product.name,
+              });
+            }}
+            className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full bg-card/85 text-foreground/70 backdrop-blur-sm transition hover:text-primary"
+            aria-label="Toggle wishlist"
+          >
+            <Heart className={cn("h-4 w-4 transition", wished && "fill-primary text-primary")} />
+          </button>
+        )}
+      </div>
 
       {/* body */}
       <div className="flex flex-1 flex-col p-4">
@@ -163,12 +174,12 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           </span>
         </div>
 
-        <button
-          onClick={() => go({ name: "product", slug: product.slug })}
-          className="text-left text-[15px] font-semibold leading-snug text-foreground transition hover:text-primary"
-        >
+        <p className={cn(
+          "text-left text-[15px] font-semibold leading-snug",
+          product.active ? "text-foreground" : "text-stone-500"
+        )}>
           {product.name}
-        </button>
+        </p>
 
         <div className="mt-1 flex items-center gap-1.5">
           {product.bestSeller && (
@@ -194,16 +205,22 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
               <span className="text-[12px] text-muted-foreground line-through">{inr(product.mrp)}</span>
             )}
           </div>
-          <button
-            onClick={() => {
-              add(product);
-              toast.success("Added to cart", { description: product.name });
-            }}
-            className="grid h-9 w-9 place-items-center rounded-[4px] bg-foreground text-card transition hover:bg-primary hover:text-primary-foreground active:scale-95"
-            aria-label={`Add ${product.name} to cart`}
-          >
-            <Plus className="h-4 w-4" strokeWidth={2.2} />
-          </button>
+          {product.active ? (
+            <button
+              onClick={() => {
+                add(product);
+                toast.success("Added to cart", { description: product.name });
+              }}
+              className="grid h-9 w-9 place-items-center rounded-[4px] bg-foreground text-card transition hover:bg-primary hover:text-primary-foreground active:scale-95"
+              aria-label={`Add ${product.name} to cart`}
+            >
+              <Plus className="h-4 w-4" strokeWidth={2.2} />
+            </button>
+          ) : (
+            <span className="rounded-[4px] bg-stone-100 px-2.5 py-1 text-[11px] font-medium text-stone-500">
+              Unavailable
+            </span>
+          )}
         </div>
       </div>
     </motion.article>

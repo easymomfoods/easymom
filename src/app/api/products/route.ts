@@ -6,7 +6,6 @@ export const runtime = "nodejs";
 export async function GET() {
   try {
     const products = await db.product.findMany({
-      where: { active: true },
       orderBy: { createdAt: "desc" },
     });
 
