@@ -522,6 +522,7 @@ function ProductEditModal({
                 </div>
                 {/* Right: thumbnail strip */}
                 <div className="flex flex-col gap-2">
+                  <p className="text-[10px] font-semibold text-stone-500 uppercase tracking-wider mb-0.5">Images</p>
                   {/* Main image slot */}
                   <div
                     className={`relative w-16 h-16 rounded-lg border-2 overflow-hidden cursor-pointer transition-all ${
@@ -539,8 +540,9 @@ function ProductEditModal({
                         <Loader2 className="h-5 w-5 text-[#891816] animate-spin" />
                       </div>
                     ) : (
-                      <label className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-stone-50">
-                        <Plus className="h-4 w-4 text-stone-400" />
+                      <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer hover:bg-stone-100 border-2 border-dashed border-stone-300 rounded-lg transition-all">
+                        <Plus className="h-4 w-4 text-stone-400 mb-0.5" />
+                        <span className="text-[7px] text-stone-400 leading-tight">Upload</span>
                         <input
                           type="file"
                           accept="image/*"
@@ -586,8 +588,9 @@ function ProductEditModal({
                           <Loader2 className="h-5 w-5 text-[#891816] animate-spin" />
                         </div>
                       ) : (
-                        <label className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-stone-50">
-                          <Plus className="h-4 w-4 text-stone-400" />
+                        <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer hover:bg-stone-100 border-2 border-dashed border-stone-300 rounded-lg transition-all">
+                          <Plus className="h-4 w-4 text-stone-400 mb-0.5" />
+                          <span className="text-[7px] text-stone-400 leading-tight">Upload</span>
                           <input
                             type="file"
                             accept="image/*"
