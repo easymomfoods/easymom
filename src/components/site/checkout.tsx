@@ -12,6 +12,7 @@ import {
   Loader2,
   PartyPopper,
   ArrowRight,
+  Package,
 } from "lucide-react";
 import { useUI } from "@/lib/ui-store";
 import { useCart, cartSubtotal, cartCount } from "@/lib/store";
@@ -309,8 +310,14 @@ export function Checkout() {
                       <div className="mt-4 max-h-64 space-y-3 overflow-y-auto scroll-elegant">
                         {lines.map((l) => (
                           <div key={l.productId} className="flex gap-3">
-                            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-[6px]">
-                              <img src={l.img} alt={l.name} className="h-full w-full object-cover" />
+                            <div className="h-12 w-12 shrink-0 overflow-hidden rounded-[6px] bg-stone-100">
+                              {l.img ? (
+                                <img src={l.img} alt={l.name} className="h-full w-full object-cover" />
+                              ) : (
+                                <div className="h-full w-full flex items-center justify-center text-stone-400">
+                                  <Package className="h-4 w-4" />
+                                </div>
+                              )}
                             </div>
                             <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
                               <div className="min-w-0">

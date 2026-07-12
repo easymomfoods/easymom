@@ -28,6 +28,28 @@ export function CartDrawer() {
   const { lines, setQty, remove, coupon, applyCoupon, removeCoupon } = useCart();
   const [code, setCode] = useState("");
 
+  // Auto-refresh cart images from DB on mount
+  useEffect(() => {
+    if (lines.length === 0) return;
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.products) return;
+        const productMap = new Map(d.products.map((p: { id: string; img: string; price: number; name: string; weight: string }) => [p.id, p]));
+        let changed = false;
+        const updated = lines.map((l) => {
+          const fresh = productMap.get(l.productId);
+          if (fresh && fresh.img && l.img !== fresh.img) {
+            changed = true;
+            return { ...l, img: fresh.img };
+          }
+          return l;
+        });
+        if (changed) useCart.setState({ lines: updated });
+      })
+      .catch(() => {});
+  }, []);
+
   const subtotal = cartSubtotal(lines);
   const discount = coupon ? Math.round((subtotal * coupon.discountPct) / 100) : 0;
   const shipping = subtotal - discount >= 499 || subtotal === 0 ? 0 : 49;
@@ -106,8 +128,14 @@ export function CartDrawer() {
                           exit={{ opacity: 0, height: 0 }}
                           className="flex gap-3 rounded-[6px] border border-border bg-card p-3"
                         >
-                          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[6px]">
-                            <img src={l.img} alt={l.name} className="h-full w-full object-cover" />
+                          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[6px] bg-stone-100">
+                            {l.img ? (
+                              <img src={l.img} alt={l.name} className="h-full w-full object-cover" />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center text-stone-400">
+                                <ShoppingBag className="h-5 w-5" />
+                              </div>
+                            )}
                           </div>
                           <div className="flex min-w-0 flex-1 flex-col">
                             <div className="flex items-start justify-between gap-2">
