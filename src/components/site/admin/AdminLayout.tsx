@@ -22,6 +22,7 @@ import {
   BookOpenCheck,
   Shield,
   ArrowUpRight,
+  LogOut,
 } from "lucide-react";
 
 const navItems = [
@@ -100,6 +101,20 @@ export default function AdminLayout({
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Logout */}
+        <div className="p-3 border-t border-stone-100">
+          <button
+            onClick={async () => {
+              await fetch("/api/admin/logout", { method: "POST" });
+              window.location.href = "/admin/login";
+            }}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-stone-500 transition hover:bg-red-50 hover:text-red-600"
+          >
+            <LogOut className="h-4 w-4" />
+            Log out
+          </button>
         </div>
       </aside>
 
