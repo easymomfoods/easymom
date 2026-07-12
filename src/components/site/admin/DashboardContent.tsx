@@ -53,6 +53,7 @@ export default function DashboardContent() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
   const [barChart, setBarChart] = useState<BarChart>({ heights: [], labels: [], values: [] });
+  const [sparklines, setSparklines] = useState<Record<string, number[]>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -63,6 +64,7 @@ export default function DashboardContent() {
       if (statsData.stats) setStats(statsData.stats);
       if (statsData.topProducts) setTopProducts(statsData.topProducts);
       if (statsData.barChart) setBarChart(statsData.barChart);
+      if (statsData.sparklines) setSparklines(statsData.sparklines);
       if (ordersData.orders) setOrders(ordersData.orders.slice(0, 5));
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
@@ -151,35 +153,42 @@ export default function DashboardContent() {
         <StatCard
           label="Total Orders"
           value={String(stats?.totalOrders || 0)}
+          trend={stats?.weekOrders ? `+${stats.weekOrders} this week` : "No orders yet"}
+          trendUp={!!stats?.weekOrders}
           icon={<ShoppingBag className="h-5 w-5" />}
           iconBg="bg-[#891816]/8"
           iconColor="text-[#891816]"
-          sparkline={barChart.heights}
+          sparkline={sparklines.orders}
         />
         <StatCard
           label="This Month Revenue"
           value={inr(stats?.monthRevenue || 0)}
+          trend={stats?.monthRevenue ? `+${inr(stats.monthRevenue)} earned` : "No revenue yet"}
+          trendUp={!!stats?.monthRevenue}
           icon={<IndianRupee className="h-5 w-5" />}
           iconBg="bg-emerald-50"
           iconColor="text-emerald-600"
-          sparkline={barChart.heights}
+          sparkline={sparklines.revenue}
         />
         <StatCard
           label="Subscribers"
           value={String(stats?.totalSubscribers || 0)}
+          trend={stats?.totalSubscribers ? `${stats.totalSubscribers} total` : "No subscribers yet"}
+          trendUp={!!stats?.totalSubscribers}
           icon={<Users className="h-5 w-5" />}
           iconBg="bg-amber-50"
           iconColor="text-amber-600"
-          sparkline={barChart.heights}
+          sparkline={sparklines.subscribers}
         />
         <StatCard
           label="Avg. Rating"
           value={`${stats?.avgRating || 0}/5`}
+          trend={stats?.totalReviews ? `${stats.totalReviews} reviews` : "No reviews yet"}
+          trendUp={!!stats?.totalReviews}
           icon={<Star className="h-5 w-5" />}
           iconBg="bg-purple-50"
           iconColor="text-purple-600"
-          subtitle={`${stats?.totalReviews || 0} reviews`}
-          sparkline={barChart.heights}
+          sparkline={sparklines.rating}
         />
       </div>
 
@@ -304,18 +313,20 @@ export default function DashboardContent() {
 function StatCard({
   label,
   value,
+  trend,
+  trendUp,
   icon,
   iconBg,
   iconColor,
-  subtitle,
   sparkline,
 }: {
   label: string;
   value: string;
+  trend: string;
+  trendUp: boolean;
   icon: React.ReactNode;
   iconBg: string;
   iconColor: string;
-  subtitle?: string;
   sparkline?: number[];
 }) {
   return (
@@ -330,16 +341,26 @@ function StatCard({
       </div>
       <p className="text-[13px] text-stone-500 mb-0.5">{label}</p>
       <p className="text-xl font-bold text-stone-900">{value}</p>
-      {subtitle && (
-        <p className="text-[12px] text-stone-400 mt-1">{subtitle}</p>
-      )}
+      <div className="flex items-center gap-1.5 mt-2">
+        {trendUp ? (
+          <TrendingUp className="h-3 w-3 text-emerald-500" />
+        ) : (
+          <TrendingDown className="h-3 w-3 text-stone-400" />
+        )}
+        <span className={`text-[12px] font-medium ${trendUp ? "text-emerald-600" : "text-stone-400"}`}>
+          {trend}
+        </span>
+      </div>
       {sparkline && sparkline.length > 0 && (
         <div className="flex items-end gap-px h-6 mt-2">
           {sparkline.map((h, i) => (
             <div
               key={i}
-              className="flex-1 rounded-sm bg-[#891816]/20 transition-all hover:bg-[#891816]/40"
-              style={{ height: `${Math.max(h, 5)}%` }}
+              className="flex-1 rounded-sm transition-all"
+              style={{
+                height: `${Math.max(h, 5)}%`,
+                backgroundColor: trendUp ? "oklch(0.65 0.15 155 / 0.3)" : "oklch(0.60 0.17 25 / 0.3)",
+              }}
             />
           ))}
         </div>

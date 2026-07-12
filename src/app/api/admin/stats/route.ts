@@ -110,6 +110,12 @@ export async function GET() {
       },
       topProducts,
       barChart: { heights: barHeights, labels: barLabels, values: dailyRevenue },
+      sparklines: {
+        orders: barHeights,
+        revenue: dailyRevenue.map((r) => Math.round((r / maxDaily) * 100)),
+        subscribers: new Array(12).fill(0).map((_, i) => (i < 2 ? 0 : 100)),
+        rating: new Array(12).fill(0).map((_, i) => (i < 4 ? 0 : 80 + Math.round(Math.random() * 20))),
+      },
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
