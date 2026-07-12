@@ -22,6 +22,8 @@ interface Stats {
   totalSubscribers: number;
   monthRevenue: number;
   pendingRevenue: number;
+  avgRating: number;
+  totalReviews: number;
 }
 
 interface Order {
@@ -34,9 +36,23 @@ interface Order {
   items: { name: string; img?: string }[];
 }
 
+interface TopProduct {
+  name: string;
+  count: number;
+  img: string;
+}
+
+interface BarChart {
+  heights: number[];
+  labels: string[];
+  values: number[];
+}
+
 export default function DashboardContent() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [topProducts, setTopProducts] = useState<TopProduct[]>([]);
+  const [barChart, setBarChart] = useState<BarChart>({ heights: [], labels: [], values: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,6 +61,8 @@ export default function DashboardContent() {
       fetch("/api/admin/orders").then((r) => r.json()),
     ]).then(([statsData, ordersData]) => {
       if (statsData.stats) setStats(statsData.stats);
+      if (statsData.topProducts) setTopProducts(statsData.topProducts);
+      if (statsData.barChart) setBarChart(statsData.barChart);
       if (ordersData.orders) setOrders(ordersData.orders.slice(0, 5));
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
@@ -71,6 +89,15 @@ export default function DashboardContent() {
     cancelled: "bg-red-50 text-red-600",
   };
 
+  const defaultProductImages: Record<string, string> = {
+    "Green Curry": "/brand/products/green-curry1.png",
+    "Ghee Roast Masala": "/brand/products/ghee-roast1.png",
+    "Red Curry": "/brand/products/red-curry1.png",
+    "Fish Curry Masala": "/brand/products/fish-curry1.png",
+    "Chicken Sukka": "/brand/products/chicken-sukka-masala1.png",
+    "Palli Curry": "/brand/products/palli-curry1.png",
+  };
+
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse">
@@ -93,7 +120,6 @@ export default function DashboardContent() {
     <div className="space-y-6">
       {/* Hero Banner */}
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#1a0f0a] via-[#2a1810] to-[#1a0f0a] min-h-[200px] lg:min-h-[240px]">
-        {/* Background image */}
         <div className="absolute inset-0">
           <img
             src="/brand/products/fish-curry1.png"
@@ -102,16 +128,17 @@ export default function DashboardContent() {
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a0f0a]/95 via-[#1a0f0a]/70 to-transparent" />
         </div>
-
-        {/* Content */}
         <div className="relative z-10 p-6 lg:p-8 flex flex-col justify-center h-full min-h-[200px] lg:min-h-[240px] max-w-lg">
           <p className="text-[11px] font-bold text-[#c8a960] uppercase tracking-[0.2em] mb-2">EasyMom</p>
           <h2 className="text-2xl lg:text-3xl font-bold text-white leading-tight">
-            Today&apos;s Orders,<br />
-            <span className="text-[#c8a960]">Today&apos;s Freshness</span>
+            {stats?.todayOrders ? (
+              <>Today&apos;s Orders,<br /><span className="text-[#c8a960]">{stats.todayOrders} order{stats.todayOrders !== 1 ? "s" : ""} today</span></>
+            ) : (
+              <>No Orders Today<br /><span className="text-[#c8a960]">Start selling!</span></>
+            )}
           </h2>
           <p className="text-sm text-white/60 mt-2 max-w-xs leading-relaxed">
-            Manage your store efficiently. Track orders, update products, and grow your business.
+            {stats?.pendingOrders ? `${stats.pendingOrders} pending order${stats.pendingOrders !== 1 ? "s" : ""} awaiting processing` : "All caught up — no pending orders."}
           </p>
           <button className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-[#c8a960] text-[#1a0f0a] text-[13px] font-semibold rounded-lg hover:bg-[#d4b86a] transition-colors w-fit">
             Explore Products <ArrowRight className="h-3.5 w-3.5" />
@@ -124,38 +151,31 @@ export default function DashboardContent() {
         <StatCard
           label="Total Orders"
           value={String(stats?.totalOrders || 0)}
-          trend="+18.6%"
-          trendUp
           icon={<ShoppingBag className="h-5 w-5" />}
           iconBg="bg-[#891816]/8"
           iconColor="text-[#891816]"
         />
         <StatCard
-          label="Total Sales"
+          label="This Month Revenue"
           value={inr(stats?.monthRevenue || 0)}
-          trend="+22.4%"
-          trendUp
           icon={<IndianRupee className="h-5 w-5" />}
           iconBg="bg-emerald-50"
           iconColor="text-emerald-600"
         />
         <StatCard
-          label="Total Customers"
+          label="Subscribers"
           value={String(stats?.totalSubscribers || 0)}
-          trend="+14.2%"
-          trendUp
           icon={<Users className="h-5 w-5" />}
           iconBg="bg-amber-50"
           iconColor="text-amber-600"
         />
         <StatCard
           label="Avg. Rating"
-          value="4.8/5"
-          trend="+8.7%"
-          trendUp
+          value={`${stats?.avgRating || 0}/5`}
           icon={<Star className="h-5 w-5" />}
           iconBg="bg-purple-50"
           iconColor="text-purple-600"
+          subtitle={`${stats?.totalReviews || 0} reviews`}
         />
       </div>
 
@@ -165,68 +185,67 @@ export default function DashboardContent() {
         <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
             <h3 className="text-[14px] font-semibold text-stone-900">Top Selling Products</h3>
-            <button className="text-[12px] font-medium text-stone-500 hover:text-[#891816] transition-colors">
-              View All
-            </button>
           </div>
           <div className="divide-y divide-stone-50">
-            {[
-              { name: "Green Curry", sold: "1,245", trend: "+24.5%", img: "/brand/products/green-curry1.png" },
-              { name: "Ghee Roast Masala", sold: "845", trend: "+18.2%", img: "/brand/products/ghee-roast1.png" },
-              { name: "Red Curry", sold: "620", trend: "+12.6%", img: "/brand/products/red-curry1.png" },
-              { name: "Chicken Sukka", sold: "567", trend: "+10.3%", img: "/brand/products/chicken-sukka-masala1.png" },
-            ].map((p, i) => (
-              <div key={i} className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50/50 transition-colors">
-                <div className="h-10 w-10 rounded-lg bg-stone-100 overflow-hidden shrink-0">
-                  <img src={p.img} alt={p.name} className="h-full w-full object-cover" />
+            {topProducts.length === 0 ? (
+              <div className="px-5 py-8 text-center text-[13px] text-stone-400">No sales data yet</div>
+            ) : (
+              topProducts.map((p, i) => (
+                <div key={i} className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50/50 transition-colors">
+                  <div className="h-10 w-10 rounded-lg bg-stone-100 overflow-hidden shrink-0">
+                    <img src={p.img || defaultProductImages[p.name] || "/brand/products/green-curry1.png"} alt={p.name} className="h-full w-full object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-medium text-stone-900 truncate">{p.name}</p>
+                    <p className="text-[12px] text-stone-500">{p.count} sold</p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-stone-900 truncate">{p.name}</p>
-                  <p className="text-[12px] text-stone-500">{p.sold} Sold</p>
-                </div>
-                <span className="text-[12px] font-medium text-emerald-600 flex items-center gap-0.5">
-                  <TrendingUp className="h-3 w-3" />
-                  {p.trend}
-                </span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
-        {/* Sales Overview (CSS Chart) */}
+        {/* Sales Overview (Dynamic Bar Chart) */}
         <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
             <h3 className="text-[14px] font-semibold text-stone-900">Sales Overview</h3>
-            <span className="text-[12px] text-stone-500 bg-stone-50 px-2.5 py-1 rounded-md">This Month</span>
+            <span className="text-[12px] text-stone-500 bg-stone-50 px-2.5 py-1 rounded-md">Last 12 Days</span>
           </div>
           <div className="p-5">
-            {/* CSS Bar Chart */}
-            <div className="flex items-end gap-2 h-40 mb-4">
-              {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map((h, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                  <div
-                    className="w-full rounded-t-md bg-gradient-to-t from-[#c8a960] to-[#d4b86a] transition-all hover:from-[#891816] hover:to-[#a82020]"
-                    style={{ height: `${h}%` }}
-                  />
-                </div>
-              ))}
+            <div className="flex items-end gap-1.5 h-40 mb-4">
+              {barChart.heights.length === 0 ? (
+                <div className="flex-1 flex items-center justify-center text-[13px] text-stone-400">No data</div>
+              ) : (
+                barChart.heights.map((h, i) => (
+                  <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
+                    <div className="relative">
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-stone-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                        {inr(barChart.values[i] || 0)}
+                      </div>
+                      <div
+                        className="w-full rounded-t-md bg-gradient-to-t from-[#c8a960] to-[#d4b86a] transition-all hover:from-[#891816] hover:to-[#a82020] min-h-[2px]"
+                        style={{ height: `${Math.max(h, 3)}%` }}
+                      />
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-            <div className="flex justify-between text-[11px] text-stone-400 px-1">
-              <span>1 May</span>
-              <span>8 May</span>
-              <span>15 May</span>
-              <span>22 May</span>
-              <span>29 May</span>
-            </div>
+            {barChart.labels.length > 0 && (
+              <div className="flex justify-between text-[10px] text-stone-400 px-0.5">
+                <span>{barChart.labels[0]}</span>
+                <span>{barChart.labels[Math.floor(barChart.labels.length / 2)]}</span>
+                <span>{barChart.labels[barChart.labels.length - 1]}</span>
+              </div>
+            )}
 
-            {/* Summary */}
             <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-stone-100">
               <div>
-                <p className="text-[11px] text-stone-500">Total Revenue</p>
+                <p className="text-[11px] text-stone-500">Revenue</p>
                 <p className="text-[14px] font-bold text-stone-900">{inr(stats?.monthRevenue || 0)}</p>
               </div>
               <div>
-                <p className="text-[11px] text-stone-500">Total Orders</p>
+                <p className="text-[11px] text-stone-500">Orders</p>
                 <p className="text-[14px] font-bold text-stone-900">{stats?.totalOrders || 0}</p>
               </div>
               <div>
@@ -243,9 +262,6 @@ export default function DashboardContent() {
         <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
             <h3 className="text-[14px] font-semibold text-stone-900">Recent Orders</h3>
-            <button className="text-[12px] font-medium text-stone-500 hover:text-[#891816] transition-colors">
-              View All
-            </button>
           </div>
           <div className="divide-y divide-stone-50">
             {orders.length === 0 ? (
@@ -277,24 +293,6 @@ export default function DashboardContent() {
           </div>
         </div>
       </div>
-
-      {/* Bottom Features */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { title: "Rich & Authentic", desc: "Handpicked spices for authentic taste", icon: "🌶️" },
-          { title: "No Preservatives", desc: "100% natural ingredients, pure & safe", icon: "🌿" },
-          { title: "Perfect for Every Dish", desc: "Enhances the taste of fish & seafood", icon: "🐟" },
-          { title: "Trusted by Thousands", desc: "Loved by 10,000+ happy customers", icon: "❤️" },
-        ].map((f, i) => (
-          <div key={i} className="bg-white rounded-xl border border-stone-100 p-4 flex items-start gap-3">
-            <span className="text-xl mt-0.5">{f.icon}</span>
-            <div>
-              <p className="text-[13px] font-semibold text-stone-900">{f.title}</p>
-              <p className="text-[12px] text-stone-500 mt-0.5 leading-relaxed">{f.desc}</p>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
@@ -302,19 +300,17 @@ export default function DashboardContent() {
 function StatCard({
   label,
   value,
-  trend,
-  trendUp,
   icon,
   iconBg,
   iconColor,
+  subtitle,
 }: {
   label: string;
   value: string;
-  trend: string;
-  trendUp: boolean;
   icon: React.ReactNode;
   iconBg: string;
   iconColor: string;
+  subtitle?: string;
 }) {
   return (
     <div className="bg-white rounded-xl border border-stone-100 p-4 hover:border-stone-200 transition-colors">
@@ -328,33 +324,9 @@ function StatCard({
       </div>
       <p className="text-[13px] text-stone-500 mb-0.5">{label}</p>
       <p className="text-xl font-bold text-stone-900">{value}</p>
-      <div className="flex items-center gap-1.5 mt-2">
-        {trendUp ? (
-          <TrendingUp className="h-3 w-3 text-emerald-500" />
-        ) : (
-          <TrendingDown className="h-3 w-3 text-red-500" />
-        )}
-        <span className={`text-[12px] font-medium ${trendUp ? "text-emerald-600" : "text-red-500"}`}>
-          {trend}
-        </span>
-        <span className="text-[12px] text-stone-400">this month</span>
-      </div>
-      {/* Mini sparkline */}
-      <div className="flex items-end gap-px h-6 mt-2">
-        {Array.from({ length: 12 }, (_, i) => {
-          const h = 30 + Math.random() * 70;
-          return (
-            <div
-              key={i}
-              className="flex-1 rounded-sm"
-              style={{
-                height: `${h}%`,
-                backgroundColor: trendUp ? "oklch(0.65 0.15 155 / 0.3)" : "oklch(0.60 0.17 25 / 0.3)",
-              }}
-            />
-          );
-        })}
-      </div>
+      {subtitle && (
+        <p className="text-[12px] text-stone-400 mt-1">{subtitle}</p>
+      )}
     </div>
   );
 }

@@ -287,39 +287,44 @@ export default function AdminLayout({
                         </button>
                       )}
                     </div>
-                    <div className="max-h-80 overflow-y-auto">
-                      {notifications.length === 0 ? (
-                        <div className="py-8 text-center text-[13px] text-stone-400">
-                          No orders in the last 24 hours
-                        </div>
-                      ) : (
-                        notifications.map((n) => (
-                          <div
-                            key={n.orderId}
-                            className={`px-4 py-3 border-b border-stone-50 transition-colors ${
-                              n.read ? "bg-white" : "bg-[#891816]/[0.03]"
-                            }`}
-                          >
-                            <div className="flex items-start justify-between gap-2">
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-2">
-                                  {!n.read && (
-                                    <span className="h-2 w-2 rounded-full bg-[#891816] shrink-0" />
-                                  )}
-                                  <p className={`text-[13px] truncate ${n.read ? "text-stone-600" : "font-medium text-stone-900"}`}>
-                                    {n.name}
+                    <div className="relative">
+                      <div className="max-h-[340px] overflow-y-auto scroll-smooth">
+                        {notifications.length === 0 ? (
+                          <div className="py-8 text-center text-[13px] text-stone-400">
+                            No orders in the last 24 hours
+                          </div>
+                        ) : (
+                          notifications.map((n) => (
+                            <div
+                              key={n.orderId}
+                              className={`px-4 py-3 border-b border-stone-50 transition-colors ${
+                                n.read ? "bg-white" : "bg-[#891816]/[0.03]"
+                              }`}
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-2">
+                                    {!n.read && (
+                                      <span className="h-2 w-2 rounded-full bg-[#891816] shrink-0" />
+                                    )}
+                                    <p className={`text-[13px] truncate ${n.read ? "text-stone-600" : "font-medium text-stone-900"}`}>
+                                      {n.name}
+                                    </p>
+                                  </div>
+                                  <p className={`text-[12px] mt-0.5 ${n.read ? "text-stone-400" : "text-stone-500"}`}>
+                                    ₹{n.total.toLocaleString("en-IN")} · {n.paymentMethod === "cod" ? "COD" : "UPI"} · {n.orderId}
                                   </p>
                                 </div>
-                                <p className={`text-[12px] mt-0.5 ${n.read ? "text-stone-400" : "text-stone-500"}`}>
-                                  ₹{n.total.toLocaleString("en-IN")} · {n.paymentMethod === "cod" ? "COD" : "UPI"} · {n.orderId}
-                                </p>
+                                <span className="shrink-0 text-[11px] text-stone-400">
+                                  {new Date(n.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                                </span>
                               </div>
-                              <span className="shrink-0 text-[11px] text-stone-400">
-                                {new Date(n.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
-                              </span>
                             </div>
-                          </div>
-                        ))
+                          ))
+                        )}
+                      </div>
+                      {notifications.length > 5 && (
+                        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none" />
                       )}
                     </div>
                   </div>
