@@ -131,7 +131,7 @@ export default function Home() {
     }
 
     if (!adminLoggedIn) {
-      return <AdminLogin onLogin={() => setAdminLoggedIn(true)} />;
+      return <AdminLogin onLogin={() => { setAdminLoggedIn(true); go({ name: "admin" }); }} />;
     }
 
     const adminPage = view.name === "admin" ? "dashboard" : view.name.replace("admin-", "");
