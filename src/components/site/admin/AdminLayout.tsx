@@ -27,12 +27,12 @@ import {
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "products", label: "Products", icon: Package },
+  { id: "categories", label: "Categories", icon: LayoutList },
   { id: "orders", label: "Orders", icon: ShoppingCart },
-  { id: "analytics", label: "Analytics", icon: BarChart3 },
-  { id: "customers", label: "Customers", icon: Users },
-  { id: "marketing", label: "Marketing", icon: Megaphone },
+  { id: "reviews", label: "Reviews", icon: Star },
   { id: "recipes", label: "Recipes", icon: BookOpen },
-  { id: "testimonials", label: "Reviews", icon: Star },
+  { id: "testimonials", label: "Testimonials", icon: Star },
+  { id: "faqs", label: "FAQs", icon: BookOpen },
   { id: "recipes-section", label: "Recipes Section", icon: BookOpen },
   { id: "instagram", label: "Instagram Feed", icon: Image },
   { id: "trust-strip", label: "Trust Strip", icon: Shield },
@@ -42,6 +42,8 @@ const navItems = [
   { id: "featured", label: "Most Loved", icon: Heart },
   { id: "our-products", label: "Our Products", icon: LayoutList },
   { id: "hero", label: "Hero", icon: Image },
+  { id: "brand-strip", label: "Marquee", icon: Image },
+  { id: "analytics", label: "Analytics", icon: BarChart3 },
   { id: "settings", label: "Settings", icon: Settings },
 ];
 

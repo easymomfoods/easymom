@@ -55,7 +55,7 @@ model Product {
 }
 
 model Recipe {
-  id          String   @id
+  id          String    @id
   title       String
   region      String
   time        String
@@ -63,21 +63,24 @@ model Recipe {
   difficulty  String
   productSlug String
   excerpt     String
-  steps       String   @default("[]") // JSON array
+  steps       String    @default("[]") // JSON array
   hue         Int
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
 }
 
 model Testimonial {
-  id        String  @id
+  id        String    @id
   name      String
   location  String
   role      String
   quote     String
   rating    Int
   product   String
-  active    Boolean @default(true)
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
 }
 
 model Order {
@@ -142,4 +145,14 @@ model Review {
   body      String
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
+}
+
+model Faq {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  sortOrder Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

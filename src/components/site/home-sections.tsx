@@ -24,16 +24,33 @@ const ICONS: Record<string, typeof LeafIcon> = {
   flame: FlameIcon,
 };
 
+const DEFAULT_BRAND_STRIP = [
+  "Stone-ground in small batches",
+  "No preservatives, ever",
+  "Sourced from origin",
+  "Roasted, never raw",
+  "Built for the 15-minute cook",
+  "From Mangalore & Kerala",
+  "42,000+ households",
+];
+
 export function BrandStrip() {
-  const items = [
-    "Stone-ground in small batches",
-    "No preservatives, ever",
-    "Sourced from origin",
-    "Roasted, never raw",
-    "Built for the 15-minute cook",
-    "From Mangalore & Kerala",
-    "42,000+ households",
-  ];
+  const [items, setItems] = React.useState(DEFAULT_BRAND_STRIP);
+
+  React.useEffect(() => {
+    fetch("/api/site-content/brand-strip")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.value) {
+          try {
+            const parsed = JSON.parse(d.value);
+            if (parsed.items && parsed.items.length > 0) setItems(parsed.items);
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="border-y border-border bg-secondary/50 py-3.5">
       <div className="relative flex overflow-hidden">
@@ -50,8 +67,21 @@ export function BrandStrip() {
   );
 }
 
+const DEFAULT_CATEGORIES = categories;
+
 export function Categories() {
   const go = useUI((s) => s.go);
+  const [dbCategories, setDbCategories] = React.useState(DEFAULT_CATEGORIES);
+
+  React.useEffect(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.categories && d.categories.length > 0) setDbCategories(d.categories);
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
       <SectionHeader
@@ -60,7 +90,7 @@ export function Categories() {
         title="Six kitchens, one pantry"
       />
       <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {categories.map((c, i) => (
+        {dbCategories.map((c, i) => (
           <motion.button
             key={c.id}
             initial={{ opacity: 0, y: 20 }}

@@ -50,6 +50,10 @@ import InstagramFeedEditor from "@/components/site/admin/InstagramFeedEditor";
 import TrustStripEditor from "@/components/site/admin/TrustStripEditor";
 import FooterEditor from "@/components/site/admin/FooterEditor";
 import AboutEditor from "@/components/site/admin/AboutEditor";
+import AdminCategories from "@/components/site/admin/AdminCategories";
+import AdminFaqs from "@/components/site/admin/AdminFaqs";
+import AdminReviews from "@/components/site/admin/AdminReviews";
+import BrandStripEditor from "@/components/site/admin/BrandStripEditor";
 
 export default function Home() {
   const view = useUI((s) => s.view);
@@ -140,6 +144,10 @@ export default function Home() {
         {view.name === "admin-trust-strip" && <TrustStripEditor />}
         {view.name === "admin-footer" && <FooterEditor />}
         {view.name === "admin-about" && <AboutEditor />}
+        {view.name === "admin-categories" && <AdminCategories />}
+        {view.name === "admin-faqs" && <AdminFaqs />}
+        {view.name === "admin-reviews" && <AdminReviews />}
+        {view.name === "admin-brand-strip" && <BrandStripEditor />}
       </AdminLayout>
     );
   }

@@ -1,5 +1,8 @@
 import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/auth";
+
+export const runtime = "nodejs";
 
 export async function GET(
   _req: Request,
@@ -15,6 +18,12 @@ export async function PUT(
   req: Request,
   { params }: { params: Promise<{ key: string }> }
 ) {
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { key } = await params;
   const { value } = await req.json();
   const record = await db.siteContent.upsert({

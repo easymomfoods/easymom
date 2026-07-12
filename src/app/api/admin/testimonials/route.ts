@@ -6,6 +6,12 @@ export const runtime = "nodejs";
 
 export async function GET() {
   try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
     const testimonials = await db.testimonial.findMany({ orderBy: { id: "asc" } });
     return NextResponse.json({ testimonials });
   } catch (e) {

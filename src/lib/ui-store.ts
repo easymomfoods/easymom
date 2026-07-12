@@ -25,7 +25,11 @@ export type View =
   | { name: "admin-instagram" }
   | { name: "admin-trust-strip" }
   | { name: "admin-footer" }
-  | { name: "admin-about" };
+  | { name: "admin-about" }
+  | { name: "admin-categories" }
+  | { name: "admin-faqs" }
+  | { name: "admin-reviews" }
+  | { name: "admin-brand-strip" };
 
 function viewToPath(v: View): string {
   switch (v.name) {
@@ -73,6 +77,14 @@ function viewToPath(v: View): string {
       return "/admin/footer";
     case "admin-about":
       return "/admin/about";
+    case "admin-categories":
+      return "/admin/categories";
+    case "admin-faqs":
+      return "/admin/faqs";
+    case "admin-reviews":
+      return "/admin/reviews";
+    case "admin-brand-strip":
+      return "/admin/brand-strip";
     default:
       return "/";
   }
@@ -105,6 +117,10 @@ function pathToView(pathname: string): View {
     if (parts[1] === "trust-strip") return { name: "admin-trust-strip" };
     if (parts[1] === "footer") return { name: "admin-footer" };
     if (parts[1] === "about") return { name: "admin-about" };
+    if (parts[1] === "categories") return { name: "admin-categories" };
+    if (parts[1] === "faqs") return { name: "admin-faqs" };
+    if (parts[1] === "reviews") return { name: "admin-reviews" };
+    if (parts[1] === "brand-strip") return { name: "admin-brand-strip" };
     return { name: "admin" };
   }
   return { name: "home" };

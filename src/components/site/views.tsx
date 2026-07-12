@@ -952,6 +952,7 @@ const DEFAULT_ABOUT = {
 export function AboutView() {
   const go = useUI((s) => s.go);
   const [about, setAbout] = useState(DEFAULT_ABOUT);
+  const [aboutTestimonials, setAboutTestimonials] = useState(testimonials);
 
   useEffect(() => {
     fetch("/api/site-content/about")
@@ -963,6 +964,15 @@ export function AboutView() {
             setAbout({ ...DEFAULT_ABOUT, ...parsed });
           } catch {}
         }
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/testimonials")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.testimonials && d.testimonials.length > 0) setAboutTestimonials(d.testimonials);
       })
       .catch(() => {});
   }, []);
@@ -1009,7 +1019,7 @@ export function AboutView() {
       <div className="mt-20">
         <h2 className="text-center text-[28px] font-semibold tracking-tight">Trusted in 42,000 kitchens</h2>
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((t) => (
+          {aboutTestimonials.map((t) => (
             <figure key={t.id} className="flex flex-col rounded-[6px] border border-border bg-card p-6">
               <Quote className="h-6 w-6 text-primary/30" />
               <blockquote className="mt-3 flex-1 text-[14.5px] leading-relaxed text-foreground/90">"{t.quote}"</blockquote>
@@ -1025,43 +1035,35 @@ export function AboutView() {
   );
 }
 
+const DEFAULT_FAQS = [
+  { q: "How long does delivery take?", a: "Orders are dispatched within 24 hours from our Mangalore facility. Metro cities receive in 2–3 days, the rest of India in 4–6 days. International orders to the UAE, UK, Singapore, USA, Canada and Australia take 7–12 days, shipped DDP." },
+  { q: "Are your masalas preservative-free?", a: "Entirely. No preservatives, no added colour, no anti-caking agents. The shelf life comes from low-moisture roasting and airtight packaging, not chemistry. Read the back of any pouch — it reads like a recipe." },
+  { q: "What's the shelf life?", a: "8–12 months unopened, depending on the blend. Once opened, use within 3 months and keep the pouch sealed in a cool, dry place away from direct sunlight." },
+  { q: "Do you ship internationally?", a: "Yes — we currently ship to the UAE, UK, Singapore, USA, Canada and Australia. Duties are prepaid at checkout (DDP) so there are no surprise charges on delivery." },
+  { q: "What's your return policy?", a: "If a blend arrives damaged or isn't what you expected, write to hello@easymom.in within 7 days and we'll replace or refund — no questions, no fuss. Spoilage in transit is on us." },
+  { q: "Is the packaging recyclable?", a: "Our pouches are recyclable LDPE (category 4). The outer mailer is recycled kraft. We're transitioning to compostable pouches across the range by Q3 2025." },
+  { q: "How do I track my order?", a: "Every order gets a tracking link by email and SMS within 24 hours of dispatch. You can also track from the order confirmation page." },
+  { q: "Do you offer bulk or gifting?", a: "Yes — we do corporate gifting, wedding favours and wholesale. Write to hello@easymom.in with your requirements and we'll put together a custom selection." },
+];
+
 export function FaqView() {
   const go = useUI((s) => s.go);
   const [open, setOpen] = useState<number | null>(0);
-  const faqs = [
-    {
-      q: "How long does delivery take?",
-      a: "Orders are dispatched within 24 hours from our Mangalore facility. Metro cities receive in 2–3 days, the rest of India in 4–6 days. International orders to the UAE, UK, Singapore, USA, Canada and Australia take 7–12 days, shipped DDP.",
-    },
-    {
-      q: "Are your masalas preservative-free?",
-      a: "Entirely. No preservatives, no added colour, no anti-caking agents. The shelf life comes from low-moisture roasting and airtight packaging, not chemistry. Read the back of any pouch — it reads like a recipe.",
-    },
-    {
-      q: "What's the shelf life?",
-      a: "8–12 months unopened, depending on the blend. Once opened, use within 3 months and keep the pouch sealed in a cool, dry place away from direct sunlight.",
-    },
-    {
-      q: "Do you ship internationally?",
-      a: "Yes — we currently ship to the UAE, UK, Singapore, USA, Canada and Australia. Duties are prepaid at checkout (DDP) so there are no surprise charges on delivery.",
-    },
-    {
-      q: "What's your return policy?",
-      a: "If a blend arrives damaged or isn't what you expected, write to hello@easymom.in within 7 days and we'll replace or refund — no questions, no fuss. Spoilage in transit is on us.",
-    },
-    {
-      q: "Is the packaging recyclable?",
-      a: "Our pouches are recyclable LDPE (category 4). The outer mailer is recycled kraft. We're transitioning to compostable pouches across the range by Q3 2025.",
-    },
-    {
-      q: "How do I track my order?",
-      a: "Every order gets a tracking link by email and SMS within 24 hours of dispatch. You can also track from the order confirmation page.",
-    },
-    {
-      q: "Do you offer bulk or gifting?",
-      a: "Yes — we do corporate gifting, wedding favours and wholesale. Write to hello@easymom.in with your requirements and we'll put together a custom selection.",
-    },
-  ];
+  const [dbFaqs, setDbFaqs] = useState<{ question: string; answer: string }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/faqs")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.faqs && d.faqs.length > 0) {
+          setDbFaqs(d.faqs.map((f: any) => ({ question: f.question, answer: f.answer })));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const faqs = dbFaqs.length > 0 ? dbFaqs : DEFAULT_FAQS;
+
   return (
     <div className="mx-auto max-w-3xl px-4 pb-20 pt-24 sm:px-6 lg:px-8 lg:pt-28">
       <nav className="mb-6 flex items-center gap-1.5 text-[12px] text-muted-foreground">
@@ -1083,7 +1085,7 @@ export function FaqView() {
               onClick={() => setOpen(open === i ? null : i)}
               className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
             >
-              <span className="text-[15px] font-semibold text-foreground">{f.q}</span>
+              <span className="text-[15px] font-semibold text-foreground">{f.question || f.q}</span>
               <ChevronRight className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", open === i && "rotate-90")} />
             </button>
             <AnimatePresence>
@@ -1095,7 +1097,7 @@ export function FaqView() {
                   transition={{ duration: 0.28 }}
                   className="overflow-hidden"
                 >
-                  <p className="px-5 pb-5 text-[14px] leading-relaxed text-muted-foreground">{f.a}</p>
+                  <p className="px-5 pb-5 text-[14px] leading-relaxed text-muted-foreground">{f.answer || f.a}</p>
                 </motion.div>
               )}
             </AnimatePresence>

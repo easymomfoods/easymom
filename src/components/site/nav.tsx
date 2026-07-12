@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { useUI } from "@/lib/ui-store";
 import { useCart } from "@/lib/store";
-import { categories, products } from "@/lib/data";
+import { categories as defaultCategories, products as defaultProducts } from "@/lib/data";
 import { cartCount } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { SpiceVisual } from "./spice-visual";
@@ -30,10 +30,24 @@ export function Nav() {
   const lines = useCart((s) => s.lines);
   const wishlist = useCart((s) => s.wishlist);
   const [megaOpen, setMegaOpen] = useState<string | null>(null);
+  const [navCategories, setNavCategories] = useState(defaultCategories);
+  const [navProducts, setNavProducts] = useState(defaultProducts);
 
   useEffect(() => {
     setMobileNav(false);
   }, [view, setMobileNav]);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("/api/categories").then((r) => r.json()),
+      fetch("/api/products").then((r) => r.json()),
+    ])
+      .then(([catData, prodData]) => {
+        if (catData.categories && catData.categories.length > 0) setNavCategories(catData.categories);
+        if (prodData.products && prodData.products.length > 0) setNavProducts(prodData.products);
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <>
@@ -166,7 +180,7 @@ export function Nav() {
                     Shop by category
                   </p>
                   <div className="grid grid-cols-3 gap-x-6 gap-y-1">
-                    {categories.map((c) => (
+                    {navCategories.map((c) => (
                       <button
                         key={c.id}
                         onClick={() => {
@@ -191,7 +205,7 @@ export function Nav() {
                     Most loved
                   </p>
                   <div className="space-y-3">
-                    {products
+                    {navProducts
                       .filter((p) => p.bestSeller)
                       .slice(0, 3)
                       .map((p) => (
@@ -232,6 +246,15 @@ export function Nav() {
 
 function MobileNav() {
   const { go, setMobileNav } = useUI();
+  const [mobileCategories, setMobileCategories] = useState(defaultCategories);
+
+  useEffect(() => {
+    fetch("/api/categories")
+      .then((r) => r.json())
+      .then((d) => { if (d.categories && d.categories.length > 0) setMobileCategories(d.categories); })
+      .catch(() => {});
+  }, []);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -283,7 +306,7 @@ function MobileNav() {
           <p className="px-2 pb-2 pt-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Categories
           </p>
-          {categories.map((c) => (
+          {mobileCategories.map((c) => (
             <button
               key={c.id}
               onClick={() => go({ name: "shop", categoryId: c.id })}

@@ -24,7 +24,7 @@ type CartState = {
   setQty: (productId: string, qty: number) => void;
   clear: () => void;
   toggleWishlist: (productId: string) => void;
-  applyCoupon: (code: string) => boolean;
+  applyCoupon: (code: string) => boolean | Promise<boolean>;
   removeCoupon: () => void;
 };
 
@@ -83,8 +83,21 @@ export const useCart = create<CartState>()(
             ? s.wishlist.filter((id) => id !== productId)
             : [...s.wishlist, productId],
         })),
-      applyCoupon: (code) => {
+      applyCoupon: async (code) => {
         const upper = code.trim().toUpperCase();
+        try {
+          const res = await fetch("/api/coupons/validate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: upper }),
+          });
+          const data = await res.json();
+          if (data.valid) {
+            set({ coupon: { code: upper, discountPct: data.discountPct } });
+            return true;
+          }
+        } catch {}
+        // Fallback to hardcoded coupons
         if (COUPONS[upper]) {
           set({ coupon: { code: upper, discountPct: COUPONS[upper] } });
           return true;

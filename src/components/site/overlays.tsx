@@ -13,7 +13,7 @@ import {
   Heart,
   Star,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUI } from "@/lib/ui-store";
 import { useCart, cartSubtotal, cartCount } from "@/lib/store";
 import { products, categories } from "@/lib/data";
@@ -278,14 +278,23 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
 export function SearchOverlay() {
   const { searchOpen, closeSearch, go } = useUI();
   const [q, setQ] = useState("");
-  const results = q
-    ? products.filter(
-        (p) =>
-          p.name.toLowerCase().includes(q.toLowerCase()) ||
-          p.shortDesc.toLowerCase().includes(q.toLowerCase()) ||
-          p.tags.some((t) => t.includes(q.toLowerCase()))
-      )
-    : products.filter((p) => p.bestSeller).slice(0, 4);
+  const [apiResults, setApiResults] = useState<{ products: any[]; recipes: any[] }>({ products: [], recipes: [] });
+  const [searching, setSearching] = useState(false);
+
+  useEffect(() => {
+    if (q.length < 2) { setApiResults({ products: [], recipes: [] }); return; }
+    setSearching(true);
+    const timer = setTimeout(() => {
+      fetch(`/api/search?q=${encodeURIComponent(q)}`)
+        .then((r) => r.json())
+        .then((d) => setApiResults({ products: d.products || [], recipes: d.recipes || [] }))
+        .catch(() => setApiResults({ products: [], recipes: [] }))
+        .finally(() => setSearching(false));
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [q]);
+
+  const results = q.length >= 2 ? apiResults.products : products.filter((p) => p.bestSeller).slice(0, 4);
 
   return (
     <AnimatePresence>

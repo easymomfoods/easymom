@@ -57,21 +57,7 @@ export async function POST(req: NextRequest) {
         rating: Number(rating),
         title,
         body: reviewBody,
-      },
-    });
-
-    // Recalculate product rating
-    const stats = await db.review.aggregate({
-      where: { productId, active: true },
-      _avg: { rating: true },
-      _count: { rating: true },
-    });
-
-    await db.product.update({
-      where: { id: productId },
-      data: {
-        rating: Math.round((stats._avg.rating || 0) * 10) / 10,
-        reviewCount: stats._count.rating,
+        active: false,
       },
     });
 
