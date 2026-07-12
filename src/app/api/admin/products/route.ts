@@ -50,6 +50,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Product with this slug already exists" }, { status: 409 });
     }
 
+    // Auto-create category if it doesn't exist
+    const categoryId = body.categoryId || slug;
+    const existingCategory = await db.category.findUnique({ where: { id: categoryId } });
+    if (!existingCategory) {
+      const catName = categoryId.split("-").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+      await db.category.create({
+        data: {
+          id: categoryId,
+          name: catName,
+          tagline: catName,
+          description: "",
+          count: 0,
+          accent: "zinc",
+          hue: 0,
+          sortOrder: 99,
+        },
+      });
+    }
+
     const product = await db.product.create({
       data: {
         name: body.name || "",
@@ -78,6 +97,9 @@ export async function POST(req: NextRequest) {
         active: body.active !== false,
       },
     });
+
+    // Increment category count
+    await db.category.update({ where: { id: categoryId }, data: { count: { increment: 1 } } }).catch(() => {});
 
     return NextResponse.json({ ok: true, product });
   } catch (e) {

@@ -44,6 +44,15 @@ export async function PUT(
     if (body.hue !== undefined) data.hue = Number(body.hue);
     if (body.active !== undefined) data.active = body.active;
 
+    // Auto-create category if categoryId is changing to a new one
+    if (body.categoryId) {
+      const existingCat = await db.category.findUnique({ where: { id: body.categoryId } });
+      if (!existingCat) {
+        const catName = body.categoryId.split("-").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+        await db.category.create({ data: { id: body.categoryId, name: catName, tagline: catName, description: "", count: 0, accent: "zinc", hue: 0, sortOrder: 99 } });
+      }
+    }
+
     const product = await db.product.update({
       where: { id },
       data,
