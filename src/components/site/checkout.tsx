@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -37,12 +37,26 @@ export function Checkout() {
     notes: "",
   });
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi_qr">("cod");
+  const [upiSettings, setUpiSettings] = useState<{ upiId: string; qrImage: string } | null>(null);
   const [placedOrder, setPlacedOrder] = useState<{ id: string; total: number } | null>(null);
 
   const subtotal = cartSubtotal(lines);
   const discount = coupon ? Math.round((subtotal * coupon.discountPct) / 100) : 0;
   const shipping = 0;
   const total = subtotal - discount + shipping;
+
+  useEffect(() => {
+    if (!checkoutOpen) return;
+    Promise.all([
+      fetch("/api/site-content/upi_id").then((r) => r.json()),
+      fetch("/api/site-content/qr_image").then((r) => r.json()),
+    ]).then(([upi, qr]) => {
+      setUpiSettings({
+        upiId: upi.value || "",
+        qrImage: qr.value || "",
+      });
+    }).catch(() => setUpiSettings({ upiId: "", qrImage: "" }));
+  }, [checkoutOpen]);
 
   const close = () => {
     setCheckout(false);
@@ -255,7 +269,8 @@ export function Checkout() {
                                 <span className="text-lg">💵</span>
                               </label>
 
-                              {/* UPI QR Option */}
+                              {/* UPI QR Option — only show if QR image is uploaded */}
+                              {upiSettings?.qrImage && (
                               <label
                                 className={`flex items-center gap-3 rounded-[4px] border p-3 cursor-pointer transition-all ${
                                   paymentMethod === "upi_qr"
@@ -277,20 +292,27 @@ export function Checkout() {
                                 </div>
                                 <span className="text-lg">📱</span>
                               </label>
+                              )}
                             </div>
                           </div>
 
                           {/* UPI QR Instructions */}
-                          {paymentMethod === "upi_qr" && (
+                          {paymentMethod === "upi_qr" && upiSettings?.qrImage && (
                             <div className="rounded-[6px] border border-border bg-amber-50 p-4">
                               <p className="text-[13px] font-semibold text-amber-800 mb-2">UPI Payment Instructions</p>
                               <ol className="text-[12px] text-amber-700 space-y-1.5 list-decimal list-inside">
                                 <li>Open any UPI app (Google Pay, PhonePe, Paytm, etc.)</li>
-                                <li>Scan the QR code or send payment to UPI ID: <strong>easymom@upi</strong></li>
+                                <li>Scan the QR code or send payment to UPI ID: <strong>{upiSettings?.upiId || "easymom@upi"}</strong></li>
                                 <li>Enter amount: <strong>{inr(total)}</strong></li>
                                 <li>In reference/note, type your order ID (shown after placing order)</li>
                                 <li>Click &quot;I&apos;ve paid&quot; below after completing payment</li>
                               </ol>
+                              <div className="mt-3">
+                                <p className="text-[12px] font-medium text-amber-800 mb-2">Scan this QR to pay:</p>
+                                <div className="w-44 h-44 mx-auto bg-white rounded-xl border border-amber-200 overflow-hidden">
+                                  <img src={upiSettings.qrImage} alt="UPI QR Code" className="w-full h-full object-contain" />
+                                </div>
+                              </div>
                               <div className="mt-3 flex items-center gap-2 text-[11px] text-amber-600">
                                 <ShieldCheck className="h-3.5 w-3.5" />
                                 Your order will be confirmed after payment verification

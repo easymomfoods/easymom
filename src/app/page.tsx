@@ -55,6 +55,7 @@ import AdminCategories from "@/components/site/admin/AdminCategories";
 import AdminFaqs from "@/components/site/admin/AdminFaqs";
 import AdminReviews from "@/components/site/admin/AdminReviews";
 import BrandStripEditor from "@/components/site/admin/BrandStripEditor";
+import AdminProfile from "@/components/site/admin/AdminProfile";
 
 export default function Home() {
   const view = useUI((s) => s.view);
@@ -149,6 +150,7 @@ export default function Home() {
         {view.name === "admin-faqs" && <AdminFaqs />}
         {view.name === "admin-reviews" && <AdminReviews />}
         {view.name === "admin-brand-strip" && <BrandStripEditor />}
+        {view.name === "admin-profile" && <AdminProfile />}
       </AdminLayout>
     );
   }
