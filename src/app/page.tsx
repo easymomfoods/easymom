@@ -65,11 +65,16 @@ export default function Home() {
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
   const [adminChecking, setAdminChecking] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
 
   // Mark as mounted after hydration, and sync view from URL
   useEffect(() => {
     syncFromURL();
     setMounted(true);
+    fetch("/api/site-content/maintenance_mode")
+      .then((r) => r.json())
+      .then((d) => setMaintenanceMode(d.value === "true"))
+      .catch(() => {});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Check admin session when view is an admin route
@@ -154,6 +159,25 @@ export default function Home() {
         {view.name === "admin-profile" && <AdminProfile />}
         {view.name === "admin-settings" && <AdminSettings />}
       </AdminLayout>
+    );
+  }
+
+  // Maintenance mode — show coming soon for non-admin visitors
+  if (maintenanceMode) {
+    return (
+      <div className="min-h-screen bg-[#891816] flex items-center justify-center p-6" suppressHydrationWarning>
+        <div className="text-center max-w-md">
+          <img src="/brand/easymom-logo.png" alt="EasyMom" className="h-14 mx-auto mb-8 brightness-0 invert" />
+          <h1 className="text-3xl font-bold text-white mb-3">Coming Soon</h1>
+          <p className="text-white/70 text-[15px] leading-relaxed">
+            We&apos;re working on something amazing. Our store will be back online shortly.
+          </p>
+          <div className="mt-8 flex items-center justify-center gap-2 text-white/50 text-[13px]">
+            <div className="h-2 w-2 rounded-full bg-white/50 animate-pulse" />
+            Stay tuned
+          </div>
+        </div>
+      </div>
     );
   }
 
