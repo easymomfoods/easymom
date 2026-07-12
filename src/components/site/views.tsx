@@ -127,7 +127,11 @@ export function ShopView() {
         list.sort((a, b) => b.rating - a.rating);
         break;
       default:
-        list.sort((a, b) => Number(b.bestSeller) - Number(a.bestSeller));
+        list.sort((a, b) => {
+          const bs = Number(b.bestSeller) - Number(a.bestSeller);
+          if (bs !== 0) return bs;
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
     }
     return list;
   }, [shopProducts, categoryId, activeLevels, maxPrice, sortBy]);
