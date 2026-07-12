@@ -186,7 +186,7 @@ export default function AdminLayout({
                   <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl border border-stone-200 shadow-lg z-50 py-1.5">
                     <button
-                      onClick={() => { setProfileOpen(false); onNavigate("admin-profile"); }}
+                      onClick={() => { setProfileOpen(false); onNavigate("profile"); }}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-[13px] text-stone-700 hover:bg-stone-50 transition-colors"
                     >
                       <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#891816] to-[#6d1311] flex items-center justify-center">
