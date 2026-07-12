@@ -153,41 +153,30 @@ export function CartDrawer() {
                             <span className="text-[11px] text-muted-foreground">{l.weight}</span>
                             <div className="mt-auto flex items-center justify-between pt-2">
                               <div className="flex items-center rounded-[4px] border border-border">
-                                <motion.button
-                                  whileTap={{ scale: 0.8 }}
+                                <button
                                   onClick={() => setQty(l.productId, l.qty - 1)}
-                                  className="grid h-7 w-7 place-items-center text-foreground/70 transition hover:text-foreground"
+                                  className="grid h-7 w-7 place-items-center text-foreground/70 transition hover:text-foreground active:scale-75 transition-transform duration-150"
                                   aria-label="Decrease"
                                 >
                                   <Minus className="h-3.5 w-3.5" />
-                                </motion.button>
-                                <motion.span
+                                </button>
+                                <span
                                   key={l.qty}
-                                  initial={{ scale: 1.3, opacity: 0 }}
-                                  animate={{ scale: 1, opacity: 1 }}
-                                  transition={{ type: "spring", stiffness: 500, damping: 20 }}
-                                  className="w-7 text-center text-[13px] font-semibold"
+                                  className="w-7 text-center text-[13px] font-semibold animate-pop"
                                 >
                                   {l.qty}
-                                </motion.span>
-                                <motion.button
-                                  whileTap={{ scale: 0.8 }}
+                                </span>
+                                <button
                                   onClick={() => setQty(l.productId, l.qty + 1)}
-                                  className="grid h-7 w-7 place-items-center text-foreground/70 transition hover:text-foreground"
+                                  className="grid h-7 w-7 place-items-center text-foreground/70 transition hover:text-foreground active:scale-75 transition-transform duration-150"
                                   aria-label="Increase"
                                 >
                                   <Plus className="h-3.5 w-3.5" />
-                                </motion.button>
+                                </button>
                               </div>
-                              <motion.span
-                                key={l.price * l.qty}
-                                initial={{ y: -4, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                                className="text-[14px] font-semibold text-foreground"
-                              >
+                              <span className="text-[14px] font-semibold text-foreground animate-pop">
                                 {inr(l.price * l.qty)}
-                              </motion.span>
+                              </span>
                             </div>
                           </div>
                         </motion.div>

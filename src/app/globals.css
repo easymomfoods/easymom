@@ -122,6 +122,15 @@
   --sand: oklch(0.24 0.01 60);
 }
 
+@keyframes pop {
+  0% { transform: scale(1.4); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-pop {
+  animation: pop 0.2s ease-out;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
