@@ -4,37 +4,44 @@ import { requireAdmin } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     await requireAdmin();
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { searchParams } = new URL(req.url);
-  const since = searchParams.get("since");
+  // Get last checked timestamp from DB
+  const lastCheckedRecord = await db.siteContent.findUnique({ where: { key: "admin_notif_last_checked" } });
+  const lastChecked = lastCheckedRecord?.value || null;
 
-  const where: any = {};
-  if (since) {
-    where.createdAt = { gt: new Date(since) };
-  }
-
+  // Fetch all orders from last 24 hours
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const orders = await db.order.findMany({
-    where,
+    where: { createdAt: { gte: twentyFourHoursAgo } },
     orderBy: { createdAt: "desc" },
-    take: 20,
     select: {
       orderId: true,
       name: true,
       email: true,
       total: true,
-      status: true,
       paymentMethod: true,
+      status: true,
       createdAt: true,
     },
   });
 
-  const totalCount = await db.order.count();
+  // Mark each order as read/unread
+  const ordersWithReadStatus = orders.map((o) => ({
+    ...o,
+    read: lastChecked ? new Date(o.createdAt) <= new Date(lastChecked) : false,
+  }));
 
-  return NextResponse.json({ orders, totalCount });
+  const unreadCount = ordersWithReadStatus.filter((o) => !o.read).length;
+
+  return NextResponse.json({
+    orders: ordersWithReadStatus,
+    unreadCount,
+    lastChecked,
+  });
 }

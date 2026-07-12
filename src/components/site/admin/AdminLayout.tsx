@@ -37,6 +37,7 @@ type Notification = {
   status: string;
   paymentMethod: string;
   createdAt: string;
+  read: boolean;
 };
 
 const navItems = [
@@ -80,46 +81,56 @@ export default function AdminLayout({
   const [notifOpen, setNotifOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const lastCheckedRef = useRef<string>(new Date().toISOString());
-  const prevCountRef = useRef(0);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const prevUnreadRef = useRef(0);
 
+  // Web Audio API beep — clean, no file needed
   const playBeep = useCallback(() => {
     try {
-      if (!audioRef.current) {
-        audioRef.current = new Audio("data:audio/wav;base64,UklGRl9vT19teleVBmb3JtYXQgd2lkdGg9IjgiIGhlaWdodD0iOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48c3R5bGU+PC9zdHlsZT48cGF0aCBmaWxsPSIjODkxODE2IiBkPSJNNCA0SDRWMGg0djR6bTAgNEgwdjRoNHY0ek04IDhINFY0aDR2NHoiLz48L3N2Zz4=");
-        audioRef.current.volume = 0.5;
-      }
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {});
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(880, ctx.currentTime);
+      osc.frequency.setValueAtTime(660, ctx.currentTime + 0.1);
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.4);
     } catch {}
   }, []);
 
-  useEffect(() => {
-    const poll = async () => {
-      try {
-        const res = await fetch(`/api/admin/notifications?since=${encodeURIComponent(lastCheckedRef.current)}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        const newOrders: Notification[] = data.orders || [];
-        if (prevCountRef.current > 0 && newOrders.length > prevCountRef.current) {
-          playBeep();
-        }
-        prevCountRef.current = newOrders.length;
-        setNotifications(newOrders);
-        setUnreadCount(newOrders.length);
-      } catch {}
-    };
-
-    poll();
-    const interval = setInterval(poll, 10000);
-    return () => clearInterval(interval);
+  // Fetch notifications from DB-persisted lastChecked
+  const fetchNotifications = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/notifications");
+      if (!res.ok) return;
+      const data = await res.json();
+      setNotifications(data.orders || []);
+      const newUnread = data.unreadCount || 0;
+      // Beep only if unread count increased (new order arrived)
+      if (prevUnreadRef.current > 0 && newUnread > prevUnreadRef.current) {
+        playBeep();
+      }
+      prevUnreadRef.current = newUnread;
+      setUnreadCount(newUnread);
+    } catch {}
   }, [playBeep]);
 
-  function markAllRead() {
-    lastCheckedRef.current = new Date().toISOString();
-    setUnreadCount(0);
-    setNotifOpen(false);
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 10000);
+    return () => clearInterval(interval);
+  }, [fetchNotifications]);
+
+  async function markAllRead() {
+    try {
+      await fetch("/api/admin/notifications/read", { method: "POST" });
+      setNotifications((prev) => prev.map((o) => ({ ...o, read: true })));
+      setUnreadCount(0);
+      prevUnreadRef.current = 0;
+    } catch {}
   }
 
   return (
@@ -259,7 +270,14 @@ export default function AdminLayout({
                   <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} />
                   <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl border border-stone-200 shadow-xl z-50 overflow-hidden">
                     <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
-                      <h3 className="text-[14px] font-semibold text-stone-900">Notifications</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-[14px] font-semibold text-stone-900">Notifications</h3>
+                        {unreadCount > 0 && (
+                          <span className="min-h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-[#891816] text-white text-[10px] font-bold px-1">
+                            {unreadCount}
+                          </span>
+                        )}
+                      </div>
                       {unreadCount > 0 && (
                         <button
                           onClick={markAllRead}
@@ -272,21 +290,28 @@ export default function AdminLayout({
                     <div className="max-h-80 overflow-y-auto">
                       {notifications.length === 0 ? (
                         <div className="py-8 text-center text-[13px] text-stone-400">
-                          No new orders
+                          No orders in the last 24 hours
                         </div>
                       ) : (
                         notifications.map((n) => (
                           <div
                             key={n.orderId}
-                            className="px-4 py-3 border-b border-stone-50 hover:bg-stone-50/50 transition-colors"
+                            className={`px-4 py-3 border-b border-stone-50 transition-colors ${
+                              n.read ? "bg-white" : "bg-[#891816]/[0.03]"
+                            }`}
                           >
                             <div className="flex items-start justify-between gap-2">
-                              <div className="min-w-0">
-                                <p className="text-[13px] font-medium text-stone-900 truncate">
-                                  New order from {n.name}
-                                </p>
-                                <p className="text-[12px] text-stone-500 mt-0.5">
-                                  ₹{n.total.toLocaleString("en-IN")} · {n.paymentMethod === "cod" ? "COD" : "UPI"}
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  {!n.read && (
+                                    <span className="h-2 w-2 rounded-full bg-[#891816] shrink-0" />
+                                  )}
+                                  <p className={`text-[13px] truncate ${n.read ? "text-stone-600" : "font-medium text-stone-900"}`}>
+                                    {n.name}
+                                  </p>
+                                </div>
+                                <p className={`text-[12px] mt-0.5 ${n.read ? "text-stone-400" : "text-stone-500"}`}>
+                                  ₹{n.total.toLocaleString("en-IN")} · {n.paymentMethod === "cod" ? "COD" : "UPI"} · {n.orderId}
                                 </p>
                               </div>
                               <span className="shrink-0 text-[11px] text-stone-400">
