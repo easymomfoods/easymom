@@ -179,7 +179,13 @@ export default function AdminLayout({
               <Bell className="h-5 w-5 text-stone-500" />
               <span className="absolute top-2 right-2 h-2 w-2 bg-[#891816] rounded-full" />
             </button>
-            <button className="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-stone-100 transition-colors">
+            <button
+              onClick={async () => {
+                await fetch("/api/admin/logout", { method: "POST" });
+                window.location.href = "/admin/login";
+              }}
+              className="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors group"
+            >
               <div className="flex flex-col items-center">
                 <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#891816] to-[#6d1311] flex items-center justify-center">
                   <span className="text-sm font-bold text-white">A</span>
@@ -187,9 +193,9 @@ export default function AdminLayout({
               </div>
               <div className="hidden sm:block text-left leading-tight">
                 <p className="text-[11px] text-stone-500">Welcome,</p>
-                <p className="text-[13px] font-semibold text-stone-800">Admin</p>
+                <p className="text-[13px] font-semibold text-stone-800 group-hover:text-red-600">Admin</p>
               </div>
-              <ChevronDown className="h-3.5 w-3.5 text-stone-400 hidden sm:block" />
+              <LogOut className="h-4 w-4 text-stone-400 group-hover:text-red-500 hidden sm:block" />
             </button>
           </div>
         </header>
