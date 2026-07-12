@@ -15,7 +15,7 @@ import {
   Truck,
   IndianRupee,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useUI } from "@/lib/ui-store";
 import { useCart, cartSubtotal, cartCount } from "@/lib/store";
 import { products, categories } from "@/lib/data";
@@ -25,11 +25,72 @@ import { ProductCard } from "./product-card";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
+function usePop() {
+  const ref = useRef<HTMLSpanElement>(null);
+  const trigger = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.animation = "none";
+    el.offsetHeight;
+    el.style.animation = "";
+  }, []);
+  return { ref, trigger };
+}
+
+function CartLineItem({ l }: { l: CartLine }) {
+  const { setQty, remove } = useCart();
+  const qtyPop = usePop();
+  const pricePop = usePop();
+  const handleMinus = () => { setQty(l.productId, l.qty - 1); qtyPop.trigger(); pricePop.trigger(); };
+  const handlePlus = () => { setQty(l.productId, l.qty + 1); qtyPop.trigger(); pricePop.trigger(); };
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      className="flex gap-3 rounded-[6px] border border-border bg-card p-3"
+    >
+      <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[6px] bg-stone-100">
+        {l.img ? (
+          <img src={l.img} alt={l.name} className="h-full w-full object-cover" />
+        ) : (
+          <div className="h-full w-full flex items-center justify-center text-stone-400">
+            <ShoppingBag className="h-5 w-5" />
+          </div>
+        )}
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex items-start justify-between gap-2">
+          <p className="line-clamp-2 text-[13.5px] font-semibold leading-snug text-foreground">{l.name}</p>
+          <button onClick={() => remove(l.productId)} className="grid h-7 w-7 shrink-0 place-items-center rounded-[4px] text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive" aria-label="Remove">
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+        <span className="text-[11px] text-muted-foreground">{l.weight}</span>
+        <div className="mt-auto flex items-center justify-between pt-2">
+          <div className="flex items-center rounded-[4px] border border-border">
+            <button onClick={handleMinus} className="grid h-7 w-7 place-items-center text-foreground/70 hover:text-foreground active:scale-75 transition-transform duration-150" aria-label="Decrease">
+              <Minus className="h-3.5 w-3.5" />
+            </button>
+            <span ref={qtyPop.ref} className="w-7 text-center text-[13px] font-semibold" style={{ animation: "pop 0.25s ease-out" }}>{l.qty}</span>
+            <button onClick={handlePlus} className="grid h-7 w-7 place-items-center text-foreground/70 hover:text-foreground active:scale-75 transition-transform duration-150" aria-label="Increase">
+              <Plus className="h-3.5 w-3.5" />
+            </button>
+          </div>
+          <span ref={pricePop.ref} className="text-[14px] font-semibold text-foreground" style={{ animation: "pop 0.25s ease-out" }}>{inr(l.price * l.qty)}</span>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export function CartDrawer() {
   const { cartOpen, closeCart, setCheckout } = useUI();
   const { lines, setQty, remove, coupon, applyCoupon, removeCoupon } = useCart();
   const [code, setCode] = useState("");
-  const [animKey, setAnimKey] = useState(0);
+  const subPop = usePop();
+  const totPop = usePop();
 
   // Auto-refresh cart images from DB on mount
   useEffect(() => {
@@ -57,6 +118,9 @@ export function CartDrawer() {
   const discount = coupon ? Math.round((subtotal * coupon.discountPct) / 100) : 0;
   const shipping = 0;
   const total = subtotal - discount + shipping;
+
+  useEffect(() => { subPop.trigger(); }, [subtotal]);
+  useEffect(() => { totPop.trigger(); }, [total]);
 
   return (
     <AnimatePresence>
@@ -121,66 +185,7 @@ export function CartDrawer() {
                   <div className="mt-0 space-y-3">
                     <AnimatePresence initial={false}>
                       {lines.map((l) => (
-                        <motion.div
-                          key={l.productId}
-                          layout
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="flex gap-3 rounded-[6px] border border-border bg-card p-3"
-                        >
-                          <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[6px] bg-stone-100">
-                            {l.img ? (
-                              <img src={l.img} alt={l.name} className="h-full w-full object-cover" />
-                            ) : (
-                              <div className="h-full w-full flex items-center justify-center text-stone-400">
-                                <ShoppingBag className="h-5 w-5" />
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex min-w-0 flex-1 flex-col">
-                            <div className="flex items-start justify-between gap-2">
-                              <p className="line-clamp-2 text-[13.5px] font-semibold leading-snug text-foreground">
-                                {l.name}
-                              </p>
-                              <button
-                                onClick={() => remove(l.productId)}
-                                className="grid h-7 w-7 shrink-0 place-items-center rounded-[4px] text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive"
-                                aria-label="Remove"
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </button>
-                            </div>
-                            <span className="text-[11px] text-muted-foreground">{l.weight}</span>
-                            <div className="mt-auto flex items-center justify-between pt-2">
-                              <div className="flex items-center rounded-[4px] border border-border">
-                                <button
-                                  onClick={() => { setQty(l.productId, l.qty - 1); setAnimKey((k) => k + 1); }}
-                                  className="grid h-7 w-7 place-items-center text-foreground/70 hover:text-foreground active:scale-75 transition-transform duration-150"
-                                  aria-label="Decrease"
-                                >
-                                  <Minus className="h-3.5 w-3.5" />
-                                </button>
-                                <span
-                                  key={animKey}
-                                  className="w-7 text-center text-[13px] font-semibold animate-pop"
-                                >
-                                  {l.qty}
-                                </span>
-                                <button
-                                  onClick={() => { setQty(l.productId, l.qty + 1); setAnimKey((k) => k + 1); }}
-                                  className="grid h-7 w-7 place-items-center text-foreground/70 hover:text-foreground active:scale-75 transition-transform duration-150"
-                                  aria-label="Increase"
-                                >
-                                  <Plus className="h-3.5 w-3.5" />
-                                </button>
-                              </div>
-                              <span key={`p-${animKey}`} className="text-[14px] font-semibold text-foreground animate-pop">
-                                {inr(l.price * l.qty)}
-                              </span>
-                            </div>
-                          </div>
-                        </motion.div>
+                        <CartLineItem key={l.productId} l={l} />
                       ))}
                     </AnimatePresence>
                   </div>
@@ -240,12 +245,12 @@ export function CartDrawer() {
                   <div className="space-y-1.5 text-[13px]">
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5 text-muted-foreground"><IndianRupee className="h-3 w-3" /> Subtotal</span>
-                      <span className="font-medium text-foreground">{inr(subtotal)}</span>
+                      <span ref={subPop.ref} className="font-medium text-foreground" style={{ animation: "pop 0.25s ease-out" }}>{inr(subtotal)}</span>
                     </div>
                     {discount > 0 && (
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">Discount ({coupon?.discountPct}%)</span>
-                        <span className="font-medium text-leaf">− {inr(discount)}</span>
+                        <span key={`disc-${discount}`} style={{ animation: "pop 0.25s ease-out" }} className="font-medium text-leaf">− {inr(discount)}</span>
                       </div>
                     )}
                     <div className="flex items-center justify-between">
@@ -255,7 +260,7 @@ export function CartDrawer() {
                   </div>
                   <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                     <span className="text-[14px] font-semibold text-foreground">Total</span>
-                    <span className="text-[20px] font-semibold text-foreground">{inr(total)}</span>
+                    <span ref={totPop.ref} className="text-[20px] font-semibold text-foreground" style={{ animation: "pop 0.25s ease-out" }}>{inr(total)}</span>
                   </div>
                   <button
                     onClick={() => {
