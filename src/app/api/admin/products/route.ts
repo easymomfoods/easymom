@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       data: {
         name: body.name || "",
         slug,
-        categoryId: body.categoryId || "",
+        categoryId: categoryId,
         price: Number(body.price) || 0,
         mrp: Number(body.mrp) || 0,
         weight: body.weight || "100 g",
