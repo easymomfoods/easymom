@@ -29,6 +29,7 @@ export function CartDrawer() {
   const { cartOpen, closeCart, setCheckout } = useUI();
   const { lines, setQty, remove, coupon, applyCoupon, removeCoupon } = useCart();
   const [code, setCode] = useState("");
+  const [animKey, setAnimKey] = useState(0);
 
   // Auto-refresh cart images from DB on mount
   useEffect(() => {
@@ -154,27 +155,27 @@ export function CartDrawer() {
                             <div className="mt-auto flex items-center justify-between pt-2">
                               <div className="flex items-center rounded-[4px] border border-border">
                                 <button
-                                  onClick={() => setQty(l.productId, l.qty - 1)}
-                                  className="grid h-7 w-7 place-items-center text-foreground/70 transition hover:text-foreground active:scale-75 transition-transform duration-150"
+                                  onClick={() => { setQty(l.productId, l.qty - 1); setAnimKey((k) => k + 1); }}
+                                  className="grid h-7 w-7 place-items-center text-foreground/70 hover:text-foreground active:scale-75 transition-transform duration-150"
                                   aria-label="Decrease"
                                 >
                                   <Minus className="h-3.5 w-3.5" />
                                 </button>
                                 <span
-                                  key={l.qty}
+                                  key={animKey}
                                   className="w-7 text-center text-[13px] font-semibold animate-pop"
                                 >
                                   {l.qty}
                                 </span>
                                 <button
-                                  onClick={() => setQty(l.productId, l.qty + 1)}
-                                  className="grid h-7 w-7 place-items-center text-foreground/70 transition hover:text-foreground active:scale-75 transition-transform duration-150"
+                                  onClick={() => { setQty(l.productId, l.qty + 1); setAnimKey((k) => k + 1); }}
+                                  className="grid h-7 w-7 place-items-center text-foreground/70 hover:text-foreground active:scale-75 transition-transform duration-150"
                                   aria-label="Increase"
                                 >
                                   <Plus className="h-3.5 w-3.5" />
                                 </button>
                               </div>
-                              <span className="text-[14px] font-semibold text-foreground animate-pop">
+                              <span key={`p-${animKey}`} className="text-[14px] font-semibold text-foreground animate-pop">
                                 {inr(l.price * l.qty)}
                               </span>
                             </div>
