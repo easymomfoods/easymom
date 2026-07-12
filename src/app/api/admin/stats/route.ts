@@ -111,10 +111,10 @@ export async function GET() {
       topProducts,
       barChart: { heights: barHeights, labels: barLabels, values: dailyRevenue },
       sparklines: {
-        orders: barHeights,
-        revenue: dailyRevenue.map((r) => Math.round((r / maxDaily) * 100)),
-        subscribers: new Array(12).fill(0).map((_, i) => (i < 2 ? 0 : 100)),
-        rating: new Array(12).fill(0).map((_, i) => (i < 4 ? 0 : 80 + Math.round(Math.random() * 20))),
+        orders: totalOrders > 0 ? barHeights : [],
+        revenue: monthRevenue._sum.total ? dailyRevenue.map((r) => Math.round((r / maxDaily) * 100)) : [],
+        subscribers: totalSubscribers > 0 ? new Array(12).fill(100) : [],
+        rating: reviews.length > 0 ? new Array(12).fill(0).map(() => 80 + Math.round(parseFloat(avgRating) * 4)) : [],
       },
     });
   } catch (e) {
