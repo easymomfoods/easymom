@@ -12,6 +12,15 @@ import {
   Users,
   Star,
 } from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface Stats {
   totalOrders: number;
@@ -230,41 +239,73 @@ export default function DashboardContent() {
           </div>
         </div>
 
-        {/* Sales Overview (Dynamic Bar Chart) */}
+        {/* Sales Overview (Area Line Chart) */}
         <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
             <h3 className="text-[14px] font-semibold text-stone-900">Sales Overview</h3>
             <span className="text-[12px] text-stone-500 bg-stone-50 px-2.5 py-1 rounded-md">Last 12 Days</span>
           </div>
           <div className="p-5">
-            <div className="flex items-end gap-1.5 h-40 mb-4">
+            <div className="h-48 mb-2">
               {barChart.heights.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-[13px] text-stone-400">No data</div>
+                <div className="flex items-center justify-center h-full text-[13px] text-stone-400">No data</div>
               ) : (
-                barChart.heights.map((h, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1 group">
-                    <div className="relative">
-                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-stone-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                        {inr(barChart.values[i] || 0)}
-                      </div>
-                      <div
-                        className="w-full rounded-t-md bg-gradient-to-t from-[#c8a960] to-[#d4b86a] transition-all hover:from-[#891816] hover:to-[#a82020] min-h-[2px]"
-                        style={{ height: `${Math.max(h, 3)}%` }}
-                      />
-                    </div>
-                  </div>
-                ))
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={barChart.labels.map((label, i) => ({
+                      label,
+                      revenue: barChart.values[i] || 0,
+                    }))}
+                    margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#c8a960" stopOpacity={0.3} />
+                        <stop offset="100%" stopColor="#c8a960" stopOpacity={0.02} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" vertical={false} />
+                    <XAxis
+                      dataKey="label"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 10, fill: "#a8a29e" }}
+                      interval="preserveStartEnd"
+                      minTickGap={40}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 10, fill: "#a8a29e" }}
+                      tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#1c1917",
+                        border: "none",
+                        borderRadius: "8px",
+                        color: "#fff",
+                        fontSize: "12px",
+                        padding: "8px 12px",
+                      }}
+                      formatter={(value: number) => [inr(value), "Revenue"]}
+                      labelStyle={{ color: "#a8a29e", fontSize: "11px" }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="revenue"
+                      stroke="#c8a960"
+                      strokeWidth={2.5}
+                      fill="url(#revenueGradient)"
+                      dot={false}
+                      activeDot={{ r: 5, fill: "#c8a960", stroke: "#fff", strokeWidth: 2 }}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               )}
             </div>
-            {barChart.labels.length > 0 && (
-              <div className="flex justify-between text-[10px] text-stone-400 px-0.5">
-                <span>{barChart.labels[0]}</span>
-                <span>{barChart.labels[Math.floor(barChart.labels.length / 2)]}</span>
-                <span>{barChart.labels[barChart.labels.length - 1]}</span>
-              </div>
-            )}
 
-            <div className="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-stone-100">
+            <div className="grid grid-cols-3 gap-3 pt-4 border-t border-stone-100">
               <div>
                 <p className="text-[11px] text-stone-500">Revenue</p>
                 <p className="text-[14px] font-bold text-stone-900">{inr(stats?.monthRevenue || 0)}</p>
