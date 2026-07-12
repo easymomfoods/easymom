@@ -65,7 +65,7 @@ export default function Home() {
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
   const [adminChecking, setAdminChecking] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceMode, setMaintenanceMode] = useState<boolean | null>(null);
 
   // Mark as mounted after hydration, and sync view from URL
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function Home() {
     fetch("/api/site-content/maintenance_mode")
       .then((r) => r.json())
       .then((d) => setMaintenanceMode(d.value === "true"))
-      .catch(() => {});
+      .catch(() => setMaintenanceMode(false));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Check admin session when view is an admin route
@@ -160,6 +160,11 @@ export default function Home() {
         {view.name === "admin-settings" && <AdminSettings />}
       </AdminLayout>
     );
+  }
+
+  // Don't render anything until we know maintenance mode status
+  if (maintenanceMode === null) {
+    return null;
   }
 
   // Maintenance mode — show coming soon for non-admin visitors
