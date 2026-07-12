@@ -153,25 +153,41 @@ export function CartDrawer() {
                             <span className="text-[11px] text-muted-foreground">{l.weight}</span>
                             <div className="mt-auto flex items-center justify-between pt-2">
                               <div className="flex items-center rounded-[4px] border border-border">
-                                <button
+                                <motion.button
+                                  whileTap={{ scale: 0.8 }}
                                   onClick={() => setQty(l.productId, l.qty - 1)}
                                   className="grid h-7 w-7 place-items-center text-foreground/70 transition hover:text-foreground"
                                   aria-label="Decrease"
                                 >
                                   <Minus className="h-3.5 w-3.5" />
-                                </button>
-                                <span className="w-7 text-center text-[13px] font-semibold">{l.qty}</span>
-                                <button
+                                </motion.button>
+                                <motion.span
+                                  key={l.qty}
+                                  initial={{ scale: 1.3, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                                  className="w-7 text-center text-[13px] font-semibold"
+                                >
+                                  {l.qty}
+                                </motion.span>
+                                <motion.button
+                                  whileTap={{ scale: 0.8 }}
                                   onClick={() => setQty(l.productId, l.qty + 1)}
                                   className="grid h-7 w-7 place-items-center text-foreground/70 transition hover:text-foreground"
                                   aria-label="Increase"
                                 >
                                   <Plus className="h-3.5 w-3.5" />
-                                </button>
+                                </motion.button>
                               </div>
-                              <span className="text-[14px] font-semibold text-foreground">
+                              <motion.span
+                                key={l.price * l.qty}
+                                initial={{ y: -4, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                                className="text-[14px] font-semibold text-foreground"
+                              >
                                 {inr(l.price * l.qty)}
-                              </span>
+                              </motion.span>
                             </div>
                           </div>
                         </motion.div>
