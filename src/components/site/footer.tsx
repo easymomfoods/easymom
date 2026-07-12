@@ -25,6 +25,7 @@ const COMPANY_LINKS = [
   { label: "Our story", view: { name: "about" as const } },
   { label: "Recipes", view: { name: "recipes" as const } },
   { label: "FAQ", view: { name: "faq" as const } },
+  { label: "Track order", view: { name: "track-order" as const } },
   { label: "Contact us", view: { name: "faq" as const } },
 ];
 

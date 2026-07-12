@@ -7,12 +7,13 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const orderId = searchParams.get("orderId");
-    if (!orderId) {
-      return NextResponse.json({ error: "Order ID is required" }, { status: 400 });
+    const email = searchParams.get("email");
+    if (!orderId || !email) {
+      return NextResponse.json({ error: "Order ID and email are required" }, { status: 400 });
     }
 
     const order = await db.order.findFirst({
-      where: { orderId },
+      where: { orderId, email: email.toLowerCase() },
     });
 
     if (!order) {

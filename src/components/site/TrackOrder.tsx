@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Package, Search, Clock, Truck, CheckCircle, XCircle, ChevronRight } from "lucide-react";
+import { Package, Search, Clock, Truck, CheckCircle, XCircle, ChevronRight, Mail } from "lucide-react";
 import { useUI } from "@/lib/ui-store";
 import { inr } from "@/lib/format";
 
@@ -46,6 +46,7 @@ export default function TrackOrder() {
   const { go, view } = useUI();
   const initialOrderId = view.name === "track-order" ? view.orderId || "" : "";
   const [orderId, setOrderId] = useState(initialOrderId);
+  const [email, setEmail] = useState("");
   const [order, setOrder] = useState<OrderData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -53,22 +54,21 @@ export default function TrackOrder() {
   useEffect(() => {
     if (initialOrderId) {
       setOrderId(initialOrderId);
-      fetchOrder(initialOrderId);
     }
   }, [initialOrderId]);
 
-  async function fetchOrder(id: string) {
-    if (!id.trim()) return;
+  async function fetchOrder(id: string, emailVal: string) {
+    if (!id.trim() || !emailVal.trim()) return;
     setLoading(true);
     setError("");
     setOrder(null);
     try {
-      const res = await fetch(`/api/orders/track?orderId=${encodeURIComponent(id.trim())}`);
+      const res = await fetch(`/api/orders/track?orderId=${encodeURIComponent(id.trim())}&email=${encodeURIComponent(emailVal.trim())}`);
       const data = await res.json();
       if (res.ok && data.order) {
         setOrder(data.order);
       } else {
-        setError(data.error || "Order not found");
+        setError(data.error || "Order not found. Please check your Order ID and email.");
       }
     } catch {
       setError("Failed to fetch order");
@@ -92,24 +92,34 @@ export default function TrackOrder() {
 
       {/* Search */}
       <form
-        onSubmit={(e) => { e.preventDefault(); fetchOrder(orderId); }}
-        className="mt-6 flex gap-2"
+        onSubmit={(e) => { e.preventDefault(); fetchOrder(orderId, email); }}
+        className="mt-6 space-y-3"
       >
-        <div className="relative flex-1">
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             value={orderId}
             onChange={(e) => setOrderId(e.target.value)}
-            placeholder="Enter Order ID (e.g. EM-XXXXX)"
+            placeholder="Order ID (e.g. EM-XXXXX)"
+            className="h-11 w-full rounded-[4px] border border-border bg-card pl-10 pr-4 text-[14px] text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+          />
+        </div>
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email used during checkout"
             className="h-11 w-full rounded-[4px] border border-border bg-card pl-10 pr-4 text-[14px] text-foreground placeholder:text-muted-foreground/70 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
         <button
           type="submit"
-          disabled={loading || !orderId.trim()}
-          className="h-11 rounded-[4px] bg-primary px-6 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50"
+          disabled={loading || !orderId.trim() || !email.trim()}
+          className="h-11 w-full rounded-[4px] bg-primary px-6 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50"
         >
-          {loading ? "Searching..." : "Track"}
+          {loading ? "Searching..." : "Track Order"}
         </button>
       </form>
 
@@ -172,7 +182,7 @@ export default function TrackOrder() {
               <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
                 order.paymentStatus === "paid" ? "bg-leaf/15 text-leaf" : "bg-amber-100 text-amber-700"
               }`}>
-                {order.paymentStatus === "paid" ? "Paid" : "Pending"}
+                {order.paymentStatus === "paid" ? "Paid" : "Payment Pending"}
               </span>
             </div>
             <p className="mt-1 text-[12px] text-muted-foreground">
