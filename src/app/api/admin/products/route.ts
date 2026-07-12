@@ -103,6 +103,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, product });
   } catch (e) {
+    console.error("PRODUCT_CREATE_ERROR:", e);
     const msg = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }

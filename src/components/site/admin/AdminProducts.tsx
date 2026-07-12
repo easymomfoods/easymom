@@ -372,6 +372,11 @@ function ProductEditModal({
     cookingTime: product?.cookingTime || "5 min",
     servings: product?.servings || "Serves 4",
     hue: product?.hue || 0,
+    badge: product?.badge || "",
+    bestSeller: product?.bestSeller || false,
+    isNew: product?.isNew || false,
+    ingredients: Array.isArray(product?.ingredients) ? product!.ingredients.join(", ") : "",
+    tags: Array.isArray(product?.tags) ? product!.tags.join(", ") : "",
   });
   const [saving, setSaving] = useState(false);
 
@@ -381,10 +386,16 @@ function ProductEditModal({
     try {
       const url = product ? `/api/admin/products/${product.id}` : "/api/admin/products";
       const method = product ? "PUT" : "POST";
+      const payload = {
+        ...form,
+        ingredients: form.ingredients.split(",").map((s) => s.trim()).filter(Boolean),
+        tags: form.tags.split(",").map((s) => s.trim()).filter(Boolean),
+        badge: form.badge || null,
+      };
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (res.ok) onSave(data.product);
@@ -492,6 +503,34 @@ function ProductEditModal({
             <div>
               <label className={labelCls}>Shelf Life</label>
               <input type="text" value={form.shelfLife} onChange={(e) => setForm({ ...form, shelfLife: e.target.value })} className={inputCls} placeholder="6 months" />
+            </div>
+            <div className="col-span-2">
+              <label className={labelCls}>Ingredients (comma-separated)</label>
+              <input type="text" value={form.ingredients} onChange={(e) => setForm({ ...form, ingredients: e.target.value })} className={inputCls} placeholder="Saffron, Star Anise, Cardamom, Cinnamon..." />
+            </div>
+            <div className="col-span-2">
+              <label className={labelCls}>Tags (comma-separated)</label>
+              <input type="text" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} className={inputCls} placeholder="biryani, whole-spice, stone-ground..." />
+            </div>
+            <div>
+              <label className={labelCls}>Badge</label>
+              <select value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} className={inputCls}>
+                <option value="">None</option>
+                <option value="Bestseller">Bestseller</option>
+                <option value="New">New</option>
+                <option value="Limited">Limited</option>
+                <option value="Sale">Sale</option>
+              </select>
+            </div>
+            <div className="flex items-end gap-4">
+              <label className="flex items-center gap-2 text-[13px] text-stone-700">
+                <input type="checkbox" checked={form.bestSeller} onChange={(e) => setForm({ ...form, bestSeller: e.target.checked })} className="h-4 w-4 rounded border-stone-300 text-[#891816] focus:ring-[#891816]" />
+                Best Seller
+              </label>
+              <label className="flex items-center gap-2 text-[13px] text-stone-700">
+                <input type="checkbox" checked={form.isNew} onChange={(e) => setForm({ ...form, isNew: e.target.checked })} className="h-4 w-4 rounded border-stone-300 text-[#891816] focus:ring-[#891816]" />
+                New Arrival
+              </label>
             </div>
           </div>
 

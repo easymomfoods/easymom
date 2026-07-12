@@ -3,6 +3,8 @@
 // Lazy initialization — only connects when actually called at runtime.
 
 import { Redis } from "@upstash/redis";
+import { readFileSync, writeFileSync, existsSync } from "fs";
+import { join } from "path";
 
 let redis: Redis | null = null;
 
@@ -22,10 +24,28 @@ interface Session {
 }
 
 const SESSION_PREFIX = "admin:session:";
-const SESSION_TTL = 24 * 60 * 60; // 24 hours in seconds
+const SESSION_TTL = 7 * 24 * 60 * 60; // 7 days in seconds
 
-// Fallback to in-memory if Redis is not configured (local dev without Upstash)
-const memoryFallback = new Map<string, Session>();
+// File-based fallback for local dev (survives hot reloads)
+const SESSION_FILE = join(process.cwd(), ".dev-sessions.json");
+
+function loadFileSessions(): Map<string, Session> {
+  try {
+    if (existsSync(SESSION_FILE)) {
+      const data = JSON.parse(readFileSync(SESSION_FILE, "utf-8"));
+      return new Map(Object.entries(data));
+    }
+  } catch {}
+  return new Map();
+}
+
+function saveFileSessions(map: Map<string, Session>) {
+  try {
+    writeFileSync(SESSION_FILE, JSON.stringify(Object.fromEntries(map)));
+  } catch {}
+}
+
+let memoryFallback = loadFileSessions();
 
 function isRedisConfigured(): boolean {
   return !!(
@@ -40,6 +60,7 @@ export async function createSession(token: string, session: Session): Promise<vo
     await getRedis().set(SESSION_PREFIX + token, JSON.stringify(session), { ex: SESSION_TTL });
   } else {
     memoryFallback.set(token, session);
+    saveFileSessions(memoryFallback);
   }
 }
 
@@ -73,5 +94,6 @@ export async function deleteSession(token: string): Promise<void> {
     await getRedis().del(SESSION_PREFIX + token);
   } else {
     memoryFallback.delete(token);
+    saveFileSessions(memoryFallback);
   }
 }

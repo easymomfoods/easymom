@@ -401,6 +401,14 @@ export function ProductView() {
     }
   }, [p?.id, fetchReviews]);
 
+  useEffect(() => {
+    if (p) {
+      document.title = `${p.name} · EasyMom Foods`;
+    } else {
+      document.title = "EasyMom Foods — Authentic South Indian Masalas";
+    }
+  }, [p]);
+
   function loadMoreReviews() {
     if (!p?.id) return;
     const next = reviewPage + 1;
