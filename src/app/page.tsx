@@ -65,7 +65,8 @@ export default function Home() {
   const [adminLoggedIn, setAdminLoggedIn] = useState(false);
   const [adminChecking, setAdminChecking] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [maintenanceMode, setMaintenanceMode] = useState<boolean | null>(null);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceChecked, setMaintenanceChecked] = useState(false);
 
   // Mark as mounted after hydration, and sync view from URL
   useEffect(() => {
@@ -73,8 +74,14 @@ export default function Home() {
     setMounted(true);
     fetch("/api/site-content/maintenance_mode")
       .then((r) => r.json())
-      .then((d) => setMaintenanceMode(d.value === "true"))
-      .catch(() => setMaintenanceMode(false));
+      .then((d) => {
+        setMaintenanceMode(d.value === "true");
+        setMaintenanceChecked(true);
+      })
+      .catch(() => {
+        setMaintenanceMode(false);
+        setMaintenanceChecked(true);
+      });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Check admin session when view is an admin route
@@ -162,13 +169,9 @@ export default function Home() {
     );
   }
 
-  // Don't render anything until we know maintenance mode status
-  if (maintenanceMode === null) {
-    return null;
-  }
-
   // Maintenance mode — show coming soon for non-admin visitors
-  if (maintenanceMode) {
+  // Only check after client mount + API check completes
+  if (mounted && maintenanceChecked && maintenanceMode && !view.name.startsWith("admin")) {
     return (
       <div className="min-h-screen bg-[#891816] flex items-center justify-center p-6" suppressHydrationWarning>
         <div className="text-center max-w-md">

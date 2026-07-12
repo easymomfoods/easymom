@@ -216,7 +216,17 @@ export default function AdminSettings() {
             <p className="text-[12px] text-stone-500 mt-0.5">When enabled, visitors see a &quot;Coming Soon&quot; page instead of the site</p>
           </div>
           <button
-            onClick={() => update("maintenance_mode", fields.maintenance_mode === "true" ? "false" : "true")}
+            onClick={async () => {
+              const newVal = fields.maintenance_mode === "true" ? "false" : "true";
+              update("maintenance_mode", newVal);
+              try {
+                await fetch("/api/site-content/maintenance_mode", {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ value: newVal }),
+                });
+              } catch {}
+            }}
             className={`relative w-12 h-7 rounded-full transition-colors ${
               fields.maintenance_mode === "true" ? "bg-[#891816]" : "bg-stone-300"
             }`}
