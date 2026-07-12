@@ -25,6 +25,7 @@ import {
   AboutView,
   FaqView,
 } from "@/components/site/views";
+import TrackOrder from "@/components/site/TrackOrder";
 import {
   HomepageSkeleton,
   ShopSkeleton,
@@ -195,6 +196,7 @@ export default function Home() {
             <FaqView />
           </Suspense>
         )}
+        {view.name === "track-order" && <TrackOrder />}
       </main>
 
       <Footer />

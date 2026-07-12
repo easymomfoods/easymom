@@ -29,7 +29,8 @@ export type View =
   | { name: "admin-categories" }
   | { name: "admin-faqs" }
   | { name: "admin-reviews" }
-  | { name: "admin-brand-strip" };
+  | { name: "admin-brand-strip" }
+  | { name: "track-order"; orderId?: string };
 
 function viewToPath(v: View): string {
   switch (v.name) {
@@ -85,6 +86,8 @@ function viewToPath(v: View): string {
       return "/admin/reviews";
     case "admin-brand-strip":
       return "/admin/brand-strip";
+    case "track-order":
+      return v.orderId ? `/track-order/${v.orderId}` : "/track-order";
     default:
       return "/";
   }
@@ -122,6 +125,10 @@ function pathToView(pathname: string): View {
     if (parts[1] === "reviews") return { name: "admin-reviews" };
     if (parts[1] === "brand-strip") return { name: "admin-brand-strip" };
     return { name: "admin" };
+  }
+  if (parts[0] === "track-order") {
+    if (parts[1]) return { name: "track-order", orderId: parts[1] };
+    return { name: "track-order" };
   }
   return { name: "home" };
 }

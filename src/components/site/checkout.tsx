@@ -57,6 +57,7 @@ export function Checkout() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          phone: form.phone.startsWith("+91") ? form.phone : `+91 ${form.phone}`,
           subtotal,
           discount,
           shipping,
@@ -159,7 +160,10 @@ export function Checkout() {
                               <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} placeholder="Anjali Rao" />
                             </Field>
                             <Field label="Phone" required>
-                              <input required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={inputCls} placeholder="+91 98765 43210" />
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[14px] text-muted-foreground font-medium pointer-events-none">+91</span>
+                                <input required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className={`${inputCls} pl-[46px]`} placeholder="98765 43210" />
+                              </div>
                             </Field>
                           </div>
                           <Field label="Address" required>
@@ -174,10 +178,19 @@ export function Checkout() {
                           </Field>
                           <div className="grid grid-cols-3 gap-3">
                             <Field label="City" required>
-                              <input required value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className={inputCls} placeholder="Bengaluru" />
+                              <select required value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className={inputCls}>
+                                <option value="" disabled>Select city</option>
+                                <option value="Mangalore">Mangalore</option>
+                                <option value="Bangalore">Bangalore</option>
+                                <option value="Kasaragod">Kasaragod</option>
+                              </select>
                             </Field>
                             <Field label="State" required>
-                              <input required value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className={inputCls} placeholder="Karnataka" />
+                              <select required value={form.state} onChange={(e) => setForm({ ...form, state: e.target.value })} className={inputCls}>
+                                <option value="" disabled>Select state</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Kerala">Kerala</option>
+                              </select>
                             </Field>
                             <Field label="Pincode" required>
                               <input required value={form.pincode} onChange={(e) => setForm({ ...form, pincode: e.target.value })} className={inputCls} placeholder="560001" />
@@ -417,7 +430,6 @@ function OrderSuccess({
       <h2 className="mt-6 text-[28px] font-semibold tracking-tight">Order confirmed!</h2>
       <p className="mx-auto mt-2 max-w-sm text-[14.5px] text-muted-foreground">
         Thank you. Your masalas are being packed and will be dispatched within 24 hours.
-        A confirmation has been sent to <strong className="text-foreground">{email || "your email"}</strong>.
       </p>
       <div className="mx-auto mt-6 max-w-xs rounded-[6px] border border-border bg-secondary/40 p-4 text-left">
         <div className="flex justify-between text-[13px]">
@@ -433,16 +445,19 @@ function OrderSuccess({
           <span className="font-medium text-foreground">2–4 days</span>
         </div>
       </div>
+      <p className="mt-4 text-[13px] text-muted-foreground">
+        Save your Order ID to track your order status.
+      </p>
       <div className="mt-7 flex flex-col gap-2 sm:flex-row sm:justify-center">
         <button
           onClick={() => {
             onClose();
             useUI.getState().setOrderConfirmed(false);
-            go({ name: "home" });
+            go({ name: "track-order", orderId });
           }}
           className="rounded-[4px] bg-foreground px-6 py-3 text-[14px] font-semibold text-card transition hover:bg-primary hover:text-primary-foreground"
         >
-          Back to home
+          Track your order
         </button>
         <button
           onClick={() => {
