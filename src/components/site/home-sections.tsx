@@ -1022,7 +1022,7 @@ export function InstagramFeed() {
 }
 
 const DEFAULT_TRUST_ITEMS = [
-  { icon: "package", title: "Free shipping over ₹499", sub: "Dispatched in 24 hours" },
+  { icon: "package", title: "Free shipping", sub: "Dispatched in 24 hours" },
   { icon: "leaf", title: "No preservatives, ever", sub: "Read the label — it's a recipe" },
   { icon: "circular-arrow", title: "Easy returns", sub: "Not right? We'll make it right" },
 ];

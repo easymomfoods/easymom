@@ -13,6 +13,7 @@ import {
   PartyPopper,
   ArrowRight,
   Package,
+  IndianRupee,
 } from "lucide-react";
 import { useUI } from "@/lib/ui-store";
 import { useCart, cartSubtotal, cartCount } from "@/lib/store";
@@ -40,7 +41,7 @@ export function Checkout() {
 
   const subtotal = cartSubtotal(lines);
   const discount = coupon ? Math.round((subtotal * coupon.discountPct) / 100) : 0;
-  const shipping = subtotal - discount >= 499 || subtotal === 0 ? 0 : 49;
+  const shipping = 0;
   const total = subtotal - discount + shipping;
 
   const close = () => {
@@ -330,11 +331,11 @@ export function Checkout() {
                         ))}
                       </div>
                       <div className="mt-4 space-y-1.5 border-t border-border pt-4 text-[13px]">
-                        <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{inr(subtotal)}</span></div>
+                        <div className="flex justify-between"><span className="flex items-center gap-1.5 text-muted-foreground"><IndianRupee className="h-3 w-3" /> Subtotal</span><span>{inr(subtotal)}</span></div>
                         {discount > 0 && (
                           <div className="flex justify-between text-leaf"><span>Discount ({coupon?.code})</span><span>− {inr(discount)}</span></div>
                         )}
-                        <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>{shipping === 0 ? "Free" : inr(shipping)}</span></div>
+                        <div className="flex justify-between"><span className="flex items-center gap-1.5 text-muted-foreground"><Truck className="h-3 w-3" /> Shipping</span><span className="text-leaf font-medium">{shipping === 0 ? "Free" : inr(shipping)}</span></div>
                       </div>
                       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                         <span className="text-[14px] font-semibold">Total</span>

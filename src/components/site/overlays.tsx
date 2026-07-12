@@ -12,6 +12,8 @@ import {
   Search as SearchIcon,
   Heart,
   Star,
+  Truck,
+  IndianRupee,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useUI } from "@/lib/ui-store";
@@ -52,7 +54,7 @@ export function CartDrawer() {
 
   const subtotal = cartSubtotal(lines);
   const discount = coupon ? Math.round((subtotal * coupon.discountPct) / 100) : 0;
-  const shipping = subtotal - discount >= 499 || subtotal === 0 ? 0 : 49;
+  const shipping = 0;
   const total = subtotal - discount + shipping;
 
   return (
@@ -115,9 +117,7 @@ export function CartDrawer() {
               <>
                 {/* lines */}
                 <div className="scroll-elegant flex-1 overflow-y-auto px-4 py-4">
-                  {/* free shipping progress */}
-                  <FreeShipBar subtotal={subtotal - discount} />
-                  <div className="mt-4 space-y-3">
+                  <div className="mt-0 space-y-3">
                     <AnimatePresence initial={false}>
                       {lines.map((l) => (
                         <motion.div
@@ -232,15 +232,20 @@ export function CartDrawer() {
                 {/* summary */}
                 <div className="border-t border-border bg-card px-5 py-4">
                   <div className="space-y-1.5 text-[13px]">
-                    <Row label="Subtotal" value={inr(subtotal)} />
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-muted-foreground"><IndianRupee className="h-3 w-3" /> Subtotal</span>
+                      <span className="font-medium text-foreground">{inr(subtotal)}</span>
+                    </div>
                     {discount > 0 && (
-                      <Row label={`Discount (${coupon?.discountPct}%)`} value={`− ${inr(discount)}`} accent="leaf" />
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Discount ({coupon?.discountPct}%)</span>
+                        <span className="font-medium text-leaf">− {inr(discount)}</span>
+                      </div>
                     )}
-                    <Row
-                      label="Shipping"
-                      value={shipping === 0 ? "Free" : inr(shipping)}
-                      accent={shipping === 0 ? "leaf" : undefined}
-                    />
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-1.5 text-muted-foreground"><Truck className="h-3 w-3" /> Shipping</span>
+                      <span className="font-medium text-leaf">Free</span>
+                    </div>
                   </div>
                   <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                     <span className="text-[14px] font-semibold text-foreground">Total</span>
@@ -265,41 +270,6 @@ export function CartDrawer() {
         </motion.div>
       )}
     </AnimatePresence>
-  );
-}
-
-function FreeShipBar({ subtotal }: { subtotal: number }) {
-  const remaining = Math.max(0, 499 - subtotal);
-  const pct = Math.min(100, (subtotal / 499) * 100);
-  return (
-    <div className="rounded-[6px] bg-secondary/60 px-3.5 py-3">
-      <p className="text-[12px] text-foreground">
-        {remaining > 0 ? (
-          <>
-            Add <strong>{inr(remaining)}</strong> for <strong>free shipping</strong>
-          </>
-        ) : (
-          <>You've unlocked <strong className="text-leaf">free shipping</strong></>
-        )}
-      </p>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border">
-        <motion.div
-          className="h-full rounded-full bg-gradient-to-r from-primary to-turmeric"
-          initial={false}
-          animate={{ width: `${pct}%` }}
-          transition={{ duration: 0.4 }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function Row({ label, value, accent }: { label: string; value: string; accent?: "leaf" }) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-muted-foreground">{label}</span>
-      <span className={cn("font-medium", accent === "leaf" ? "text-leaf" : "text-foreground")}>{value}</span>
-    </div>
   );
 }
 

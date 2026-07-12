@@ -165,7 +165,7 @@ export function QuickView() {
               </div>
 
               <div className="mt-4 flex items-center justify-center gap-4 text-[11px] text-muted-foreground">
-                <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-leaf" /> Free shipping over ₹499</span>
+                <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-leaf" /> Free shipping</span>
                 <span className="flex items-center gap-1"><Check className="h-3.5 w-3.5 text-leaf" /> Dispatched in 24h</span>
               </div>
             </div>

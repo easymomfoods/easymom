@@ -637,7 +637,7 @@ export function ProductView() {
             </div>
 
             <div className="mt-4 grid grid-cols-3 gap-2 text-center text-[11px] text-muted-foreground">
-              <span className="flex items-center justify-center gap-1"><Truck className="h-3.5 w-3.5 text-leaf" /> Free over ₹499</span>
+              <span className="flex items-center justify-center gap-1"><Truck className="h-3.5 w-3.5 text-leaf" /> Free shipping</span>
               <span className="flex items-center justify-center gap-1"><Check className="h-3.5 w-3.5 text-leaf" /> Dispatched 24h</span>
               <span className="flex items-center justify-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-leaf" /> Secure pay</span>
             </div>

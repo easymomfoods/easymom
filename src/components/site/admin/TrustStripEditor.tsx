@@ -28,7 +28,7 @@ interface TrustData {
 
 const defaults: TrustData = {
   items: [
-    { icon: "package", title: "Free shipping over ₹499", sub: "Dispatched in 24 hours" },
+    { icon: "package", title: "Free shipping", sub: "Dispatched in 24 hours" },
     { icon: "leaf", title: "No preservatives, ever", sub: "Read the label — it's a recipe" },
     { icon: "circular-arrow", title: "Easy returns", sub: "Not right? We'll make it right" },
   ],
@@ -207,7 +207,7 @@ export default function TrustStripEditor() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           <div>
                             <label className={labelCls}>Title</label>
-                            <input type="text" value={item.title} onChange={(e) => updateItem(idx, "title", e.target.value)} className={inputCls} placeholder="Free shipping over ₹499" />
+                                <input type="text" value={item.title} onChange={(e) => updateItem(idx, "title", e.target.value)} className={inputCls} placeholder="Free shipping" />
                           </div>
                           <div>
                             <label className={labelCls}>Subtitle</label>
