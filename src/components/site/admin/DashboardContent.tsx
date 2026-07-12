@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useUI } from "@/lib/ui-store";
 import {
   TrendingUp,
   TrendingDown,
@@ -55,6 +56,7 @@ export default function DashboardContent() {
   const [barChart, setBarChart] = useState<BarChart>({ heights: [], labels: [], values: [] });
   const [sparklines, setSparklines] = useState<Record<string, number[]>>({});
   const [loading, setLoading] = useState(true);
+  const go = useUI((s) => s.go);
 
   useEffect(() => {
     Promise.all([
@@ -198,13 +200,23 @@ export default function DashboardContent() {
         <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
             <h3 className="text-[14px] font-semibold text-stone-900">Top Selling Products</h3>
+            <button
+              onClick={() => go({ name: "admin-products" })}
+              className="text-[12px] text-[#891816] font-medium hover:underline inline-flex items-center gap-1 transition-colors"
+            >
+              View All <ArrowRight className="h-3 w-3" />
+            </button>
           </div>
           <div className="divide-y divide-stone-50">
             {topProducts.length === 0 ? (
               <div className="px-5 py-8 text-center text-[13px] text-stone-400">No sales data yet</div>
             ) : (
               topProducts.map((p, i) => (
-                <div key={i} className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50/50 transition-colors">
+                <div
+                  key={i}
+                  onClick={() => go({ name: "admin-products" })}
+                  className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50/50 transition-colors cursor-pointer"
+                >
                   <div className="h-10 w-10 rounded-lg bg-stone-100 overflow-hidden shrink-0">
                     <img src={p.img || defaultProductImages[p.name] || "/brand/products/green-curry1.png"} alt={p.name} className="h-full w-full object-cover" />
                   </div>
@@ -275,13 +287,23 @@ export default function DashboardContent() {
         <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
           <div className="flex items-center justify-between px-5 py-4 border-b border-stone-100">
             <h3 className="text-[14px] font-semibold text-stone-900">Recent Orders</h3>
+            <button
+              onClick={() => go({ name: "admin-orders" })}
+              className="text-[12px] text-[#891816] font-medium hover:underline inline-flex items-center gap-1 transition-colors"
+            >
+              View All <ArrowRight className="h-3 w-3" />
+            </button>
           </div>
           <div className="divide-y divide-stone-50">
             {orders.length === 0 ? (
               <div className="px-5 py-8 text-center text-[13px] text-stone-400">No orders yet</div>
             ) : (
               orders.map((order) => (
-                <div key={order.id} className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50/50 transition-colors">
+                <div
+                  key={order.id}
+                  onClick={() => go({ name: "admin-orders" })}
+                  className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50/50 transition-colors cursor-pointer"
+                >
                   <div className="h-9 w-9 rounded-full bg-gradient-to-br from-stone-100 to-stone-200 flex items-center justify-center shrink-0">
                     <span className="text-[12px] font-bold text-stone-600">
                       {order.name.charAt(0)}
