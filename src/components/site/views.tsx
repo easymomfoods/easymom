@@ -324,7 +324,7 @@ export function ProductView() {
   const { view, go, openCart, setQuickView } = useUI();
   const { add, wishlist, toggleWishlist } = useCart();
   const [qty, setQty] = useState(1);
-  const [selectedImg, setSelectedImg] = useState(0);
+  const [selectedImg, setSelectedImg] = useState(-1);
   const [dbProduct, setDbProduct] = useState<ProductData | null>(null);
   const [loadingProduct, setLoadingProduct] = useState(true);
   const [allProducts, setAllProducts] = useState(DEFAULT_PRODUCTS);
@@ -347,6 +347,7 @@ export function ProductView() {
     if (!slug) return;
     setLoadingProduct(true);
     setDbProduct(null);
+    setSelectedImg(-1);
     fetch(`/api/products/${slug}`)
       .then((r) => r.json())
       .then((d) => {
@@ -466,30 +467,50 @@ export function ProductView() {
       </nav>
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-14">
-        {/* visual */}
-        <div>
-          <div className="relative overflow-hidden rounded-[6px] border border-border">
-            <img
-              src={p.images && p.images.length > 0 ? p.images[selectedImg] : p.img}
-              alt={p.name}
-              className="aspect-square w-full object-cover"
-            />
+        {/* visual — left: main image, right: thumbnail strip */}
+        <div className="flex flex-col-reverse gap-4 lg:flex-row lg:gap-5">
+          {/* Right: thumbnail strip */}
+          <div className="flex gap-3 lg:flex-col lg:w-[100px] shrink-0 overflow-x-auto lg:overflow-y-auto">
+            {/* Main product image as Image 1 */}
+            {p.img && (
+              <button
+                onClick={() => setSelectedImg(-1)}
+                className={`relative shrink-0 w-[72px] h-[72px] lg:w-[100px] lg:h-[100px] overflow-hidden rounded-lg border-2 transition-all ${
+                  selectedImg === -1 ? "border-primary shadow-md" : "border-border hover:border-stone-300"
+                }`}
+              >
+                <img src={p.img} alt={`${p.name} main`} className="h-full w-full object-cover" />
+                <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[9px] text-white text-center py-0.5 font-medium">
+                  Image 1
+                </span>
+              </button>
+            )}
+            {/* Gallery images */}
+            {p.images && p.images.map((img, i) => (
+              <button
+                key={i}
+                onClick={() => setSelectedImg(i)}
+                className={`relative shrink-0 w-[72px] h-[72px] lg:w-[100px] lg:h-[100px] overflow-hidden rounded-lg border-2 transition-all ${
+                  selectedImg === i ? "border-primary shadow-md" : "border-border hover:border-stone-300"
+                }`}
+              >
+                <img src={img} alt={`${p.name} ${i + 2}`} className="h-full w-full object-cover" />
+                <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[9px] text-white text-center py-0.5 font-medium">
+                  Image {i + 2}
+                </span>
+              </button>
+            ))}
           </div>
-          {p.images && p.images.length > 1 ? (
-            <div className="mt-3 flex gap-2">
-              {p.images.map((img, i) => (
-                <button
-                  key={i}
-                  onClick={() => setSelectedImg(i)}
-                  className={`h-16 w-16 overflow-hidden rounded-[4px] border-2 transition ${
-                    selectedImg === i ? "border-primary" : "border-border"
-                  }`}
-                >
-                  <img src={img} alt={`${p.name} ${i + 1}`} className="h-full w-full object-cover" />
-                </button>
-              ))}
+          {/* Left: main display */}
+          <div className="flex-1 min-w-0">
+            <div className="relative overflow-hidden rounded-[6px] border border-border aspect-square bg-stone-50">
+              <img
+                src={selectedImg === -1 ? p.img : (p.images && p.images[selectedImg]) || p.img}
+                alt={p.name}
+                className="w-full h-full object-cover"
+              />
             </div>
-          ) : (
+            {/* Feature badges below main image */}
             <div className="mt-3 grid grid-cols-4 gap-3">
               {["Whole spices", "Stone-ground", "Small batch", "Sealed fresh"].map((t, i) => (
                 <div key={t} className="rounded-[6px] border border-border bg-card p-3 text-center">
@@ -501,7 +522,7 @@ export function ProductView() {
                 </div>
               ))}
             </div>
-          )}
+          </div>
         </div>
 
         {/* details */}

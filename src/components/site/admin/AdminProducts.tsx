@@ -378,6 +378,7 @@ function ProductEditModal({
     ingredients: Array.isArray(product?.ingredients) ? product!.ingredients.join(", ") : "",
     tags: Array.isArray(product?.tags) ? product!.tags.join(", ") : "",
   });
+  const [galleryImages, setGalleryImages] = useState<string[]>(product?.images || []);
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -391,6 +392,7 @@ function ProductEditModal({
         ingredients: form.ingredients.split(",").map((s) => s.trim()).filter(Boolean),
         tags: form.tags.split(",").map((s) => s.trim()).filter(Boolean),
         badge: form.badge || null,
+        images: galleryImages.filter(Boolean),
       };
       const res = await fetch(url, {
         method,
@@ -485,8 +487,45 @@ function ProductEditModal({
                 value={form.img}
                 onChange={(url) => setForm({ ...form, img: url })}
                 folder="easymom/products"
-                label="Product Image"
+                label="Product Image (Main)"
               />
+            </div>
+            <div className="col-span-2">
+              <label className={labelCls}>Gallery Images (optional, up to 5)</label>
+              <div className="grid grid-cols-2 gap-3 mt-1.5">
+                {galleryImages.map((img, i) => (
+                  <div key={i} className="relative">
+                    <ImageUpload
+                      value={img}
+                      onChange={(url) => {
+                        const next = [...galleryImages];
+                        next[i] = url;
+                        setGalleryImages(next);
+                      }}
+                      folder="easymom/products"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setGalleryImages(galleryImages.filter((_, idx) => idx !== i))}
+                      className="absolute top-2 right-2 p-1 rounded-md bg-red-500 text-white hover:bg-red-600 z-10"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
+                {galleryImages.length < 5 && (
+                  <button
+                    type="button"
+                    onClick={() => setGalleryImages([...galleryImages, ""])}
+                    className="flex items-center justify-center h-24 rounded-xl border-2 border-dashed border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-all text-stone-400"
+                  >
+                    <div className="text-center">
+                      <Plus className="h-5 w-5 mx-auto mb-1" />
+                      <span className="text-[11px]">Add Image</span>
+                    </div>
+                  </button>
+                )}
+              </div>
             </div>
             <div className="col-span-2">
               <label className={labelCls}>Short Description</label>
