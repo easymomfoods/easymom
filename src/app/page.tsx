@@ -175,7 +175,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-[#891816] flex items-center justify-center p-6" suppressHydrationWarning>
         <div className="text-center max-w-md">
-          <img src="/brand/easymom-logo.png" alt="EasyMom" className="h-14 mx-auto mb-8 brightness-0 invert" />
+          <img src="/brand/easymom-logo.png" alt="EasyMom" className="h-32 mx-auto mb-4 brightness-0 invert" />
           <h1 className="text-3xl font-bold text-white mb-3">Coming Soon</h1>
           <p className="text-white/70 text-[15px] leading-relaxed">
             We&apos;re working on something amazing. Our store will be back online shortly.

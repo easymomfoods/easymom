@@ -31,6 +31,7 @@ export default function AdminSettings() {
   const [pwSaving, setPwSaving] = useState(false);
   const [pwSaved, setPwSaved] = useState(false);
   const [pwError, setPwError] = useState("");
+  const [confirmMaintenance, setConfirmMaintenance] = useState(false);
 
   useEffect(() => {
     Promise.all(
@@ -216,16 +217,19 @@ export default function AdminSettings() {
             <p className="text-[12px] text-stone-500 mt-0.5">When enabled, visitors see a &quot;Coming Soon&quot; page instead of the site</p>
           </div>
           <button
-            onClick={async () => {
-              const newVal = fields.maintenance_mode === "true" ? "false" : "true";
-              update("maintenance_mode", newVal);
-              try {
-                await fetch("/api/site-content/maintenance_mode", {
+            onClick={() => {
+              if (fields.maintenance_mode === "true") {
+                // Turning OFF — no confirmation needed
+                update("maintenance_mode", "false");
+                fetch("/api/site-content/maintenance_mode", {
                   method: "PUT",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ value: newVal }),
-                });
-              } catch {}
+                  body: JSON.stringify({ value: "false" }),
+                }).catch(() => {});
+              } else {
+                // Turning ON — show confirmation
+                setConfirmMaintenance(true);
+              }
             }}
             className={`relative w-12 h-7 rounded-full transition-colors ${
               fields.maintenance_mode === "true" ? "bg-[#891816]" : "bg-stone-300"
@@ -390,6 +394,48 @@ export default function AdminSettings() {
           {saving ? "Saving..." : saved ? "Saved!" : "Save All"}
         </button>
       </div>
+
+      {/* Maintenance Mode Confirmation Modal */}
+      {confirmMaintenance && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setConfirmMaintenance(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-[#891816]/10 flex items-center justify-center shrink-0">
+                <AlertTriangle className="h-5 w-5 text-[#891816]" />
+              </div>
+              <h3 className="text-[16px] font-bold text-stone-900">Turn on Maintenance Mode?</h3>
+            </div>
+            <p className="text-[13px] text-stone-600 leading-relaxed">
+              Your site will be <strong>hidden from all visitors</strong> and replaced with a &quot;Coming Soon&quot; page. Only you (as admin) can access the dashboard.
+            </p>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setConfirmMaintenance(false)}
+                className="flex-1 h-10 rounded-xl border border-stone-200 text-[13px] font-medium text-stone-700 hover:bg-stone-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  setConfirmMaintenance(false);
+                  update("maintenance_mode", "true");
+                  try {
+                    await fetch("/api/site-content/maintenance_mode", {
+                      method: "PUT",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ value: "true" }),
+                    });
+                  } catch {}
+                }}
+                className="flex-1 h-10 rounded-xl bg-[#891816] text-white text-[13px] font-semibold hover:bg-[#6d1311] active:scale-[0.98] transition-all"
+              >
+                Yes, Turn On
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

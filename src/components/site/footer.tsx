@@ -40,6 +40,8 @@ const SOCIAL_ICONS: Record<string, typeof Instagram> = {
   instagram: Instagram,
   youtube: Youtube,
   twitter: Twitter,
+  facebook: Instagram,
+  whatsapp: Phone,
 };
 
 const DEFAULTS = {
@@ -52,6 +54,7 @@ const DEFAULTS = {
     { platform: "youtube", label: "YouTube", href: "#" },
     { platform: "twitter", label: "Twitter", href: "#" },
   ],
+  whatsapp: "",
   fssai: "10024051000678",
 };
 
@@ -60,15 +63,25 @@ export function Footer() {
   const [footer, setFooter] = useState(DEFAULTS);
 
   useEffect(() => {
-    fetch("/api/site-content/footer")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.value) {
-          try {
-            const parsed = JSON.parse(d.value);
-            setFooter({ ...DEFAULTS, ...parsed });
-          } catch {}
-        }
+    Promise.all([
+      fetch("/api/site-content/footer").then((r) => r.json()),
+      fetch("/api/site-content/social_instagram").then((r) => r.json()),
+      fetch("/api/site-content/social_facebook").then((r) => r.json()),
+      fetch("/api/site-content/social_twitter").then((r) => r.json()),
+      fetch("/api/site-content/social_youtube").then((r) => r.json()),
+      fetch("/api/site-content/whatsapp_number").then((r) => r.json()),
+    ])
+      .then(([footer, ig, fb, tw, yt, wa]) => {
+        const parsed = footer.value ? (() => { try { return JSON.parse(footer.value); } catch { return {}; } })() : {};
+        const socials = [
+          ig.value ? { platform: "instagram", label: "Instagram", href: ig.value } : null,
+          yt.value ? { platform: "youtube", label: "YouTube", href: yt.value } : null,
+          tw.value ? { platform: "twitter", label: "Twitter", href: tw.value } : null,
+          fb.value ? { platform: "facebook", label: "Facebook", href: fb.value } : null,
+        ].filter(Boolean);
+        if (socials.length > 0) parsed.socials = socials;
+        if (wa.value) parsed.whatsapp = `https://wa.me/91${wa.value}`;
+        setFooter({ ...DEFAULTS, ...parsed });
       })
       .catch(() => {});
   }, []);
@@ -114,7 +127,8 @@ export function Footer() {
                   <a
                     key={s.platform}
                     href={s.href}
-                    onClick={(e) => { if (s.href === "#") e.preventDefault(); }}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="grid h-11 w-11 place-items-center rounded-full border border-zinc-200 text-zinc-400 transition-all duration-200 hover:border-primary/40 hover:text-primary hover:shadow-sm"
                     aria-label={s.label}
                   >
@@ -122,6 +136,17 @@ export function Footer() {
                   </a>
                 );
               })}
+              {footer.whatsapp && (
+                <a
+                  href={footer.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="grid h-11 w-11 place-items-center rounded-full border border-zinc-200 text-zinc-400 transition-all duration-200 hover:border-green-500/40 hover:text-green-600 hover:shadow-sm"
+                  aria-label="WhatsApp"
+                >
+                  <Phone className="h-[16px] w-[16px]" strokeWidth={1.75} />
+                </a>
+              )}
             </div>
           </div>
 
