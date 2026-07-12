@@ -5,6 +5,7 @@ import { Heart, Plus, Star, ShoppingBag } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import type { Product } from "@/lib/data";
 import { useCart } from "@/lib/store";
+import { useUI } from "@/lib/ui-store";
 import { inr } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { SpiceVisual } from "./spice-visual";
@@ -21,6 +22,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
   const add = useCart((s) => s.add);
   const wishlist = useCart((s) => s.wishlist);
   const toggleWishlist = useCart((s) => s.toggleWishlist);
+  const go = useUI((s) => s.go);
   const wished = wishlist.includes(product.id);
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
 
@@ -60,7 +62,12 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
       )}
     >
       {/* visual */}
-      <div className={cn("relative block aspect-[4/5] w-full overflow-hidden", !product.active && "pointer-events-none")}>
+      <div
+        className={cn("relative block aspect-[4/5] w-full overflow-hidden", !product.active && "pointer-events-none")}
+        onClick={product.active ? () => go({ name: "product", slug: product.slug }) : undefined}
+        role={product.active ? "button" : undefined}
+        style={product.active ? { cursor: "pointer" } : undefined}
+      >
         {images ? (
           <div className="relative h-full w-full overflow-hidden">
             {images.map((img, i) => (
@@ -94,11 +101,11 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         {/* Out of Stock overlay */}
         {!product.active && (
           <>
-            <div className="absolute inset-0 bg-white/40 z-10" />
-            <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 z-20 flex justify-center">
-              <div className="bg-stone-900/80 backdrop-blur-sm px-5 py-2 rounded-full">
-                <span className="text-[11px] font-bold text-white uppercase tracking-[0.2em]">Out of Stock</span>
-              </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent z-10" />
+            <div className="absolute inset-x-0 bottom-14 z-20 flex justify-center pointer-events-none">
+              <span className="inline-block rounded bg-stone-900/80 backdrop-blur-sm px-3 py-1 text-[10px] font-bold text-white uppercase tracking-[0.18em]">
+                Currently Unavailable
+              </span>
             </div>
           </>
         )}
@@ -174,12 +181,18 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           </span>
         </div>
 
-        <p className={cn(
-          "text-left text-[15px] font-semibold leading-snug",
-          product.active ? "text-foreground" : "text-stone-500"
-        )}>
-          {product.name}
-        </p>
+        {product.active ? (
+          <button
+            onClick={() => go({ name: "product", slug: product.slug })}
+            className="text-left text-[15px] font-semibold leading-snug text-foreground transition hover:text-primary"
+          >
+            {product.name}
+          </button>
+        ) : (
+          <p className="text-left text-[15px] font-semibold leading-snug text-stone-500">
+            {product.name}
+          </p>
+        )}
 
         <div className="mt-1 flex items-center gap-1.5">
           {product.bestSeller && (

@@ -118,16 +118,26 @@ export function ShopView() {
     list = list.filter((p) => p.price <= maxPrice);
     switch (sortBy) {
       case "price-asc":
-        list.sort((a, b) => a.price - b.price);
+        list.sort((a, b) => {
+          if (a.active !== b.active) return a.active ? -1 : 1;
+          return a.price - b.price;
+        });
         break;
       case "price-desc":
-        list.sort((a, b) => b.price - a.price);
+        list.sort((a, b) => {
+          if (a.active !== b.active) return a.active ? -1 : 1;
+          return b.price - a.price;
+        });
         break;
       case "rating":
-        list.sort((a, b) => b.rating - a.rating);
+        list.sort((a, b) => {
+          if (a.active !== b.active) return a.active ? -1 : 1;
+          return b.rating - a.rating;
+        });
         break;
       default:
         list.sort((a, b) => {
+          if (a.active !== b.active) return a.active ? -1 : 1;
           const bs = Number(b.bestSeller) - Number(a.bestSeller);
           if (bs !== 0) return bs;
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
