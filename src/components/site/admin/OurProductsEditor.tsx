@@ -12,6 +12,23 @@ import {
   PackageOpen,
 } from "lucide-react";
 import ImageUpload from "./ImageUpload";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface ProductCard {
   slug: string;
@@ -95,6 +112,25 @@ export default function OurProductsEditor() {
     const items = [...data.items];
     items[idx] = { ...items[idx], [field]: value };
     setData({ ...data, items });
+  }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = data.items.findIndex((_, i) => String(i) === active.id);
+    const newIndex = data.items.findIndex((_, i) => String(i) === over.id);
+    const newItems = arrayMove(data.items, oldIndex, newIndex);
+    setData({ ...data, items: newItems });
+    if (editingIdx === oldIndex) setEditingIdx(newIndex);
+    else if (editingIdx !== null) {
+      if (oldIndex < editingIdx && newIndex >= editingIdx) setEditingIdx(editingIdx - 1);
+      else if (oldIndex > editingIdx && newIndex <= editingIdx) setEditingIdx(editingIdx + 1);
+    }
   }
 
   if (loading) {
@@ -220,90 +256,32 @@ export default function OurProductsEditor() {
               </h3>
               <button
                 onClick={addItem}
-                className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-[#891816] bg-[#891816]/8 rounded-lg hover:bg-[#891816]/15 transition-colors"
+                disabled={data.items.length >= 4}
+                className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-[#891816] bg-[#891816]/8 rounded-lg hover:bg-[#891816]/15 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <Plus className="h-4 w-4" />
                 Add Card
               </button>
             </div>
 
-            <div className="space-y-3">
-              {data.items.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={`border rounded-xl overflow-hidden transition-all ${
-                    editingIdx === idx ? "border-[#891816]/30 ring-2 ring-[#891816]/10" : "border-stone-200"
-                  }`}
-                >
-                  {/* Card Header */}
-                  <div
-                    className="flex items-center gap-3 px-4 py-3 bg-stone-50 cursor-pointer"
-                    onClick={() => setEditingIdx(editingIdx === idx ? null : idx)}
-                  >
-                    <GripVertical className="h-4 w-4 text-stone-300 shrink-0" />
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      {item.img ? (
-                        <img src={item.img} alt="" className="h-10 w-10 rounded-lg object-cover shrink-0" />
-                      ) : (
-                        <div className="h-10 w-10 rounded-lg bg-stone-200 flex items-center justify-center shrink-0">
-                          <PackageOpen className="h-4 w-4 text-stone-400" />
-                        </div>
-                      )}
-                      <div className="min-w-0">
-                        <p className="text-[13px] font-medium text-stone-900 truncate">
-                          {item.name || "Untitled Card"}
-                        </p>
-                        <p className="text-[12px] text-stone-500 truncate">{item.slug || "no-slug"}</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); removeItem(idx); }}
-                      className="p-1.5 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors shrink-0"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-
-                  {/* Card Fields */}
-                  {editingIdx === idx && (
-                    <div className="px-4 py-4 space-y-4 border-t border-stone-100">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
-                            Name
-                          </label>
-                          <input
-                            type="text"
-                            value={item.name}
-                            onChange={(e) => updateItem(idx, "name", e.target.value)}
-                            className="w-full h-10 px-3 rounded-lg border border-stone-200 text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-[#891816]/10 focus:border-[#891816]/30"
-                            placeholder="Red Curry"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
-                            Slug (product link)
-                          </label>
-                          <input
-                            type="text"
-                            value={item.slug}
-                            onChange={(e) => updateItem(idx, "slug", e.target.value)}
-                            className="w-full h-10 px-3 rounded-lg border border-stone-200 text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-[#891816]/10 focus:border-[#891816]/30"
-                            placeholder="red-curry"
-                          />
-                        </div>
-                      </div>
-                      <ImageUpload
-                        value={item.img}
-                        onChange={(url) => updateItem(idx, "img", url)}
-                        folder="easymom/categories"
-                        label="Card Image"
-                      />
-                    </div>
-                  )}
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={data.items.map((_, i) => String(i))} strategy={verticalListSortingStrategy}>
+                <div className="space-y-3">
+                  {data.items.map((item, idx) => (
+                    <SortableCard
+                      key={idx}
+                      id={String(idx)}
+                      item={item}
+                      idx={idx}
+                      editing={editingIdx === idx}
+                      onToggle={() => setEditingIdx(editingIdx === idx ? null : idx)}
+                      onRemove={() => removeItem(idx)}
+                      onUpdate={(field, value) => updateItem(idx, field, value)}
+                    />
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+            </DndContext>
           </div>
 
           {/* Info */}
@@ -317,6 +295,114 @@ export default function OurProductsEditor() {
             </div>
           </div>
         </>
+      )}
+    </div>
+  );
+}
+
+function SortableCard({
+  id,
+  item,
+  idx,
+  editing,
+  onToggle,
+  onRemove,
+  onUpdate,
+}: {
+  id: string;
+  item: ProductCard;
+  idx: number;
+  editing: boolean;
+  onToggle: () => void;
+  onRemove: () => void;
+  onUpdate: (field: keyof ProductCard, value: string) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 50 : undefined,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`border rounded-xl overflow-hidden transition-all ${
+        editing ? "border-[#891816]/30 ring-2 ring-[#891816]/10" : "border-stone-200"
+      }`}
+    >
+      <div
+        className="flex items-center gap-3 px-4 py-3 bg-stone-50 cursor-pointer"
+        onClick={onToggle}
+      >
+        <button
+          {...attributes}
+          {...listeners}
+          className="p-1 cursor-grab active:cursor-grabbing touch-none"
+        >
+          <GripVertical className="h-4 w-4 text-stone-300 shrink-0" />
+        </button>
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          {item.img ? (
+            <img src={item.img} alt="" className="h-10 w-10 rounded-lg object-cover shrink-0" />
+          ) : (
+            <div className="h-10 w-10 rounded-lg bg-stone-200 flex items-center justify-center shrink-0">
+              <PackageOpen className="h-4 w-4 text-stone-400" />
+            </div>
+          )}
+          <div className="min-w-0">
+            <p className="text-[13px] font-medium text-stone-900 truncate">
+              {item.name || "Untitled Card"}
+            </p>
+            <p className="text-[12px] text-stone-500 truncate">{item.slug || "no-slug"}</p>
+          </div>
+        </div>
+        <button
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          className="p-1.5 rounded-lg hover:bg-red-50 text-stone-400 hover:text-red-500 transition-colors shrink-0"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+
+      {editing && (
+        <div className="px-4 py-4 space-y-4 border-t border-stone-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
+                Name
+              </label>
+              <input
+                type="text"
+                value={item.name}
+                onChange={(e) => onUpdate("name", e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-stone-200 text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-[#891816]/10 focus:border-[#891816]/30"
+                placeholder="Red Curry"
+              />
+            </div>
+            <div>
+              <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
+                Slug (product link)
+              </label>
+              <input
+                type="text"
+                value={item.slug}
+                onChange={(e) => onUpdate("slug", e.target.value)}
+                className="w-full h-10 px-3 rounded-lg border border-stone-200 text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-[#891816]/10 focus:border-[#891816]/30"
+                placeholder="red-curry"
+              />
+            </div>
+          </div>
+          <ImageUpload
+            value={item.img}
+            onChange={(url) => onUpdate("img", url)}
+            folder="easymom/categories"
+            label="Card Image"
+          />
+        </div>
       )}
     </div>
   );

@@ -317,7 +317,7 @@ export default function DashboardContent() {
               <div>
                 <p className="text-[11px] text-stone-500">Avg. Value</p>
                 <p className="text-[14px] font-bold text-stone-900">
-                  {stats?.totalOrders ? inr(Math.round((stats?.monthRevenue || 0) / stats.totalOrders)) : "₹0"}
+                  {stats?.monthOrders ? inr(Math.round((stats?.monthRevenue || 0) / stats.monthOrders)) : "₹0"}
                 </p>
               </div>
             </div>
