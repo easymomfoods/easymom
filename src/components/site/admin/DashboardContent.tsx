@@ -154,6 +154,7 @@ export default function DashboardContent() {
           icon={<ShoppingBag className="h-5 w-5" />}
           iconBg="bg-[#891816]/8"
           iconColor="text-[#891816]"
+          sparkline={barChart.heights}
         />
         <StatCard
           label="This Month Revenue"
@@ -161,6 +162,7 @@ export default function DashboardContent() {
           icon={<IndianRupee className="h-5 w-5" />}
           iconBg="bg-emerald-50"
           iconColor="text-emerald-600"
+          sparkline={barChart.heights}
         />
         <StatCard
           label="Subscribers"
@@ -168,6 +170,7 @@ export default function DashboardContent() {
           icon={<Users className="h-5 w-5" />}
           iconBg="bg-amber-50"
           iconColor="text-amber-600"
+          sparkline={barChart.heights}
         />
         <StatCard
           label="Avg. Rating"
@@ -176,6 +179,7 @@ export default function DashboardContent() {
           iconBg="bg-purple-50"
           iconColor="text-purple-600"
           subtitle={`${stats?.totalReviews || 0} reviews`}
+          sparkline={barChart.heights}
         />
       </div>
 
@@ -304,6 +308,7 @@ function StatCard({
   iconBg,
   iconColor,
   subtitle,
+  sparkline,
 }: {
   label: string;
   value: string;
@@ -311,6 +316,7 @@ function StatCard({
   iconBg: string;
   iconColor: string;
   subtitle?: string;
+  sparkline?: number[];
 }) {
   return (
     <div className="bg-white rounded-xl border border-stone-100 p-4 hover:border-stone-200 transition-colors">
@@ -326,6 +332,17 @@ function StatCard({
       <p className="text-xl font-bold text-stone-900">{value}</p>
       {subtitle && (
         <p className="text-[12px] text-stone-400 mt-1">{subtitle}</p>
+      )}
+      {sparkline && sparkline.length > 0 && (
+        <div className="flex items-end gap-px h-6 mt-2">
+          {sparkline.map((h, i) => (
+            <div
+              key={i}
+              className="flex-1 rounded-sm bg-[#891816]/20 transition-all hover:bg-[#891816]/40"
+              style={{ height: `${Math.max(h, 5)}%` }}
+            />
+          ))}
+        </div>
       )}
     </div>
   );
