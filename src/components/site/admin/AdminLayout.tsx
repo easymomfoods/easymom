@@ -58,6 +58,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#f5f3ee] flex">
@@ -101,20 +102,6 @@ export default function AdminLayout({
               </button>
             </div>
           </div>
-        </div>
-
-        {/* Logout */}
-        <div className="p-3 border-t border-stone-100">
-          <button
-            onClick={async () => {
-              await fetch("/api/admin/logout", { method: "POST" });
-              window.location.href = "/admin/login";
-            }}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-stone-500 transition hover:bg-red-50 hover:text-red-600"
-          >
-            <LogOut className="h-4 w-4" />
-            Log out
-          </button>
         </div>
       </aside>
 
@@ -179,24 +166,61 @@ export default function AdminLayout({
               <Bell className="h-5 w-5 text-stone-500" />
               <span className="absolute top-2 right-2 h-2 w-2 bg-[#891816] rounded-full" />
             </button>
-            <button
-              onClick={async () => {
-                await fetch("/api/admin/logout", { method: "POST" });
-                window.location.href = "/admin/login";
-              }}
-              className="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors group"
-            >
-              <div className="flex flex-col items-center">
+            <div className="relative">
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-xl hover:bg-stone-100 transition-colors"
+              >
                 <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#891816] to-[#6d1311] flex items-center justify-center">
                   <span className="text-sm font-bold text-white">A</span>
                 </div>
-              </div>
-              <div className="hidden sm:block text-left leading-tight">
-                <p className="text-[11px] text-stone-500">Welcome,</p>
-                <p className="text-[13px] font-semibold text-stone-800 group-hover:text-red-600">Admin</p>
-              </div>
-              <LogOut className="h-4 w-4 text-stone-400 group-hover:text-red-500 hidden sm:block" />
-            </button>
+                <div className="hidden sm:block text-left leading-tight">
+                  <p className="text-[11px] text-stone-500">Welcome,</p>
+                  <p className="text-[13px] font-semibold text-stone-800">Admin</p>
+                </div>
+                <ChevronDown className={`h-3.5 w-3.5 text-stone-400 hidden sm:block transition-transform ${profileOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {profileOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setProfileOpen(false)} />
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl border border-stone-200 shadow-lg z-50 py-1.5">
+                    <button
+                      onClick={() => { setProfileOpen(false); }}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-[13px] text-stone-700 hover:bg-stone-50 transition-colors"
+                    >
+                      <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#891816] to-[#6d1311] flex items-center justify-center">
+                        <span className="text-xs font-bold text-white">A</span>
+                      </div>
+                      <div className="text-left">
+                        <p className="font-medium">Admin</p>
+                        <p className="text-[11px] text-stone-400">Profile</p>
+                      </div>
+                    </button>
+                    <div className="mx-3 my-1 border-t border-stone-100" />
+                    <button
+                      onClick={() => { setProfileOpen(false); onNavigate("settings"); }}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-[13px] text-stone-700 hover:bg-stone-50 transition-colors"
+                    >
+                      <Settings className="h-4 w-4 text-stone-400" />
+                      Settings
+                    </button>
+                    <div className="mx-3 my-1 border-t border-stone-100" />
+                    <button
+                      onClick={async () => {
+                        setProfileOpen(false);
+                        await fetch("/api/admin/logout", { method: "POST" });
+                        window.location.href = "/admin/login";
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-[13px] text-red-600 hover:bg-red-50 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Log out
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </header>
 
