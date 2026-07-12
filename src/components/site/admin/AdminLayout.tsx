@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   LayoutDashboard,
   Package,
@@ -28,6 +28,16 @@ import {
   Globe,
   Lock,
 } from "lucide-react";
+
+type Notification = {
+  orderId: string;
+  name: string;
+  email: string;
+  total: number;
+  status: string;
+  paymentMethod: string;
+  createdAt: string;
+};
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -67,6 +77,50 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [confirmLogout, setConfirmLogout] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const lastCheckedRef = useRef<string>(new Date().toISOString());
+  const prevCountRef = useRef(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const playBeep = useCallback(() => {
+    try {
+      if (!audioRef.current) {
+        audioRef.current = new Audio("data:audio/wav;base64,UklGRl9vT19teleVBmb3JtYXQgd2lkdGg9IjgiIGhlaWdodD0iOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48c3R5bGU+PC9zdHlsZT48cGF0aCBmaWxsPSIjODkxODE2IiBkPSJNNCA0SDRWMGg0djR6bTAgNEgwdjRoNHY0ek04IDhINFY0aDR2NHoiLz48L3N2Zz4=");
+        audioRef.current.volume = 0.5;
+      }
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/admin/notifications?since=${encodeURIComponent(lastCheckedRef.current)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const newOrders: Notification[] = data.orders || [];
+        if (prevCountRef.current > 0 && newOrders.length > prevCountRef.current) {
+          playBeep();
+        }
+        prevCountRef.current = newOrders.length;
+        setNotifications(newOrders);
+        setUnreadCount(newOrders.length);
+      } catch {}
+    };
+
+    poll();
+    const interval = setInterval(poll, 10000);
+    return () => clearInterval(interval);
+  }, [playBeep]);
+
+  function markAllRead() {
+    lastCheckedRef.current = new Date().toISOString();
+    setUnreadCount(0);
+    setNotifOpen(false);
+  }
 
   return (
     <div className="min-h-screen bg-[#f5f3ee] flex">
@@ -186,10 +240,67 @@ export default function AdminLayout({
           </div>
 
           <div className="flex items-center gap-2 ml-auto">
-            <button className="relative p-2.5 rounded-xl hover:bg-stone-100 transition-colors">
-              <Bell className="h-5 w-5 text-stone-500" />
-              <span className="absolute top-2 right-2 h-2 w-2 bg-[#891816] rounded-full" />
-            </button>
+            {/* Notifications */}
+            <div className="relative">
+              <button
+                onClick={() => { setNotifOpen(!notifOpen); setProfileOpen(false); }}
+                className="relative p-2.5 rounded-xl hover:bg-stone-100 transition-colors"
+              >
+                <Bell className="h-5 w-5 text-stone-500" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 min-h-[18px] min-w-[18px] flex items-center justify-center rounded-full bg-[#891816] text-white text-[10px] font-bold px-1">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {notifOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} />
+                  <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl border border-stone-200 shadow-xl z-50 overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-stone-100">
+                      <h3 className="text-[14px] font-semibold text-stone-900">Notifications</h3>
+                      {unreadCount > 0 && (
+                        <button
+                          onClick={markAllRead}
+                          className="text-[12px] text-[#891816] font-medium hover:underline"
+                        >
+                          Mark all read
+                        </button>
+                      )}
+                    </div>
+                    <div className="max-h-80 overflow-y-auto">
+                      {notifications.length === 0 ? (
+                        <div className="py-8 text-center text-[13px] text-stone-400">
+                          No new orders
+                        </div>
+                      ) : (
+                        notifications.map((n) => (
+                          <div
+                            key={n.orderId}
+                            className="px-4 py-3 border-b border-stone-50 hover:bg-stone-50/50 transition-colors"
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="min-w-0">
+                                <p className="text-[13px] font-medium text-stone-900 truncate">
+                                  New order from {n.name}
+                                </p>
+                                <p className="text-[12px] text-stone-500 mt-0.5">
+                                  ₹{n.total.toLocaleString("en-IN")} · {n.paymentMethod === "cod" ? "COD" : "UPI"}
+                                </p>
+                              </div>
+                              <span className="shrink-0 text-[11px] text-stone-400">
+                                {new Date(n.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                              </span>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
             <div className="relative">
               <button
                 onClick={() => setProfileOpen(!profileOpen)}

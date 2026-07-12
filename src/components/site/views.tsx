@@ -524,18 +524,6 @@ export function ProductView() {
                 className="w-full h-full object-cover"
               />
             </div>
-            {/* Feature badges below main image */}
-            <div className="mt-3 grid grid-cols-4 gap-3">
-              {["Whole spices", "Stone-ground", "Small batch", "Sealed fresh"].map((t, i) => (
-                <div key={t} className="rounded-[6px] border border-border bg-card p-3 text-center">
-                  <div
-                    className="mx-auto mb-2 h-8 w-8 rounded-full"
-                    style={{ background: `radial-gradient(circle at 35% 30%, oklch(0.65 0.15 ${p.hue + i * 10}), oklch(0.45 0.17 ${p.hue + i * 10}))` }}
-                  />
-                  <p className="text-[11px] font-medium text-muted-foreground">{t}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
 
