@@ -470,7 +470,7 @@ export function ProductView() {
         <div>
           <div className="relative overflow-hidden rounded-[6px] border border-border">
             <img
-              src={p.images ? p.images[selectedImg] : p.img}
+              src={p.images && p.images.length > 0 ? p.images[selectedImg] : p.img}
               alt={p.name}
               className="aspect-square w-full object-cover"
             />
