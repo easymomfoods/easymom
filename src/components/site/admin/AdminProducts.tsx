@@ -14,6 +14,7 @@ import {
   PowerOff,
   X,
   Filter,
+  ImageIcon,
 } from "lucide-react";
 import ImageUpload from "./ImageUpload";
 
@@ -379,7 +380,24 @@ function ProductEditModal({
     tags: Array.isArray(product?.tags) ? product!.tags.join(", ") : "",
   });
   const [galleryImages, setGalleryImages] = useState<string[]>(product?.images || []);
+  const [previewIdx, setPreviewIdx] = useState(0);
+  const [uploadingImg, setUploadingImg] = useState(false);
+  const allImages = [form.img, ...galleryImages].filter(Boolean);
   const [saving, setSaving] = useState(false);
+
+  async function uploadAndSet(file: File, setUrl: (url: string) => void) {
+    if (!file.type.startsWith("image/")) return;
+    setUploadingImg(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folder", "easymom/products");
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.ok) setUrl(data.url);
+    } catch {}
+    setUploadingImg(false);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -483,48 +501,113 @@ function ProductEditModal({
               </select>
             </div>
             <div className="col-span-2">
-              <ImageUpload
-                value={form.img}
-                onChange={(url) => setForm({ ...form, img: url })}
-                folder="easymom/products"
-                label="Product Image (Main)"
-              />
-            </div>
-            <div className="col-span-2">
-              <label className={labelCls}>Gallery Images (optional, up to 5)</label>
-              <div className="grid grid-cols-2 gap-3 mt-1.5">
-                {galleryImages.map((img, i) => (
-                  <div key={i} className="relative">
-                    <ImageUpload
-                      value={img}
-                      onChange={(url) => {
-                        const next = [...galleryImages];
-                        next[i] = url;
-                        setGalleryImages(next);
-                      }}
-                      folder="easymom/products"
-                    />
+              <label className={labelCls}>Product Images</label>
+              <div className="flex gap-4 mt-1.5">
+                {/* Left: large preview */}
+                <div className="w-52 h-52 shrink-0 rounded-xl border border-stone-200 overflow-hidden bg-stone-50 flex items-center justify-center">
+                  {allImages[previewIdx] ? (
+                    <img src={allImages[previewIdx]} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="text-center text-stone-400">
+                      <ImageIcon className="h-8 w-8 mx-auto mb-1" />
+                      <p className="text-[11px]">No image</p>
+                    </div>
+                  )}
+                </div>
+                {/* Right: thumbnail strip */}
+                <div className="flex flex-col gap-2">
+                  {/* Main image slot */}
+                  <div
+                    className={`relative w-16 h-16 rounded-lg border-2 overflow-hidden cursor-pointer transition-all ${
+                      previewIdx === 0 ? "border-[#891816] shadow-md" : "border-stone-200 hover:border-stone-300"
+                    }`}
+                    onClick={() => setPreviewIdx(0)}
+                  >
+                    {form.img ? (
+                      <>
+                        <img src={form.img} alt="Main" className="w-full h-full object-cover" />
+                        <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[8px] text-white text-center py-px font-medium">1</span>
+                      </>
+                    ) : (
+                      <label className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-stone-50">
+                        <Plus className="h-4 w-4 text-stone-400" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) uploadAndSet(file, (url) => setForm({ ...form, img: url }));
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>
+                  {/* Gallery image slots */}
+                  {galleryImages.map((img, i) => (
+                    <div
+                      key={i}
+                      className={`relative w-16 h-16 rounded-lg border-2 overflow-hidden cursor-pointer transition-all ${
+                        previewIdx === i + 1 ? "border-[#891816] shadow-md" : "border-stone-200 hover:border-stone-300"
+                      }`}
+                      onClick={() => setPreviewIdx(i + 1)}
+                    >
+                      {img ? (
+                        <>
+                          <img src={img} alt={`Gallery ${i + 1}`} className="w-full h-full object-cover" />
+                          <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[8px] text-white text-center py-px font-medium">{i + 2}</span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const next = galleryImages.filter((_, idx) => idx !== i);
+                              setGalleryImages(next);
+                              if (previewIdx === i + 1) setPreviewIdx(0);
+                              else if (previewIdx > i + 1) setPreviewIdx(previewIdx - 1);
+                            }}
+                            className="absolute top-0.5 right-0.5 p-0.5 rounded bg-red-500 text-white hover:bg-red-600"
+                          >
+                            <X className="h-2.5 w-2.5" />
+                          </button>
+                        </>
+                      ) : (
+                        <label className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-stone-50">
+                          <Plus className="h-4 w-4 text-stone-400" />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                uploadAndSet(file, (url) => {
+                                  const next = [...galleryImages];
+                                  next[i] = url;
+                                  setGalleryImages(next);
+                                });
+                              }
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  ))}
+                  {/* Add more slot */}
+                  {galleryImages.length < 4 && (
                     <button
                       type="button"
-                      onClick={() => setGalleryImages(galleryImages.filter((_, idx) => idx !== i))}
-                      className="absolute top-2 right-2 p-1 rounded-md bg-red-500 text-white hover:bg-red-600 z-10"
+                      onClick={() => {
+                        setGalleryImages([...galleryImages, ""]);
+                        setPreviewIdx(galleryImages.length + 1);
+                      }}
+                      className="w-16 h-16 rounded-lg border-2 border-dashed border-stone-200 hover:border-stone-300 flex items-center justify-center text-stone-400 hover:bg-stone-50 transition-all"
                     >
-                      <X className="h-3 w-3" />
+                      <Plus className="h-4 w-4" />
                     </button>
-                  </div>
-                ))}
-                {galleryImages.length < 5 && (
-                  <button
-                    type="button"
-                    onClick={() => setGalleryImages([...galleryImages, ""])}
-                    className="flex items-center justify-center h-24 rounded-xl border-2 border-dashed border-stone-200 hover:border-stone-300 hover:bg-stone-50 transition-all text-stone-400"
-                  >
-                    <div className="text-center">
-                      <Plus className="h-5 w-5 mx-auto mb-1" />
-                      <span className="text-[11px]">Add Image</span>
-                    </div>
-                  </button>
-                )}
+                  )}
+                </div>
               </div>
             </div>
             <div className="col-span-2">

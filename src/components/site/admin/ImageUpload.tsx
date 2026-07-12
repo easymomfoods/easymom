@@ -55,7 +55,7 @@ export default function ImageUpload({
 
       {/* Preview */}
       {value && (
-        <div className="relative rounded-xl overflow-hidden border border-stone-200 h-44 bg-stone-50 mb-2 group">
+        <div className="relative rounded-xl overflow-hidden border border-stone-200 aspect-square w-40 bg-stone-50 mb-2 group">
           <img src={value} alt="Preview" className="h-full w-full object-cover" />
           <button
             onClick={() => onChange("")}
@@ -67,26 +67,28 @@ export default function ImageUpload({
       )}
 
       {/* Drop zone / Upload button */}
-      <div
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={handleDrop}
-        onClick={() => inputRef.current?.click()}
-        className={`flex items-center gap-3 px-4 py-3 rounded-xl border-2 border-dashed cursor-pointer transition-all ${
-          dragOver
-            ? "border-[#891816] bg-[#891816]/5"
-            : "border-stone-200 hover:border-stone-300 hover:bg-stone-50"
-        }`}
-      >
-        {uploading ? (
-          <Loader2 className="h-5 w-5 text-[#891816] animate-spin" />
-        ) : (
-          <ImageIcon className="h-5 w-5 text-stone-400" />
-        )}
-        <span className="text-[13px] text-stone-500">
-          {uploading ? "Uploading..." : "Click or drag image to upload"}
-        </span>
-      </div>
+      {!value && (
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={handleDrop}
+          onClick={() => inputRef.current?.click()}
+          className={`w-40 flex items-center gap-2 px-3 py-2.5 rounded-xl border-2 border-dashed cursor-pointer transition-all ${
+            dragOver
+              ? "border-[#891816] bg-[#891816]/5"
+              : "border-stone-200 hover:border-stone-300 hover:bg-stone-50"
+          }`}
+        >
+          {uploading ? (
+            <Loader2 className="h-4 w-4 text-[#891816] animate-spin" />
+          ) : (
+            <ImageIcon className="h-4 w-4 text-stone-400" />
+          )}
+          <span className="text-[11px] text-stone-500 leading-tight">
+            {uploading ? "Uploading..." : "Click or drag"}
+          </span>
+        </div>
+      )}
 
       <input
         ref={inputRef}
