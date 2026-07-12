@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Loader2, X, Building2, Phone, Mail, MapPin, CreditCard, Globe, Hash } from "lucide-react";
+import { Save, Loader2, X, Building2, Phone, Mail, MapPin, CreditCard, Globe, Hash, User } from "lucide-react";
 import ImageUpload from "./ImageUpload";
 
 const BUSINESS_KEYS = [
@@ -23,20 +23,27 @@ const BUSINESS_KEYS = [
 
 export default function AdminProfile() {
   const [fields, setFields] = useState<Record<string, string>>({});
+  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [usernameSaving, setUsernameSaving] = useState(false);
+  const [usernameSaved, setUsernameSaved] = useState(false);
+  const [usernameError, setUsernameError] = useState("");
 
   useEffect(() => {
-    Promise.all(
-      BUSINESS_KEYS.map((k) =>
+    Promise.all([
+      ...BUSINESS_KEYS.map((k) =>
         fetch(`/api/site-content/${k}`).then((r) => r.json()).then((d) => [k, d.value || ""])
-      )
-    )
-      .then((entries) => {
+      ),
+      fetch("/api/admin/username").then((r) => r.json()),
+    ])
+      .then((results) => {
         const obj: Record<string, string> = {};
-        entries.forEach(([k, v]) => (obj[k] = v));
+        results.slice(0, -1).forEach(([k, v]) => (obj[k] = v));
         setFields(obj);
+        const userResult = results[results.length - 1] as any;
+        if (userResult.username) setUsername(userResult.username);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -63,6 +70,34 @@ export default function AdminProfile() {
       setTimeout(() => setSaved(false), 3000);
     } catch {}
     setSaving(false);
+  }
+
+  async function handleUsernameSave() {
+    setUsernameError("");
+    setUsernameSaved(false);
+    if (!username.trim() || username.trim().length < 3) {
+      setUsernameError("Username must be at least 3 characters");
+      return;
+    }
+    setUsernameSaving(true);
+    try {
+      const res = await fetch("/api/admin/username", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: username.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setUsernameError(data.error || "Failed to update");
+      } else {
+        setUsername(data.username);
+        setUsernameSaved(true);
+        setTimeout(() => setUsernameSaved(false), 3000);
+      }
+    } catch {
+      setUsernameError("Something went wrong");
+    }
+    setUsernameSaving(false);
   }
 
   const inputCls =
@@ -115,6 +150,34 @@ export default function AdminProfile() {
           {saving ? "Saving..." : saved ? "Saved!" : "Save All"}
         </button>
       </div>
+
+      {/* Account */}
+      <Section title="Account" icon={User}>
+        <div className="max-w-md">
+          <label className={labelCls}>Admin Username</label>
+          <div className="flex gap-3">
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              className={inputCls}
+              placeholder="admin"
+            />
+            <button
+              onClick={handleUsernameSave}
+              disabled={usernameSaving}
+              className="shrink-0 inline-flex items-center gap-2 px-4 h-11 bg-stone-900 text-white text-[13px] font-semibold rounded-xl hover:bg-stone-800 active:scale-[0.98] transition-all disabled:opacity-50"
+            >
+              {usernameSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              {usernameSaving ? "Saving..." : usernameSaved ? "Saved!" : "Update"}
+            </button>
+          </div>
+          {usernameError && (
+            <p className="mt-2 text-[12px] text-red-500">{usernameError}</p>
+          )}
+          <p className="mt-2 text-[12px] text-stone-400">This is used to sign in to the admin dashboard</p>
+        </div>
+      </Section>
 
       {/* Business Information */}
       <Section title="Business Information" icon={Building2}>

@@ -66,6 +66,7 @@ export default function AdminLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#f5f3ee] flex">
@@ -230,11 +231,7 @@ export default function AdminLayout({
                     </button>
                     <div className="mx-3 my-1 border-t border-stone-100" />
                     <button
-                      onClick={async () => {
-                        setProfileOpen(false);
-                        await fetch("/api/admin/logout", { method: "POST" });
-                        window.location.href = "/admin/login";
-                      }}
+                      onClick={() => { setProfileOpen(false); setConfirmLogout(true); }}
                       className="flex w-full items-center gap-3 px-4 py-2.5 text-[13px] text-red-600 hover:bg-red-50 transition-colors"
                     >
                       <LogOut className="h-4 w-4" />
@@ -252,6 +249,42 @@ export default function AdminLayout({
           {children}
         </main>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      {confirmLogout && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setConfirmLogout(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                <LogOut className="h-5 w-5 text-red-600" />
+              </div>
+              <h3 className="text-[16px] font-bold text-stone-900">Log out?</h3>
+            </div>
+            <p className="text-[13px] text-stone-600 leading-relaxed">
+              Are you sure you want to log out of the admin dashboard?
+            </p>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setConfirmLogout(false)}
+                className="flex-1 h-10 rounded-xl border border-stone-200 text-[13px] font-medium text-stone-700 hover:bg-stone-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  setConfirmLogout(false);
+                  await fetch("/api/admin/logout", { method: "POST" });
+                  window.location.href = "/admin/login";
+                }}
+                className="flex-1 h-10 rounded-xl bg-red-600 text-white text-[13px] font-semibold hover:bg-red-700 active:scale-[0.98] transition-all"
+              >
+                Yes, Log out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

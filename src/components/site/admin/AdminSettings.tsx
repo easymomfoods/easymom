@@ -42,6 +42,8 @@ export default function AdminSettings() {
       .then((entries) => {
         const obj: Record<string, string> = {};
         entries.forEach(([k, v]) => (obj[k] = v));
+        if (!obj.site_name) obj.site_name = "EasyMom Foods";
+        if (!obj.site_tagline) obj.site_tagline = "South India's Favourite Masala Paste";
         if (!obj.site_currency) obj.site_currency = "INR";
         if (!obj.site_currency_symbol) obj.site_currency_symbol = "₹";
         setFields(obj);
