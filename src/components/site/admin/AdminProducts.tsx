@@ -15,6 +15,7 @@ import {
   X,
   Filter,
   ImageIcon,
+  Loader2,
 } from "lucide-react";
 import ImageUpload from "./ImageUpload";
 
@@ -381,13 +382,13 @@ function ProductEditModal({
   });
   const [galleryImages, setGalleryImages] = useState<string[]>(product?.images || []);
   const [previewIdx, setPreviewIdx] = useState(0);
-  const [uploadingImg, setUploadingImg] = useState(false);
+  const [uploadingSlot, setUploadingSlot] = useState<number | null>(null);
   const allImages = [form.img, ...galleryImages].filter(Boolean);
   const [saving, setSaving] = useState(false);
 
-  async function uploadAndSet(file: File, setUrl: (url: string) => void) {
+  async function uploadAndSet(file: File, setUrl: (url: string) => void, slot: number) {
     if (!file.type.startsWith("image/")) return;
-    setUploadingImg(true);
+    setUploadingSlot(slot);
     try {
       const fd = new FormData();
       fd.append("file", file);
@@ -396,7 +397,7 @@ function ProductEditModal({
       const data = await res.json();
       if (data.ok) setUrl(data.url);
     } catch {}
-    setUploadingImg(false);
+    setUploadingSlot(null);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -505,7 +506,12 @@ function ProductEditModal({
               <div className="flex gap-4 mt-1.5">
                 {/* Left: large preview */}
                 <div className="w-52 h-52 shrink-0 rounded-xl border border-stone-200 overflow-hidden bg-stone-50 flex items-center justify-center">
-                  {allImages[previewIdx] ? (
+                  {uploadingSlot !== null ? (
+                    <div className="text-center">
+                      <Loader2 className="h-10 w-10 mx-auto mb-2 text-[#891816] animate-spin" />
+                      <p className="text-[12px] text-stone-500">Uploading...</p>
+                    </div>
+                  ) : allImages[previewIdx] ? (
                     <img src={allImages[previewIdx]} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
                     <div className="text-center text-stone-400">
@@ -528,6 +534,10 @@ function ProductEditModal({
                         <img src={form.img} alt="Main" className="w-full h-full object-cover" />
                         <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[8px] text-white text-center py-px font-medium">1</span>
                       </>
+                    ) : uploadingSlot === 0 ? (
+                      <div className="w-full h-full flex items-center justify-center bg-stone-100">
+                        <Loader2 className="h-5 w-5 text-[#891816] animate-spin" />
+                      </div>
                     ) : (
                       <label className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-stone-50">
                         <Plus className="h-4 w-4 text-stone-400" />
@@ -537,7 +547,7 @@ function ProductEditModal({
                           className="hidden"
                           onChange={(e) => {
                             const file = e.target.files?.[0];
-                            if (file) uploadAndSet(file, (url) => setForm({ ...form, img: url }));
+                            if (file) uploadAndSet(file, (url) => setForm({ ...form, img: url }), 0);
                             e.target.value = "";
                           }}
                         />
@@ -571,6 +581,10 @@ function ProductEditModal({
                             <X className="h-2.5 w-2.5" />
                           </button>
                         </>
+                      ) : uploadingSlot === i + 1 ? (
+                        <div className="w-full h-full flex items-center justify-center bg-stone-100">
+                          <Loader2 className="h-5 w-5 text-[#891816] animate-spin" />
+                        </div>
                       ) : (
                         <label className="w-full h-full flex items-center justify-center cursor-pointer hover:bg-stone-50">
                           <Plus className="h-4 w-4 text-stone-400" />
@@ -585,7 +599,7 @@ function ProductEditModal({
                                   const next = [...galleryImages];
                                   next[i] = url;
                                   setGalleryImages(next);
-                                });
+                                }, i + 1);
                               }
                               e.target.value = "";
                             }}
