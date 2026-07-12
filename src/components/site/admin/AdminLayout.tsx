@@ -23,6 +23,10 @@ import {
   Shield,
   ArrowUpRight,
   LogOut,
+  User,
+  CreditCard,
+  Globe,
+  Lock,
 } from "lucide-react";
 
 const navItems = [
@@ -32,19 +36,22 @@ const navItems = [
   { id: "orders", label: "Orders", icon: ShoppingCart },
   { id: "reviews", label: "Reviews", icon: Star },
   { id: "recipes", label: "Recipes", icon: BookOpen },
-  { id: "testimonials", label: "Testimonials", icon: Star },
+  { id: "testimonials", label: "Testimonials", icon: Megaphone },
   { id: "faqs", label: "FAQs", icon: BookOpen },
+  { divider: true, label: "Content" },
+  { id: "hero", label: "Hero", icon: Image },
+  { id: "our-products", label: "Our Products", icon: LayoutList },
+  { id: "featured", label: "Most Loved", icon: Heart },
   { id: "recipes-section", label: "Recipes Section", icon: BookOpen },
+  { id: "brand-story", label: "Brand Story", icon: BookOpenCheck },
   { id: "instagram", label: "Instagram Feed", icon: Image },
   { id: "trust-strip", label: "Trust Strip", icon: Shield },
   { id: "footer", label: "Footer", icon: ArrowUpRight },
   { id: "about", label: "Our Story", icon: BookOpenCheck },
-  { id: "brand-story", label: "Brand Story", icon: BookOpenCheck },
-  { id: "featured", label: "Most Loved", icon: Heart },
-  { id: "our-products", label: "Our Products", icon: LayoutList },
-  { id: "hero", label: "Hero", icon: Image },
   { id: "brand-strip", label: "Marquee", icon: Image },
+  { divider: true, label: "System" },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "profile", label: "Profile & Payments", icon: CreditCard },
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
@@ -71,20 +78,28 @@ export default function AdminLayout({
 
         {/* Nav */}
         <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto">
-          {navItems.map((item) => {
-            const active = activePage === item.id;
+          {navItems.map((item, i) => {
+            if ("divider" in item && item.divider) {
+              return (
+                <div key={`div-${i}`} className="pt-4 pb-1.5 px-3">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">{item.label}</p>
+                </div>
+              );
+            }
+            const navItem = item as { id: string; label: string; icon: any };
+            const active = activePage === navItem.id;
             return (
               <button
-                key={item.id}
-                onClick={() => onNavigate(item.id)}
+                key={navItem.id}
+                onClick={() => onNavigate(navItem.id)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all ${
                   active
                     ? "bg-[#891816]/8 text-[#891816]"
                     : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
                 }`}
               >
-                <item.icon className={`h-[18px] w-[18px] ${active ? "text-[#891816]" : ""}`} />
-                {item.label}
+                <navItem.icon className={`h-[18px] w-[18px] ${active ? "text-[#891816]" : ""}`} />
+                {navItem.label}
               </button>
             );
           })}
@@ -117,20 +132,28 @@ export default function AdminLayout({
               </button>
             </div>
             <nav className="py-3 px-3 space-y-0.5">
-              {navItems.map((item) => {
-                const active = activePage === item.id;
+              {navItems.map((item, i) => {
+                if ("divider" in item && item.divider) {
+                  return (
+                    <div key={`div-${i}`} className="pt-4 pb-1.5 px-3">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-stone-400">{item.label}</p>
+                    </div>
+                  );
+                }
+                const navItem = item as { id: string; label: string; icon: any };
+                const active = activePage === navItem.id;
                 return (
                   <button
-                    key={item.id}
-                    onClick={() => { onNavigate(item.id); setSidebarOpen(false); }}
+                    key={navItem.id}
+                    onClick={() => { onNavigate(navItem.id); setSidebarOpen(false); }}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all ${
                       active
                         ? "bg-[#891816]/8 text-[#891816]"
                         : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
                     }`}
                   >
-                    <item.icon className={`h-[18px] w-[18px] ${active ? "text-[#891816]" : ""}`} />
-                    {item.label}
+                    <navItem.icon className={`h-[18px] w-[18px] ${active ? "text-[#891816]" : ""}`} />
+                    {navItem.label}
                   </button>
                 );
               })}
