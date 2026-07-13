@@ -237,4 +237,8 @@
     0% { opacity: 1; transform: translateX(0) scale(1); }
     100% { opacity: 0; transform: translateX(120%) scale(0.9); }
   }
+
+  .animate-cart-in {
+    animation: cartToastIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
 }

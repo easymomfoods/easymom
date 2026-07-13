@@ -1,26 +1,30 @@
 "use client";
 
+import { useEffect } from "react";
 import { Check } from "lucide-react";
-import { toast } from "sonner";
 import { useUI } from "@/lib/ui-store";
 
 /**
- * Custom "Added to cart" notification.
- * Replaces the default sonner success toast with a fully branded design.
+ * Self-contained "Added to cart" notification.
+ * Driven by the UI store (cartToast state) — no external toast lib.
+ * Renders bottom-right with a branded check badge + View Cart action.
  */
-export function showAddedToCart(name: string, qty = 1) {
-  const { openCart } = useUI.getState();
+export function CartToast() {
+  const cartToast = useUI((s) => s.cartToast);
+  const hideCartToast = useUI((s) => s.hideCartToast);
+  const openCart = useUI((s) => s.openCart);
 
-  toast.custom(
-    (t) => (
-      <div
-        style={{
-          animation: t.visible
-            ? "cartToastIn 0.35s cubic-bezier(0.16,1,0.3,1)"
-            : "cartToastOut 0.25s ease forwards",
-        }}
-        className="pointer-events-auto flex w-[320px] items-center gap-3 overflow-hidden rounded-2xl border border-stone-200/70 bg-white p-3.5 pr-4 shadow-[0_12px_40px_-12px_rgba(24,16,12,0.35)]"
-      >
+  useEffect(() => {
+    if (!cartToast) return;
+    const t = setTimeout(() => hideCartToast(), 3500);
+    return () => clearTimeout(t);
+  }, [cartToast, hideCartToast]);
+
+  if (!cartToast) return null;
+
+  return (
+    <div className="pointer-events-none fixed bottom-5 right-5 z-[100] flex justify-end">
+      <div className="pointer-events-auto relative flex w-[320px] animate-cart-in items-center gap-3 overflow-hidden rounded-2xl border border-stone-200/70 bg-white p-3.5 pr-4 shadow-[0_12px_40px_-12px_rgba(24,16,12,0.35)]">
         {/* Accent bar */}
         <span className="absolute left-0 top-0 h-full w-1 bg-[#891816]" />
 
@@ -36,8 +40,8 @@ export function showAddedToCart(name: string, qty = 1) {
             Added to cart
           </p>
           <p className="mt-0.5 truncate text-[12px] leading-snug text-stone-500">
-            {qty > 1 ? `${qty} × ` : ""}
-            {name}
+            {cartToast.qty > 1 ? `${cartToast.qty} × ` : ""}
+            {cartToast.name}
           </p>
         </div>
 
@@ -45,14 +49,17 @@ export function showAddedToCart(name: string, qty = 1) {
         <button
           onClick={() => {
             openCart();
-            toast.dismiss(t.id);
+            hideCartToast();
           }}
           className="shrink-0 rounded-lg bg-stone-50 px-3 py-1.5 text-[12px] font-semibold text-[#891816] transition hover:bg-[#891816]/10"
         >
           View Cart
         </button>
       </div>
-    ),
-    { duration: 3500 }
+    </div>
   );
+}
+
+export function showAddedToCart(name: string, qty = 1) {
+  useUI.getState().showCartToast(name, qty);
 }

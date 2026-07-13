@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
+import { CartToast } from "@/components/site/cart-toast";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -90,6 +91,7 @@ export default function RootLayout({
         {children}
         <Toaster />
         <SonnerToaster position="bottom-right" richColors />
+        <CartToast />
       </body>
     </html>
   );

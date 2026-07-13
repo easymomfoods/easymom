@@ -153,6 +153,7 @@ type UIState = {
   maxPrice: number;
   sortBy: "featured" | "price-asc" | "price-desc" | "rating";
   wishlistOpen: boolean;
+  cartToast: { name: string; qty: number } | null;
   go: (v: View) => void;
   openCart: () => void;
   closeCart: () => void;
@@ -168,6 +169,8 @@ type UIState = {
   setMaxPrice: (n: number) => void;
   setSortBy: (s: UIState["sortBy"]) => void;
   setWishlistOpen: (v: boolean) => void;
+  showCartToast: (name: string, qty?: number) => void;
+  hideCartToast: () => void;
   syncFromURL: () => void;
 };
 
@@ -183,6 +186,7 @@ export const useUI = create<UIState>((set, get) => ({
   maxPrice: 200,
   sortBy: "featured",
   wishlistOpen: false,
+  cartToast: null,
   go: (v) => {
     const path = viewToPath(v);
     const currentPath = window.location.pathname;
@@ -214,6 +218,8 @@ export const useUI = create<UIState>((set, get) => ({
   setMaxPrice: (n) => set({ maxPrice: n }),
   setSortBy: (s) => set({ sortBy: s }),
   setWishlistOpen: (v) => set({ wishlistOpen: v }),
+  showCartToast: (name, qty = 1) => set({ cartToast: { name, qty } }),
+  hideCartToast: () => set({ cartToast: null }),
   syncFromURL: () => {
     const view = pathToView(window.location.pathname);
     set({ view });
