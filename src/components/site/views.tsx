@@ -336,7 +336,7 @@ export function ShopView() {
 }
 
 export function ProductView() {
-  const { view, go, openCart, setQuickView } = useUI();
+  const { view, go, setQuickView } = useUI();
   const { add, wishlist, toggleWishlist } = useCart();
   const [qty, setQty] = useState(1);
   const [selectedImg, setSelectedImg] = useState(-1);
@@ -617,7 +617,6 @@ export function ProductView() {
                 onClick={() => {
                   add(p, qty);
                   showAddedToCart(p.name, qty);
-                  openCart();
                 }}
                 className="flex flex-1 items-center justify-center gap-2 rounded-[4px] bg-primary px-5 py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
               >

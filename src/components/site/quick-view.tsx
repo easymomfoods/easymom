@@ -20,7 +20,7 @@ const LEVEL_COLOR: Record<string, string> = {
 };
 
 export function QuickView() {
-  const { quickView, setQuickView, openCart } = useUI();
+  const { quickView, setQuickView } = useUI();
   const { add, wishlist, toggleWishlist } = useCart();
   const [qty, setQty] = useState(1);
   const p = quickView;
@@ -157,7 +157,6 @@ export function QuickView() {
                     add(p, qty);
                     showAddedToCart(p.name, qty);
                     setQuickView(null);
-                    openCart();
                   }}
                   className="flex flex-1 items-center justify-center gap-2 rounded-[4px] bg-primary px-5 py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
                 >
