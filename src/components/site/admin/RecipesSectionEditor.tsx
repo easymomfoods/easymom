@@ -286,7 +286,8 @@ export default function RecipesSectionEditor() {
               </h3>
               <button
                 onClick={() => setShowPicker(!showPicker)}
-                className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-[#891816] bg-[#891816]/8 rounded-lg hover:bg-[#891816]/15 transition-colors"
+                disabled={selectedRecipes.length >= 3}
+                className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-[#891816] bg-[#891816]/8 rounded-lg hover:bg-[#891816]/15 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <Plus className="h-4 w-4" />
                 Add Recipe

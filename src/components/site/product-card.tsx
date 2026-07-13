@@ -10,6 +10,7 @@ import { inr } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { SpiceVisual } from "./spice-visual";
 import { toast } from "sonner";
+import { showAddedToCart } from "@/components/site/cart-toast";
 
 const LEVEL_COLOR: Record<string, string> = {
   Mild: "bg-leaf/15 text-leaf",
@@ -222,7 +223,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
             <button
               onClick={() => {
                 add(product);
-                toast.success("Added to cart", { description: product.name });
+                showAddedToCart(product.name);
               }}
               className="grid h-9 w-9 place-items-center rounded-[4px] bg-foreground text-card transition hover:bg-primary hover:text-primary-foreground active:scale-95"
               aria-label={`Add ${product.name} to cart`}

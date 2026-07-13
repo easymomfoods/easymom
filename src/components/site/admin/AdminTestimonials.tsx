@@ -123,7 +123,8 @@ export default function AdminTestimonials() {
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-white bg-[#891816] rounded-xl hover:bg-[#6d1311] transition-colors"
+          disabled={testimonials.length >= 6}
+          className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-white bg-[#891816] rounded-xl hover:bg-[#6d1311] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         >
           <Plus className="h-4 w-4" />
           Add Review

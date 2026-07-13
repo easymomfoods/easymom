@@ -9,6 +9,7 @@ import { inr } from "@/lib/format";
 import { getCategoryById } from "@/lib/data";
 import { SpiceVisual } from "./spice-visual";
 import { toast } from "sonner";
+import { showAddedToCart } from "@/components/site/cart-toast";
 import { cn } from "@/lib/utils";
 
 const LEVEL_COLOR: Record<string, string> = {
@@ -154,7 +155,7 @@ export function QuickView() {
                 <button
                   onClick={() => {
                     add(p, qty);
-                    toast.success("Added to cart", { description: `${qty} × ${p.name}` });
+                    showAddedToCart(p.name, qty);
                     setQuickView(null);
                     openCart();
                   }}

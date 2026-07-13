@@ -71,7 +71,7 @@ model Recipe {
 }
 
 model Testimonial {
-  id        String    @id
+    id          String    @id @default(cuid())
   name      String
   location  String
   role      String

@@ -689,7 +689,7 @@ export function Testimonials() {
     return () => o.disconnect();
   }, []);
 
-  const activeTestimonials = dbTestimonials.length > 0 ? dbTestimonials : testimonials;
+  const activeTestimonials = dbTestimonials.length > 0 ? dbTestimonials.slice(0, 6) : testimonials;
 
   return (
     <section ref={ref} className="bg-white">

@@ -38,6 +38,7 @@ import { SpiceVisual } from "./spice-visual";
 import { inr } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { showAddedToCart } from "@/components/site/cart-toast";
 
 type ProductData = {
   id: string;
@@ -615,7 +616,7 @@ export function ProductView() {
               <button
                 onClick={() => {
                   add(p, qty);
-                  toast.success("Added to cart", { description: `${qty} × ${p.name}` });
+                  showAddedToCart(p.name, qty);
                   openCart();
                 }}
                 className="flex flex-1 items-center justify-center gap-2 rounded-[4px] bg-primary px-5 py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
