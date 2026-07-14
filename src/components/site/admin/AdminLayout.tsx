@@ -256,7 +256,7 @@ export default function AdminLayout({
       )}
 
       {/* Main Content */}
-      <div className="flex-1 lg:ml-[220px] xl:ml-[240px] min-h-screen flex flex-col">
+      <div className="flex-1 min-w-0 lg:ml-[220px] xl:ml-[240px] min-h-screen flex flex-col">
         {/* Top Bar */}
         <header className="sticky top-0 z-30 h-16 bg-white/80 backdrop-blur-xl border-b border-stone-200/60 flex items-center px-4 lg:px-6 gap-4">
           <button

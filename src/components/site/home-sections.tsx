@@ -507,7 +507,7 @@ export function Recipes() {
             data-reveal
             onClick={() => go({ name: "recipes" })}
             className="group relative flex flex-col overflow-hidden rounded-sm border border-zinc-200 bg-white text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-zinc-200/60 lg:col-span-3 lg:row-span-2"
-            style={{ transition: "opacity 0.7s ease 0.1s, transform 0.7s ease 0.1s", opacity: 0, transform: "translateX(-28px)" }}
+            style={{ transition: "opacity 0.7s ease 0.1s, transform 0.7s ease 0.1s", opacity: 0, transform: "translateY(28px)" }}
           >
             <div className="relative flex-1 overflow-hidden">
               <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.03]">
@@ -553,7 +553,7 @@ export function Recipes() {
               data-reveal
               onClick={() => go({ name: "recipes" })}
               className="group relative flex flex-col overflow-hidden rounded-sm border border-zinc-200 bg-white text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-zinc-200/60 lg:col-span-2"
-              style={{ transition: `opacity 0.7s ease ${0.15 + i * 0.1}s, transform 0.7s ease ${0.15 + i * 0.1}s`, opacity: 0, transform: "translateX(28px)" }}
+              style={{ transition: `opacity 0.7s ease ${0.15 + i * 0.1}s, transform 0.7s ease ${0.15 + i * 0.1}s`, opacity: 0, transform: "translateY(28px)" }}
             >
               <div className="relative aspect-[5/3] overflow-hidden">
                 <div className="absolute inset-0 transition-transform duration-700 ease-out group-hover:scale-[1.03]">
