@@ -18,6 +18,7 @@ import { Footer } from "@/components/site/footer";
 import { CartDrawer, SearchOverlay, WishlistDrawer } from "@/components/site/overlays";
 import { QuickView } from "@/components/site/quick-view";
 import { Checkout } from "@/components/site/checkout";
+import AvailableNearYou from "@/components/site/available-near-you";
 import {
   ShopView,
   ProductView,
@@ -205,6 +206,7 @@ export default function Home() {
             <Recipes />
             <Testimonials />
             <InstagramFeed />
+            <AvailableNearYou />
             <TrustStrip />
           </Suspense>
         )}
