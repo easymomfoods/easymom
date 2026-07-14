@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useLayoutEffect } from "react";
 import {
   LayoutDashboard,
   Package,
@@ -88,6 +88,14 @@ export default function AdminLayout({
   const [unreadCount, setUnreadCount] = useState(0);
   const prevUnreadRef = useRef(0);
 
+  // Preserve the sidebar nav scroll position across renders / nav clicks
+  // so switching sections doesn't yank the menu back to the top.
+  const navRef = useRef<HTMLElement>(null);
+  const navScrollPos = useRef(0);
+  useLayoutEffect(() => {
+    if (navRef.current) navRef.current.scrollTop = navScrollPos.current;
+  });
+
   // Web Audio API beep — clean, no file needed
   const playBeep = useCallback(() => {
     try {
@@ -148,7 +156,13 @@ export default function AdminLayout({
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto">
+        <nav
+          ref={navRef}
+          onScroll={() => {
+            if (navRef.current) navScrollPos.current = navRef.current.scrollTop;
+          }}
+          className="flex-1 py-3 px-3 space-y-0.5 overflow-y-auto"
+        >
           {navItems.map((item, i) => {
             if ("divider" in item && item.divider) {
               return (
@@ -164,6 +178,7 @@ export default function AdminLayout({
                 key={navItem.id}
                 onClick={() => onNavigate(navItem.id)}
                 onMouseDown={(e) => e.preventDefault()}
+                onPointerDown={(e) => e.preventDefault()}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all ${
                   active
                     ? "bg-[#891816]/8 text-[#891816]"
