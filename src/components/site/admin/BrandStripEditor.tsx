@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Save, RotateCcw, Plus, Trash2, Sparkles } from "lucide-react";
+import { Save, RotateCcw, Plus, Trash2, Sparkles, Eye, Pencil } from "lucide-react";
 
 const defaults = [
   "Stone-ground in small batches",
@@ -20,6 +20,7 @@ export default function BrandStripEditor() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [preview, setPreview] = useState(false);
 
   useEffect(() => {
     fetch("/api/site-content/brand-strip")
@@ -46,6 +47,33 @@ export default function BrandStripEditor() {
 
   if (loading) return <div className="animate-pulse h-64 bg-white rounded-xl border border-stone-100" />;
 
+  if (preview) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Brand Marquee</h1>
+            <p className="text-sm text-stone-500 mt-0.5">Preview — how the marquee looks on the homepage</p>
+          </div>
+          <button onClick={() => setPreview(false)} className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-stone-600 bg-white border border-stone-200 rounded-xl hover:bg-stone-50"><Pencil className="h-4 w-4" /> Edit</button>
+        </div>
+        <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
+          <div className="border-b border-zinc-100 py-5 sm:py-7">
+            <div className="flex overflow-hidden">
+              <div className="flex shrink-0 animate-marquee items-center gap-6 pr-6 sm:gap-10 sm:pr-10">
+                {Array.from({ length: 20 }).map((_, i) => (
+                  <span key={i} className="whitespace-nowrap text-[42px] font-bold leading-none tracking-[-0.03em] text-zinc-[0.06] select-none sm:text-[64px] lg:text-[80px]">
+                    {(items[0] || "NO PREP · NO OIL · READY IN 5 MINUTES").toUpperCase()}&nbsp;&nbsp;·&nbsp;&nbsp;
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -54,6 +82,7 @@ export default function BrandStripEditor() {
           <p className="text-sm text-stone-500 mt-0.5">Scrolling text strip below the hero</p>
         </div>
         <div className="flex items-center gap-3">
+          <button onClick={() => setPreview(true)} className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-stone-600 bg-white border border-stone-200 rounded-xl hover:bg-stone-50"><Eye className="h-4 w-4" /> Preview</button>
           <button onClick={() => setItems(defaults)} className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-stone-600 bg-white border border-stone-200 rounded-xl hover:bg-stone-50"><RotateCcw className="h-4 w-4" /> Reset</button>
           <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium text-white bg-[#891816] rounded-xl hover:bg-[#6d1311] disabled:opacity-50"><Save className="h-4 w-4" />{saving ? "Saving..." : saved ? "Saved!" : "Save"}</button>
         </div>

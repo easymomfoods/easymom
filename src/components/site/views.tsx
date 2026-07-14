@@ -34,7 +34,6 @@ import {
   type SpiceLevel,
 } from "@/lib/data";
 import { ProductCard } from "./product-card";
-import { SpiceVisual } from "./spice-visual";
 import { inr } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";

@@ -7,7 +7,6 @@ import { useUI } from "@/lib/ui-store";
 import { useCart } from "@/lib/store";
 import { inr } from "@/lib/format";
 import { getCategoryById } from "@/lib/data";
-import { SpiceVisual } from "./spice-visual";
 import { toast } from "sonner";
 import { showAddedToCart } from "@/components/site/cart-toast";
 import { cn } from "@/lib/utils";

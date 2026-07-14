@@ -4,8 +4,12 @@ import { deleteAdminSession } from "@/lib/auth";
 export const runtime = "nodejs";
 
 export async function POST() {
-  await deleteAdminSession();
-  const response = NextResponse.json({ ok: true });
-  response.cookies.delete("easymom_admin_session");
-  return response;
+  try {
+    await deleteAdminSession();
+    const response = NextResponse.json({ ok: true });
+    response.cookies.delete("easymom_admin_session");
+    return response;
+  } catch {
+    return NextResponse.json({ error: "Logout failed" }, { status: 500 });
+  }
 }

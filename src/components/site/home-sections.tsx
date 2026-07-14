@@ -14,7 +14,6 @@ import { PackageIcon, LeafIcon, CircularArrowIcon, MortarIcon, FlameIcon, Shield
 import { categories, products, recipes, testimonials, brandValues, type Product } from "@/lib/data";
 import { useUI } from "@/lib/ui-store";
 import { ProductCard } from "./product-card";
-import { SpiceVisual } from "./spice-visual";
 import { inr } from "@/lib/format";
 
 const ICONS: Record<string, typeof LeafIcon> = {
@@ -310,7 +309,7 @@ export function BrandStory() {
                 key={i}
                 className="whitespace-nowrap text-[42px] font-bold leading-none tracking-[-0.03em] text-zinc-[0.06] select-none sm:text-[64px] lg:text-[80px]"
               >
-                NO PREP · NO OIL · READY IN 5 MINUTES&nbsp;&nbsp;·&nbsp;&nbsp;
+                {(marqueeText || DEFAULT_MARQUEE_TEXT).toUpperCase()}&nbsp;&nbsp;·&nbsp;&nbsp;
               </span>
             ))}
           </div>
@@ -779,40 +778,46 @@ const CARD_W = 200;
 const CARD_W_MOBILE = 140;
 const FAN_SPREAD = 100;
 const FAN_SPREAD_MOBILE = 60;
-const ROTATIONS = [-5, -3, -1.5, 0, 1.5, 3, 5];
-const VERTICAL_DROP = [30, 18, 8, 0, 8, 18, 30];
-const Z_INDEX = [4, 5, 6, 7, 6, 5, 4];
-const CENTER = 3;
-
-function getFanValues(i: number) {
-  return {
-    x: (i - CENTER) * FAN_SPREAD,
-    y: VERTICAL_DROP[i],
-    r: ROTATIONS[i],
-    z: Z_INDEX[i],
-  };
+function buildFanArrays(count: number) {
+  const center = Math.floor(count / 2);
+  const maxAngle = 5;
+  const rotations: number[] = [];
+  const verticalDrop: number[] = [];
+  const zIndex: number[] = [];
+  for (let i = 0; i < count; i++) {
+    const t = count === 1 ? 0 : (i - center) / center;
+    rotations.push(Math.round(t * maxAngle * 100) / 100);
+    const dist = Math.abs(i - center);
+    verticalDrop.push(Math.round(dist * dist * (30 / (center * center || 1))));
+    const zCenter = Math.ceil(count / 2);
+    zIndex.push(zCenter - dist);
+  }
+  return { rotations, verticalDrop, zIndex, center };
 }
 
-function getDefaultShadow(i: number) {
-  return i === CENTER
+function getDefaultShadow(i: number, center: number) {
+  return i === center
     ? "0 25px 60px -10px rgba(0,0,0,0.18), 0 40px 100px -20px rgba(0,0,0,0.22)"
     : "0 15px 40px -8px rgba(0,0,0,0.12), 0 25px 70px -15px rgba(0,0,0,0.15)";
 }
 
-function getHoverValues(i: number, hovered: number) {
-  const fan = getFanValues(i);
+function getHoverValues(i: number, hovered: number, fanSpread: number, center: number, rotations: number[], verticalDrop: number[], zIndex: number[]) {
+  const fanX = (i - center) * fanSpread;
+  const fanY = verticalDrop[i] ?? 0;
+  const fanR = rotations[i] ?? 0;
+  const fanZ = zIndex[i] ?? 0;
   if (i === hovered) {
-    return { x: fan.x, y: fan.y, r: 0, s: 1.05, z: 100, o: 1, shadow: "0 30px 70px -10px rgba(0,0,0,0.22), 0 50px 110px -25px rgba(0,0,0,0.28)" };
+    return { x: fanX, y: fanY, r: 0, s: 1.05, z: 100, o: 1, shadow: "0 30px 70px -10px rgba(0,0,0,0.22), 0 50px 110px -25px rgba(0,0,0,0.28)" };
   }
   const away = i < hovered ? -1 : 1;
   const dist = Math.max(Math.abs(i - hovered), 1);
   const shift = dist === 1 ? 26 : dist === 2 ? 16 : 8;
   return {
-    x: fan.x + away * shift,
-    y: fan.y + 4,
-    r: fan.r,
+    x: fanX + away * shift,
+    y: fanY + 4,
+    r: fanR,
     s: 0.97,
-    z: fan.z,
+    z: fanZ,
     o: 0.45,
     shadow: "0 8px 24px -6px rgba(0,0,0,0.1), 0 14px 40px -10px rgba(0,0,0,0.12)",
   };
@@ -864,29 +869,31 @@ export function InstagramFeed() {
     return () => { clearTimeout(t); clearTimeout(t2); };
   }, [isInView]);
 
+  const { rotations, verticalDrop, zIndex, center } = React.useMemo(
+    () => buildFanArrays(igCards.length),
+    [igCards.length]
+  );
+
   function getCardState(i: number) {
     const fanSpread = isMobile ? FAN_SPREAD_MOBILE : FAN_SPREAD;
-    const cardW = isMobile ? CARD_W_MOBILE : CARD_W;
-    const fan = {
-      x: (i - CENTER) * fanSpread,
-      y: VERTICAL_DROP[i],
-      r: ROTATIONS[i],
-      z: Z_INDEX[i],
-    };
-    const dist = Math.abs(i - CENTER);
+    const fanX = (i - center) * fanSpread;
+    const fanY = verticalDrop[i] ?? 0;
+    const fanR = rotations[i] ?? 0;
+    const fanZ = zIndex[i] ?? 0;
+    const dist = Math.abs(i - center);
 
-    if (i === CENTER) {
-      if (!isInView) return { x: 0, y: 0, r: 0, s: 1, z: 7, o: 1, shadow: getDefaultShadow(i) };
-      if (hovered !== null && animDone) return getHoverValues(i, hovered);
-      return { x: fan.x, y: fan.y, r: fan.r, s: 1.04, z: fan.z, o: 1, shadow: getDefaultShadow(i) };
+    if (i === center) {
+      if (!isInView) return { x: 0, y: 0, r: 0, s: 1, z: igCards.length, o: 1, shadow: getDefaultShadow(i, center) };
+      if (hovered !== null && animDone) return getHoverValues(i, hovered, fanSpread, center, rotations, verticalDrop, zIndex);
+      return { x: fanX, y: fanY, r: fanR, s: 1.04, z: fanZ, o: 1, shadow: getDefaultShadow(i, center) };
     }
 
     if (!isInView || dist > revealedPairs) {
       return { x: 0, y: 0, r: 0, s: 0.96, z: 0, o: 0, shadow: "none" };
     }
 
-    if (hovered !== null && animDone) return getHoverValues(i, hovered);
-    return { x: fan.x, y: fan.y, r: fan.r, s: 1, z: fan.z, o: 1, shadow: getDefaultShadow(i) };
+    if (hovered !== null && animDone) return getHoverValues(i, hovered, fanSpread, center, rotations, verticalDrop, zIndex);
+    return { x: fanX, y: fanY, r: fanR, s: 1, z: fanZ, o: 1, shadow: getDefaultShadow(i, center) };
   }
 
   return (
@@ -914,7 +921,7 @@ export function InstagramFeed() {
         >
           {igCards.map((card, i) => {
             const s = getCardState(i);
-            const dist = Math.abs(i - CENTER);
+            const dist = Math.abs(i - center);
             const pairDelay = dist * 0.07;
 
             return (

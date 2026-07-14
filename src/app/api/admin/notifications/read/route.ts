@@ -11,12 +11,17 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const now = new Date().toISOString();
-  await db.siteContent.upsert({
-    where: { key: "admin_notif_last_checked" },
-    update: { value: now },
-    create: { key: "admin_notif_last_checked", value: now },
-  });
+  try {
+    const now = new Date().toISOString();
+    await db.siteContent.upsert({
+      where: { key: "admin_notif_last_checked" },
+      update: { value: now },
+      create: { key: "admin_notif_last_checked", value: now },
+    });
 
-  return NextResponse.json({ ok: true, lastChecked: now });
+    return NextResponse.json({ ok: true, lastChecked: now });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Unknown error";
+    return NextResponse.json({ error: msg }, { status: 500 });
+  }
 }

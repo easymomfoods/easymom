@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, Trash2, Star, Eye, Clock } from "lucide-react";
+import { Check, Trash2, Star, Eye, Clock, X } from "lucide-react";
 
 interface Review {
   id: string;
@@ -34,6 +34,13 @@ export default function AdminReviews() {
   async function approveReview(id: string) {
     try {
       await fetch(`/api/admin/reviews/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ active: true }) });
+      fetchReviews();
+    } catch {}
+  }
+
+  async function rejectReview(id: string) {
+    try {
+      await fetch(`/api/admin/reviews/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ active: false }) });
       fetchReviews();
     } catch {}
   }
@@ -94,6 +101,11 @@ export default function AdminReviews() {
                   {!review.active && (
                     <button onClick={() => approveReview(review.id)} className="flex items-center gap-1.5 px-3 py-2 text-[12px] font-medium text-emerald-700 bg-emerald-50 rounded-lg hover:bg-emerald-100 transition">
                       <Check className="h-3.5 w-3.5" /> Approve
+                    </button>
+                  )}
+                  {review.active && (
+                    <button onClick={() => rejectReview(review.id)} className="flex items-center gap-1.5 px-3 py-2 text-[12px] font-medium text-amber-700 bg-amber-50 rounded-lg hover:bg-amber-100 transition">
+                      <X className="h-3.5 w-3.5" /> Reject
                     </button>
                   )}
                   <button onClick={() => deleteReview(review.id)} className="p-2 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50"><Trash2 className="h-4 w-4" /></button>

@@ -8,7 +8,6 @@ import { useCart } from "@/lib/store";
 import { useUI } from "@/lib/ui-store";
 import { inr } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { SpiceVisual } from "./spice-visual";
 import { toast } from "sonner";
 import { showAddedToCart } from "@/components/site/cart-toast";
 

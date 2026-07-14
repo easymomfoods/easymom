@@ -82,6 +82,7 @@ export default function AdminOrders() {
   }
 
   async function updateOrderStatus(orderId: string, status: string) {
+    if (!confirm(`Change order status to "${status}"?`)) return;
     try {
       const res = await fetch(`/api/admin/orders/${orderId}`, {
         method: "PATCH",

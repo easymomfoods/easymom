@@ -49,6 +49,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Rating must be 1-5" }, { status: 400 });
     }
 
+    const product = await db.product.findUnique({ where: { id: productId } });
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
     const review = await db.review.create({
       data: {
         productId,

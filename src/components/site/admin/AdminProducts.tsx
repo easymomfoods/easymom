@@ -49,6 +49,7 @@ interface Product {
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "inactive">("all");
@@ -56,7 +57,20 @@ export default function AdminProducts() {
   const [showAddForm, setShowAddForm] = useState(false);
 
   useEffect(() => {
-    fetchProducts();
+    Promise.all([
+      fetch("/api/admin/products").then((r) => r.json()),
+      fetch("/api/admin/categories").then((r) => r.json()),
+    ])
+      .then(([productsData, catsData]) => {
+        if (productsData.products) setProducts(productsData.products);
+        if (catsData.categories) {
+          const map: Record<string, string> = {};
+          catsData.categories.forEach((c: { id: string; name: string }) => { map[c.id] = c.name; });
+          setCategories(map);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   async function fetchProducts() {
@@ -225,7 +239,7 @@ export default function AdminProducts() {
                       </div>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className="text-[13px] text-stone-600 capitalize">{product.categoryId.replace(/-/g, " ")}</span>
+                      <span className="text-[13px] text-stone-600 capitalize">{categories[product.categoryId] || product.categoryId.replace(/-/g, " ")}</span>
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-baseline gap-1.5">

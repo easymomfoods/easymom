@@ -16,7 +16,6 @@ import { useCart } from "@/lib/store";
 import { categories as defaultCategories, products as defaultProducts } from "@/lib/data";
 import { cartCount } from "@/lib/store";
 import { cn } from "@/lib/utils";
-import { SpiceVisual } from "./spice-visual";
 
 const NAV_LINKS = [
   { label: "Shop", view: { name: "shop" as const } },

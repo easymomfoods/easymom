@@ -20,7 +20,6 @@ import { useUI } from "@/lib/ui-store";
 import { useCart, cartSubtotal, cartCount } from "@/lib/store";
 import { products, categories } from "@/lib/data";
 import { inr } from "@/lib/format";
-import { SpiceVisual } from "./spice-visual";
 import { ProductCard } from "./product-card";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";

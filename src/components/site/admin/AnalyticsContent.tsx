@@ -70,6 +70,30 @@ export default function AnalyticsContent() {
   const codOrders = orders.filter((o) => o.paymentMethod === "cod").length;
   const upiOrders = orders.filter((o) => o.paymentMethod === "upi_qr").length;
 
+  // Trend calculations (this week vs last week)
+  const now = new Date();
+  const thisWeekStart = new Date(now);
+  thisWeekStart.setDate(now.getDate() - now.getDay());
+  thisWeekStart.setHours(0, 0, 0, 0);
+  const lastWeekStart = new Date(thisWeekStart);
+  lastWeekStart.setDate(thisWeekStart.getDate() - 7);
+  const lastWeekEnd = new Date(thisWeekStart);
+  lastWeekEnd.setMilliseconds(-1);
+
+  const thisWeekOrders = orders.filter((o) => new Date(o.createdAt) >= thisWeekStart);
+  const lastWeekOrders = orders.filter((o) => {
+    const d = new Date(o.createdAt);
+    return d >= lastWeekStart && d < thisWeekStart;
+  });
+
+  const thisWeekRevenue = thisWeekOrders.filter((o) => o.paymentStatus === "paid").reduce((s, o) => s + o.total, 0);
+  const lastWeekRevenue = lastWeekOrders.filter((o) => o.paymentStatus === "paid").reduce((s, o) => s + o.total, 0);
+  const revenueTrend = lastWeekRevenue > 0 ? Math.round(((thisWeekRevenue - lastWeekRevenue) / lastWeekRevenue) * 100) : 0;
+
+  const thisWeekAvg = thisWeekOrders.length ? Math.round(thisWeekRevenue / thisWeekOrders.length) : 0;
+  const lastWeekAvg = lastWeekOrders.length ? Math.round(lastWeekRevenue / lastWeekOrders.length) : 0;
+  const avgTrend = lastWeekAvg > 0 ? Math.round(((thisWeekAvg - lastWeekAvg) / lastWeekAvg) * 100) : 0;
+
   // Status breakdown
   const statusBreakdown = [
     { label: "Confirmed", count: orders.filter((o) => o.status === "confirmed").length, color: "#3b82f6" },
@@ -151,10 +175,10 @@ export default function AnalyticsContent() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Total Revenue" value={inr(totalRevenue)} trend="+22.4%" trendUp icon={<IndianRupee className="h-5 w-5" />} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
-        <StatCard label="Avg. Order Value" value={inr(avgOrderValue)} trend="+8.2%" trendUp icon={<BarChart3 className="h-5 w-5" />} iconBg="bg-[#891816]/8" iconColor="text-[#891816]" />
+        <StatCard label="Total Revenue" value={inr(totalRevenue)} trend={lastWeekRevenue > 0 ? `${revenueTrend > 0 ? "+" : ""}${revenueTrend}%` : "N/A"} trendUp={revenueTrend >= 0} icon={<IndianRupee className="h-5 w-5" />} iconBg="bg-emerald-50" iconColor="text-emerald-600" />
+        <StatCard label="Avg. Order Value" value={inr(avgOrderValue)} trend={lastWeekAvg > 0 ? `${avgTrend > 0 ? "+" : ""}${avgTrend}%` : "N/A"} trendUp={avgTrend >= 0} icon={<BarChart3 className="h-5 w-5" />} iconBg="bg-[#891816]/8" iconColor="text-[#891816]" />
         <StatCard label="COD Orders" value={String(codOrders)} trend={`${upiOrders} UPI`} trendUp={false} icon={<ShoppingCart className="h-5 w-5" />} iconBg="bg-amber-50" iconColor="text-amber-600" />
-        <StatCard label="Conversion Rate" value="4.8%" trend="+1.2%" trendUp icon={<Activity className="h-5 w-5" />} iconBg="bg-purple-50" iconColor="text-purple-600" />
+        <StatCard label="Total Orders" value={String(orders.length)} trend={thisWeekOrders.length > 0 ? `${thisWeekOrders.length} this week` : "No orders yet"} trendUp icon={<Activity className="h-5 w-5" />} iconBg="bg-purple-50" iconColor="text-purple-600" />
       </div>
 
       {/* Charts Row */}

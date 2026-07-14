@@ -18,7 +18,6 @@ import {
 import { useUI } from "@/lib/ui-store";
 import { useCart, cartSubtotal, cartCount } from "@/lib/store";
 import { inr, orderId } from "@/lib/format";
-import { SpiceVisual } from "./spice-visual";
 
 type Step = "details" | "payment" | "processing";
 
