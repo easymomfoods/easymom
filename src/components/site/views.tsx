@@ -785,16 +785,16 @@ export function ProductView() {
                 </div>
                 <h4 className="mt-3 text-[14px] font-semibold text-foreground">{review.title}</h4>
                 <p className="mt-1.5 text-[14px] leading-relaxed text-foreground/80">{review.body}</p>
-              </div>
-            ))}
           </div>
-        ) : (
-          !showReviewForm && (
-            <div className="rounded-[6px] border border-dashed border-border py-12 text-center">
-              <p className="text-[15px] text-muted-foreground">No reviews yet. Be the first to share your experience!</p>
-            </div>
-          )
-        )}
+        ))}
+      </div>
+      ) : (
+        !showReviewForm && (
+          <div className="rounded-[6px] border border-dashed border-border py-12 text-center">
+            <p className="text-[15px] text-muted-foreground">No reviews yet. Be the first to share your experience!</p>
+          </div>
+        )
+      )}
 
         {hasMoreReviews && (
           <div className="mt-6 text-center">
@@ -1067,21 +1067,11 @@ export function AboutView() {
   );
 }
 
-const DEFAULT_FAQS: { question: string; answer: string }[] = [
-  { question: "How long does delivery take?", answer: "Orders are dispatched within 24 hours from our Mangalore facility. Metro cities receive in 2–3 days, the rest of India in 4–6 days. International orders to the UAE, UK, Singapore, USA, Canada and Australia take 7–12 days, shipped DDP." },
-  { question: "Are your masalas preservative-free?", answer: "Entirely. No preservatives, no added colour, no anti-caking agents. The shelf life comes from low-moisture roasting and airtight packaging, not chemistry. Read the back of any pouch — it reads like a recipe." },
-  { question: "What's the shelf life?", answer: "8–12 months unopened, depending on the blend. Once opened, use within 3 months and keep the pouch sealed in a cool, dry place away from direct sunlight." },
-  { question: "Do you ship internationally?", answer: "Yes — we currently ship to the UAE, UK, Singapore, USA, Canada and Australia. Duties are prepaid at checkout (DDP) so there are no surprise charges on delivery." },
-  { question: "What's your return policy?", answer: "If a blend arrives damaged or isn't what you expected, write to hello@easymom.in within 7 days and we'll replace or refund — no questions, no fuss. Spoilage in transit is on us." },
-  { question: "Is the packaging recyclable?", answer: "Our pouches are recyclable LDPE (category 4). The outer mailer is recycled kraft. We're transitioning to compostable pouches across the range by Q3 2025." },
-  { question: "How do I track my order?", answer: "Every order gets a tracking link by email and SMS within 24 hours of dispatch. You can also track from the order confirmation page." },
-  { question: "Do you offer bulk or gifting?", answer: "Yes — we do corporate gifting, wedding favours and wholesale. Write to hello@easymom.in with your requirements and we'll put together a custom selection." },
-];
-
 export function FaqView() {
   const go = useUI((s) => s.go);
   const [open, setOpen] = useState<number | null>(0);
   const [dbFaqs, setDbFaqs] = useState<{ question: string; answer: string }[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/faqs")
@@ -1091,10 +1081,9 @@ export function FaqView() {
           setDbFaqs(d.faqs.map((f: any) => ({ question: f.question, answer: f.answer })));
         }
       })
-      .catch((e) => { console.error(e); });
+      .catch((e) => { console.error(e); })
+      .finally(() => setLoading(false));
   }, []);
-
-  const faqs = dbFaqs.length > 0 ? dbFaqs : DEFAULT_FAQS;
 
   return (
     <div className="mx-auto max-w-3xl px-4 pb-20 pt-24 sm:px-6 lg:px-8 lg:pt-28">
@@ -1111,7 +1100,18 @@ export function FaqView() {
         </p>
       </div>
       <div className="mt-10 space-y-3">
-        {faqs.map((f, i) => (
+        {loading ? (
+          <div className="space-y-3 animate-pulse">
+            {[0, 1, 2, 3].map((i) => (
+              <div key={i} className="h-14 rounded-[6px] border border-border bg-card" />
+            ))}
+          </div>
+        ) : dbFaqs.length === 0 ? (
+          <p className="py-12 text-center text-[14px] text-muted-foreground">
+            No FAQs published yet. Add them from the admin panel.
+          </p>
+        ) : (
+          dbFaqs.map((f, i) => (
           <div key={i} className="overflow-hidden rounded-[6px] border border-border bg-card">
             <button
               onClick={() => setOpen(open === i ? null : i)}
@@ -1134,7 +1134,7 @@ export function FaqView() {
               )}
             </AnimatePresence>
           </div>
-        ))}
+        )))}
       </div>
     </div>
   );
