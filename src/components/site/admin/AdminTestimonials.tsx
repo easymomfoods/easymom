@@ -10,6 +10,7 @@ import {
   X,
   Quote,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface Testimonial {
   id: string;
@@ -46,9 +47,18 @@ export default function AdminTestimonials() {
   const [saving, setSaving] = useState(false);
 
   async function load() {
-    const r = await fetch("/api/admin/testimonials").then((r) => r.json());
-    setTestimonials(r.testimonials || []);
-    setLoading(false);
+    try {
+      const r = await fetch("/api/admin/testimonials").then((r) => {
+        if (!r.ok) throw new Error("Failed to load");
+        return r.json();
+      });
+      setTestimonials(r.testimonials || []);
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to load testimonials");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -70,29 +80,39 @@ export default function AdminTestimonials() {
   async function handleSave() {
     setSaving(true);
     try {
-      if (editId) {
-        await fetch(`/api/admin/testimonials/${editId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-      } else {
-        await fetch("/api/admin/testimonials", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
+      const url = editId ? `/api/admin/testimonials/${editId}` : "/api/admin/testimonials";
+      const method = editId ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Save failed");
       }
+      toast.success(editId ? "Testimonial updated" : "Testimonial created");
       setModal(false);
       load();
-    } catch (e) { console.error(e); }
-    setSaving(false);
+    } catch (e) {
+      console.error(e);
+      toast.error(e instanceof Error ? e.message : "Failed to save testimonial");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this testimonial?")) return;
-    await fetch(`/api/admin/testimonials/${id}`, { method: "DELETE" });
-    load();
+    try {
+      const res = await fetch(`/api/admin/testimonials/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      toast.success("Testimonial deleted");
+      load();
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to delete testimonial");
+    }
   }
 
   const filtered = testimonials.filter(
@@ -237,7 +257,7 @@ export default function AdminTestimonials() {
                 </div>
                 <div>
                   <label className={labelCls}>Rating (1-5)</label>
-                  <input type="number" min={1} max={5} value={form.rating} onChange={(e) => setForm({ ...form, rating: parseInt(e.target.value) || 5 })} className={inputCls} />
+                  <input type="number" min={1} max={5} value={form.rating} onChange={(e) => setForm({ ...form, rating: Math.min(5, Math.max(1, parseInt(e.target.value) || 5)) })} className={inputCls} />
                 </div>
               </div>
               <div>

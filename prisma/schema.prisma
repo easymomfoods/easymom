@@ -20,6 +20,8 @@ model Category {
   hue         Int
   sortOrder   Int       @default(0)
   products    Product[]
+
+  @@index([sortOrder])
 }
 
 model Product {
@@ -52,6 +54,11 @@ model Product {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   reviews      Review[]
+
+  @@index([categoryId])
+  @@index([active])
+  @@index([bestSeller])
+  @@index([createdAt])
 }
 
 model Recipe {
@@ -71,16 +78,18 @@ model Recipe {
 }
 
 model Testimonial {
-    id          String    @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
   location  String
   role      String
   quote     String
   rating    Int
   product   String
-  active    Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active])
 }
 
 model Order {
@@ -106,6 +115,11 @@ model Order {
   itemsJson     String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+  @@index([createdAt])
+  @@index([paymentStatus])
 }
 
 model Coupon {
@@ -145,6 +159,9 @@ model Review {
   body      String
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([active])
 }
 
 model Faq {
@@ -155,4 +172,7 @@ model Faq {
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([active])
+  @@index([sortOrder])
 }

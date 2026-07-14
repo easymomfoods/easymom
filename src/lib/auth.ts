@@ -1,12 +1,19 @@
 // EasyMom Foods — Admin auth helpers
 // Cookie-based session with Upstash Redis persistence.
 
-import { createHash, timingSafeEqual } from "crypto";
+import { createHash, timingSafeEqual, randomBytes } from "crypto";
 import { cookies } from "next/headers";
 import { createSession, getSession, deleteSession as deleteRedisSession } from "./session-store";
 
 const SESSION_COOKIE = "easymom_admin_session";
-const SESSION_SECRET = process.env.SESSION_SECRET || "easymom-dev-secret-change-in-prod";
+
+function getSessionSecret(): string {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret || secret === "easymom-dev-secret-change-in-prod") {
+    throw new Error("SESSION_SECRET env var must be set in production");
+  }
+  return secret;
+}
 
 export function hashPassword(password: string): string {
   const bcrypt = require("bcryptjs");
@@ -18,8 +25,10 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
     const bcrypt = require("bcryptjs");
     return bcrypt.compareSync(password, hash);
   }
-  const inputHash = createHash("sha256").update(password + SESSION_SECRET).digest("hex");
+  // Legacy fallback — should not be used for new passwords
   try {
+    const secret = getSessionSecret();
+    const inputHash = createHash("sha256").update(password + secret).digest("hex");
     return timingSafeEqual(Buffer.from(inputHash), Buffer.from(hash));
   } catch {
     return false;
@@ -27,9 +36,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 }
 
 export async function createAdminSession(username: string): Promise<string> {
-  const token = createHash("sha256")
-    .update(username + Date.now() + Math.random().toString())
-    .digest("hex");
+  const token = randomBytes(32).toString("hex");
 
   await createSession(token, { username, createdAt: Date.now() });
   return token;

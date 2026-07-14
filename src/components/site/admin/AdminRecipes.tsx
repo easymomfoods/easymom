@@ -14,6 +14,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface Recipe {
   id: string;
@@ -65,13 +66,19 @@ export default function AdminRecipes() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   async function load() {
-    const [r, p] = await Promise.all([
-      fetch("/api/admin/recipes").then((r) => r.json()),
-      fetch("/api/products").then((r) => r.json()),
-    ]);
-    setRecipes(r.recipes || []);
-    setProducts(p.products || []);
-    setLoading(false);
+    try {
+      const [r, p] = await Promise.all([
+        fetch("/api/admin/recipes").then((r) => { if (!r.ok) throw new Error("Failed to load"); return r.json(); }),
+        fetch("/api/products").then((r) => { if (!r.ok) throw new Error("Failed to load"); return r.json(); }),
+      ]);
+      setRecipes(r.recipes || []);
+      setProducts(p.products || []);
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to load recipes");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -95,29 +102,39 @@ export default function AdminRecipes() {
   async function handleSave() {
     setSaving(true);
     try {
-      if (editId) {
-        await fetch(`/api/admin/recipes/${editId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
-      } else {
-        await fetch("/api/admin/recipes", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        });
+      const url = editId ? `/api/admin/recipes/${editId}` : "/api/admin/recipes";
+      const method = editId ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Save failed");
       }
+      toast.success(editId ? "Recipe updated" : "Recipe created");
       setModal(false);
       load();
-    } catch (e) { console.error(e); }
-    setSaving(false);
+    } catch (e) {
+      console.error(e);
+      toast.error(e instanceof Error ? e.message : "Failed to save recipe");
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this recipe?")) return;
-    await fetch(`/api/admin/recipes/${id}`, { method: "DELETE" });
-    load();
+    try {
+      const res = await fetch(`/api/admin/recipes/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      toast.success("Recipe deleted");
+      load();
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to delete recipe");
+    }
   }
 
   function addStep() {

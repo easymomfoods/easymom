@@ -94,6 +94,10 @@ function viewToPath(v: View): string {
       return "/admin/profile";
     case "admin-settings":
       return "/admin/settings";
+    case "admin-coupons":
+      return "/admin/coupons";
+    case "admin-store-locations":
+      return "/admin/store-locations";
     case "track-order":
       return v.orderId ? `/track-order/${v.orderId}` : "/track-order";
     default:
@@ -134,6 +138,8 @@ function pathToView(pathname: string): View {
     if (parts[1] === "brand-strip") return { name: "admin-brand-strip" };
     if (parts[1] === "profile") return { name: "admin-profile" };
     if (parts[1] === "settings") return { name: "admin-settings" };
+    if (parts[1] === "coupons") return { name: "admin-coupons" };
+    if (parts[1] === "store-locations") return { name: "admin-store-locations" };
     return { name: "admin" };
   }
   if (parts[0] === "track-order") {
