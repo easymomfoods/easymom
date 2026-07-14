@@ -28,12 +28,6 @@ type CartState = {
   removeCoupon: () => void;
 };
 
-const COUPONS: Record<string, number> = {
-  EASY10: 10,
-  FAMILIAR20: 20,
-  FIRST15: 15,
-};
-
 export const useCart = create<CartState>()(
   persist(
     (set, get) => ({
@@ -97,11 +91,6 @@ export const useCart = create<CartState>()(
             return true;
           }
         } catch {}
-        // Fallback to hardcoded coupons
-        if (COUPONS[upper]) {
-          set({ coupon: { code: upper, discountPct: COUPONS[upper] } });
-          return true;
-        }
         return false;
       },
       removeCoupon: () => set({ coupon: null }),

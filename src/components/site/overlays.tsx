@@ -88,6 +88,24 @@ export function CartDrawer() {
   const { cartOpen, closeCart, setCheckout } = useUI();
   const { lines, setQty, remove, coupon, applyCoupon, removeCoupon } = useCart();
   const [code, setCode] = useState("");
+  const [availableCoupons, setAvailableCoupons] = useState<{ code: string; discountPct: number }[]>([]);
+
+  useEffect(() => {
+    if (!cartOpen) return;
+    fetch("/api/site-content/coupons")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.value) {
+          try {
+            const parsed = JSON.parse(d.value);
+            if (Array.isArray(parsed)) {
+              setAvailableCoupons(parsed.filter((c: any) => c.active).map((c: any) => ({ code: c.code, discountPct: c.discountPct })));
+            }
+          } catch {}
+        }
+      })
+      .catch(() => {});
+  }, [cartOpen]);
   const subPop = usePop();
   const totPop = usePop();
 
@@ -214,7 +232,7 @@ export function CartDrawer() {
                             toast.success("Coupon applied", { description: `${code.toUpperCase()} active` });
                             setCode("");
                           } else {
-                            toast.error("Invalid code", { description: "Try EASY10, FIRST15 or FAMILIAR20" });
+                            toast.error("Invalid code", { description: availableCoupons.length > 0 ? `Try ${availableCoupons.map((c) => c.code).join(", ")}` : "No coupons available right now" });
                           }
                         }}
                         className="flex items-center gap-2"
@@ -234,7 +252,11 @@ export function CartDrawer() {
                       </form>
                     )}
                     <p className="mt-2 text-[11px] text-muted-foreground">
-                      Try <strong className="text-foreground">EASY10</strong> for 10% off your first order.
+                      {availableCoupons.length > 0 ? (
+                        <>Try <strong className="text-foreground">{availableCoupons[0].code}</strong> for {availableCoupons[0].discountPct}% off.</>
+                      ) : (
+                        "No coupons available right now."
+                      )}
                     </p>
                   </div>
                 </div>
