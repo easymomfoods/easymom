@@ -433,7 +433,6 @@ function OrderSuccess({
   onClose: () => void;
 }) {
   const { go } = useUI();
-  const go2 = useUI((s) => s.go);
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.96 }}
@@ -484,7 +483,7 @@ function OrderSuccess({
           onClick={() => {
             onClose();
             useUI.getState().setOrderConfirmed(false);
-            go2({ name: "shop" });
+            go({ name: "shop" });
           }}
           className="rounded-[4px] border border-border px-6 py-3 text-[14px] font-semibold text-foreground transition hover:border-foreground/30"
         >

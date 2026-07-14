@@ -50,10 +50,8 @@ export function Hero() {
         if (!e.isIntersecting) return;
         o.disconnect();
 
-        // Parse target number from string like "42,000+"
         const numStr = hero.statNumber.replace(/[^0-9]/g, "");
         const target = parseInt(numStr) || 42000;
-        const isThousands = hero.statNumber.includes(",");
         const duration = 1600;
         const startTime = performance.now();
 
@@ -63,11 +61,7 @@ export function Hero() {
           const eased = 1 - Math.pow(1 - progress, 3);
           const cur = Math.round(eased * target);
 
-          if (isThousands) {
-            setCount(cur);
-          } else {
-            setCount(cur);
-          }
+          setCount(cur);
 
           if (progress < 1) {
             requestAnimationFrame(step);
