@@ -33,6 +33,7 @@ import {
   RecipesSkeleton,
   AboutSkeleton,
   FaqSkeleton,
+  TrackOrderSkeleton,
 } from "@/components/site/page-skeletons";
 import AdminLogin from "@/components/site/admin/AdminLogin";
 import AdminLayout from "@/components/site/admin/AdminLayout";
@@ -134,7 +135,7 @@ export default function Home() {
       return <AdminLogin onLogin={() => { setAdminLoggedIn(true); go({ name: "admin" }); }} />;
     }
 
-    const adminPage = view.name === "admin" ? "dashboard" : view.name.replace("admin-", "");
+    const adminPage = (view.name === "admin" || view.name === "admin-login") ? "dashboard" : view.name.replace("admin-", "");
 
     return (
       <AdminLayout
@@ -144,7 +145,7 @@ export default function Home() {
           else go({ name: `admin-${page}` as any });
         }}
       >
-        {view.name === "admin" && <DashboardContent />}
+        {(view.name === "admin" || view.name === "admin-login") && <DashboardContent />}
         {view.name === "admin-orders" && <AdminOrders />}
         {view.name === "admin-products" && <AdminProducts />}
         {view.name === "admin-analytics" && <AnalyticsContent />}
@@ -232,7 +233,11 @@ export default function Home() {
             <FaqView />
           </Suspense>
         )}
-        {view.name === "track-order" && <TrackOrder />}
+        {view.name === "track-order" && (
+          <Suspense fallback={<TrackOrderSkeleton />}>
+            <TrackOrder />
+          </Suspense>
+        )}
       </main>
 
       <Footer />

@@ -420,3 +420,27 @@ export function FaqSkeleton() {
     </div>
   );
 }
+
+export function TrackOrderSkeleton() {
+  return (
+    <div className="mx-auto max-w-[520px] px-4 py-16 sm:px-6 lg:px-8">
+      <div className="text-center">
+        <Skeleton className="mx-auto h-6 w-48" />
+        <Skeleton className="mx-auto mt-3 h-4 w-64" />
+      </div>
+      <div className="mt-8 space-y-4">
+        <Skeleton className="h-12 w-full rounded-xl" />
+        <Skeleton className="h-12 w-full rounded-xl" />
+        <Skeleton className="h-12 w-full rounded-xl" />
+      </div>
+      <div className="mt-6 space-y-6">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 shrink-0 rounded-full" />
+            <Skeleton className="h-4 w-40" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
