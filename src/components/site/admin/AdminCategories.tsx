@@ -32,7 +32,7 @@ export default function AdminCategories() {
       const res = await fetch("/api/admin/categories");
       const data = await res.json();
       if (data.categories) setCategories(data.categories);
-    } catch {} finally { setLoading(false); }
+    } catch (e) { console.error(e); } finally { setLoading(false); }
   }
 
   async function handleSave() {
@@ -42,12 +42,12 @@ export default function AdminCategories() {
       const method = editing ? "PUT" : "POST";
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       if (res.ok) { fetchCategories(); setEditing(null); setShowAdd(false); setForm({ name: "", tagline: "", description: "", accent: "zinc", hue: 0, sortOrder: 0 }); }
-    } catch {} setSaving(false);
+    } catch (e) { console.error(e); } setSaving(false);
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this category?")) return;
-    try { await fetch(`/api/admin/categories/${id}`, { method: "DELETE" }); fetchCategories(); } catch {}
+    try { await fetch(`/api/admin/categories/${id}`, { method: "DELETE" }); fetchCategories(); } catch (e) { console.error(e); }
   }
 
   if (loading) return <div className="animate-pulse h-64 bg-white rounded-xl border border-stone-100" />;

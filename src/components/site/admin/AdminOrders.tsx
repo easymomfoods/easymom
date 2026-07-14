@@ -76,7 +76,7 @@ export default function AdminOrders() {
       const res = await fetch("/api/admin/orders");
       const data = await res.json();
       if (res.ok) setOrders(data.orders);
-    } catch {} finally {
+    } catch (e) { console.error(e); } finally {
       setLoading(false);
     }
   }
@@ -95,7 +95,7 @@ export default function AdminOrders() {
           setSelectedOrder((prev) => (prev ? { ...prev, status } : null));
         }
       }
-    } catch {}
+    } catch (e) { console.error(e); }
   }
 
   async function updatePaymentStatus(orderId: string, paymentStatus: string) {
@@ -111,7 +111,7 @@ export default function AdminOrders() {
           setSelectedOrder((prev) => (prev ? { ...prev, paymentStatus } : null));
         }
       }
-    } catch {}
+    } catch (e) { console.error(e); }
   }
 
   function inr(amount: number) {

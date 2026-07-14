@@ -85,7 +85,7 @@ export default function AdminTestimonials() {
       }
       setModal(false);
       load();
-    } catch {}
+    } catch (e) { console.error(e); }
     setSaving(false);
   }
 

@@ -45,7 +45,7 @@ export default function AdminProfile() {
         const userResult = results[results.length - 1] as any;
         if (userResult.username) setUsername(userResult.username);
       })
-      .catch(() => {})
+      .catch((e) => { console.error(e); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -68,7 +68,7 @@ export default function AdminProfile() {
       );
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch {}
+    } catch (e) { console.error(e); }
     setSaving(false);
   }
 

@@ -62,7 +62,7 @@ export default function FeaturedEditor() {
           try {
             const parsed = JSON.parse(contentData.value);
             setData({ ...defaults, ...parsed });
-          } catch {}
+          } catch (e) { console.error(e); }
         } else {
           // No saved content yet — preload bestSellers from DB as defaults
           if (productsData.products) {
@@ -77,7 +77,7 @@ export default function FeaturedEditor() {
           setAllProducts(productsData.products);
         }
       })
-      .catch(() => {})
+      .catch((e) => { console.error(e); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -92,7 +92,7 @@ export default function FeaturedEditor() {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch {}
+    } catch (e) { console.error(e); }
     setSaving(false);
   }
 

@@ -48,7 +48,7 @@ export default function AdminSettings() {
         if (!obj.site_currency_symbol) obj.site_currency_symbol = "₹";
         setFields(obj);
       })
-      .catch(() => {})
+      .catch((e) => { console.error(e); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -71,7 +71,7 @@ export default function AdminSettings() {
       );
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch {}
+    } catch (e) { console.error(e); }
     setSaving(false);
   }
 
@@ -227,7 +227,7 @@ export default function AdminSettings() {
                   method: "PUT",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ value: "false" }),
-                }).catch(() => {});
+                }).catch((e) => { console.error(e); });
               } else {
                 // Turning ON — show confirmation
                 setConfirmMaintenance(true);
@@ -428,7 +428,7 @@ export default function AdminSettings() {
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ value: "true" }),
                     });
-                  } catch {}
+                  } catch (e) { console.error(e); }
                 }}
                 className="flex-1 h-10 rounded-xl bg-[#891816] text-white text-[13px] font-semibold hover:bg-[#6d1311] active:scale-[0.98] transition-all"
               >

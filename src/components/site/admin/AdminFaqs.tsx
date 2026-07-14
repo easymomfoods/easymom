@@ -30,7 +30,7 @@ export default function AdminFaqs() {
       const res = await fetch("/api/admin/faqs");
       const data = await res.json();
       if (data.faqs) setFaqs(data.faqs);
-    } catch {} finally { setLoading(false); }
+    } catch (e) { console.error(e); } finally { setLoading(false); }
   }
 
   async function handleSave() {
@@ -40,19 +40,19 @@ export default function AdminFaqs() {
       const method = editing ? "PUT" : "POST";
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       if (res.ok) { fetchFaqs(); setEditing(null); setShowAdd(false); setForm({ question: "", answer: "", sortOrder: 0, active: true }); }
-    } catch {} setSaving(false);
+    } catch (e) { console.error(e); } setSaving(false);
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this FAQ?")) return;
-    try { await fetch(`/api/admin/faqs/${id}`, { method: "DELETE" }); fetchFaqs(); } catch {}
+    try { await fetch(`/api/admin/faqs/${id}`, { method: "DELETE" }); fetchFaqs(); } catch (e) { console.error(e); }
   }
 
   async function toggleActive(faq: Faq) {
     try {
       await fetch(`/api/admin/faqs/${faq.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...faq, active: !faq.active }) });
       fetchFaqs();
-    } catch {}
+    } catch (e) { console.error(e); }
   }
 
   if (loading) return <div className="animate-pulse h-64 bg-white rounded-xl border border-stone-100" />;

@@ -110,7 +110,7 @@ export default function AdminRecipes() {
       }
       setModal(false);
       load();
-    } catch {}
+    } catch (e) { console.error(e); }
     setSaving(false);
   }
 

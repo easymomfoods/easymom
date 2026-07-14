@@ -28,26 +28,26 @@ export default function AdminReviews() {
       const res = await fetch("/api/admin/reviews");
       const data = await res.json();
       if (data.reviews) setReviews(data.reviews);
-    } catch {} finally { setLoading(false); }
+    } catch (e) { console.error(e); } finally { setLoading(false); }
   }
 
   async function approveReview(id: string) {
     try {
       await fetch(`/api/admin/reviews/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ active: true }) });
       fetchReviews();
-    } catch {}
+    } catch (e) { console.error(e); }
   }
 
   async function rejectReview(id: string) {
     try {
       await fetch(`/api/admin/reviews/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ active: false }) });
       fetchReviews();
-    } catch {}
+    } catch (e) { console.error(e); }
   }
 
   async function deleteReview(id: string) {
     if (!confirm("Delete this review?")) return;
-    try { await fetch(`/api/admin/reviews/${id}`, { method: "DELETE" }); fetchReviews(); } catch {}
+    try { await fetch(`/api/admin/reviews/${id}`, { method: "DELETE" }); fetchReviews(); } catch (e) { console.error(e); }
   }
 
   const filtered = reviews.filter((r) => filter === "all" || (filter === "pending" && !r.active) || (filter === "approved" && r.active));

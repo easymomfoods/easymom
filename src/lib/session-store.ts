@@ -35,14 +35,18 @@ function loadFileSessions(): Map<string, Session> {
       const data = JSON.parse(readFileSync(SESSION_FILE, "utf-8"));
       return new Map(Object.entries(data));
     }
-  } catch {}
+  } catch (e) {
+    console.error("Failed to load dev sessions:", e);
+  }
   return new Map();
 }
 
 function saveFileSessions(map: Map<string, Session>) {
   try {
     writeFileSync(SESSION_FILE, JSON.stringify(Object.fromEntries(map)));
-  } catch {}
+  } catch (e) {
+    console.error("Failed to save dev sessions:", e);
+  }
 }
 
 let memoryFallback = loadFileSessions();

@@ -101,10 +101,10 @@ export function CartDrawer() {
             if (Array.isArray(parsed)) {
               setAvailableCoupons(parsed.filter((c: any) => c.active).map((c: any) => ({ code: c.code, discountPct: c.discountPct })));
             }
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, [cartOpen]);
   const subPop = usePop();
   const totPop = usePop();
@@ -128,7 +128,7 @@ export function CartDrawer() {
         });
         if (changed) useCart.setState({ lines: updated });
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   const subtotal = cartSubtotal(lines);
@@ -441,7 +441,7 @@ export function WishlistDrawer() {
         const all = d.products || [];
         setWishlistProducts(all.filter((p: any) => wishlist.includes(p.id)));
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, [wishlistOpen, wishlist]);
   return (
     <AnimatePresence>

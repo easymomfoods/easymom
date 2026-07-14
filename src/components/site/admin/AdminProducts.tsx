@@ -69,7 +69,7 @@ export default function AdminProducts() {
           setCategories(map);
         }
       })
-      .catch(() => {})
+      .catch((e) => { console.error(e); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -78,8 +78,8 @@ export default function AdminProducts() {
       const res = await fetch("/api/admin/products");
       const data = await res.json();
       if (res.ok) setProducts(data.products);
-    } catch {
-      // ignore
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ export default function AdminProducts() {
           prev.map((p) => (p.id === id ? { ...p, active: !active } : p))
         );
       }
-    } catch {}
+    } catch (e) { console.error(e); }
   }
 
   async function deleteProduct(id: string) {
@@ -107,7 +107,7 @@ export default function AdminProducts() {
       if (res.ok) {
         setProducts((prev) => prev.filter((p) => p.id !== id));
       }
-    } catch {}
+    } catch (e) { console.error(e); }
   }
 
   function inr(amount: number) {
@@ -410,7 +410,7 @@ function ProductEditModal({
       const res = await fetch("/api/upload", { method: "POST", body: fd });
       const data = await res.json();
       if (data.ok) setUrl(data.url);
-    } catch {}
+    } catch (e) { console.error(e); }
     setUploadingSlot(null);
   }
 
@@ -434,7 +434,7 @@ function ProductEditModal({
       });
       const data = await res.json();
       if (res.ok) onSave(data.product);
-    } catch {} finally {
+    } catch (e) { console.error(e); } finally {
       setSaving(false);
     }
   }

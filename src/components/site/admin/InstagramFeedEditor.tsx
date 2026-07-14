@@ -60,10 +60,10 @@ export default function InstagramFeedEditor() {
           try {
             const parsed = JSON.parse(d.value);
             setData({ ...defaults, ...parsed });
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {})
+      .catch((e) => { console.error(e); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -78,7 +78,7 @@ export default function InstagramFeedEditor() {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch {}
+    } catch (e) { console.error(e); }
     setSaving(false);
   }
 

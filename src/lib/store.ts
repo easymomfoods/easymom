@@ -90,7 +90,7 @@ export const useCart = create<CartState>()(
             set({ coupon: { code: upper, discountPct: data.discountPct } });
             return true;
           }
-        } catch {}
+        } catch (e) { console.error(e); }
         return false;
       },
       removeCoupon: () => set({ coupon: null }),

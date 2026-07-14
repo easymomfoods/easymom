@@ -66,7 +66,7 @@ export default function RecipesSectionEditor() {
           try {
             const parsed = JSON.parse(contentData.value);
             setData({ ...defaults, ...parsed });
-          } catch {}
+          } catch (e) { console.error(e); }
         } else if (recipesData.recipes) {
           const allIds = recipesData.recipes.map((r: any) => r.id);
           setData({ ...defaults, recipeIds: allIds });
@@ -82,7 +82,7 @@ export default function RecipesSectionEditor() {
           setAllProducts(map);
         }
       })
-      .catch(() => {})
+      .catch((e) => { console.error(e); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -97,7 +97,7 @@ export default function RecipesSectionEditor() {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch {}
+    } catch (e) { console.error(e); }
     setSaving(false);
   }
 

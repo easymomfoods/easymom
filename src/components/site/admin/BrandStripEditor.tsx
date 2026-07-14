@@ -30,10 +30,10 @@ export default function BrandStripEditor() {
           try {
             const parsed = JSON.parse(d.value);
             if (parsed.items && parsed.items.length > 0) setItems(parsed.items);
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {})
+      .catch((e) => { console.error(e); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -42,7 +42,7 @@ export default function BrandStripEditor() {
     try {
       await fetch("/api/site-content/brand-strip", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ value: JSON.stringify({ items }) }) });
       setSaved(true); setTimeout(() => setSaved(false), 2000);
-    } catch {} setSaving(false);
+    } catch (e) { console.error(e); } setSaving(false);
   }
 
   if (loading) return <div className="animate-pulse h-64 bg-white rounded-xl border border-stone-100" />;

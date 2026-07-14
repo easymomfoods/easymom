@@ -35,10 +35,10 @@ export default function CouponEditor() {
           try {
             const parsed = JSON.parse(d.value);
             if (Array.isArray(parsed)) setCoupons(parsed);
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {})
+      .catch((e) => { console.error(e); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -53,7 +53,7 @@ export default function CouponEditor() {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch {}
+    } catch (e) { console.error(e); }
     setSaving(false);
   }
 

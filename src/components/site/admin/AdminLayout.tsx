@@ -102,7 +102,7 @@ export default function AdminLayout({
       gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.4);
-    } catch {}
+    } catch (e) { console.error(e); }
   }, []);
 
   // Fetch notifications from DB-persisted lastChecked
@@ -119,7 +119,7 @@ export default function AdminLayout({
       }
       prevUnreadRef.current = newUnread;
       setUnreadCount(newUnread);
-    } catch {}
+    } catch (e) { console.error(e); }
   }, [playBeep]);
 
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function AdminLayout({
       setNotifications((prev) => prev.map((o) => ({ ...o, read: true })));
       setUnreadCount(0);
       prevUnreadRef.current = 0;
-    } catch {}
+    } catch (e) { console.error(e); }
   }
 
   return (

@@ -35,7 +35,7 @@ export function Categories() {
       .then((d) => {
         if (d.categories && d.categories.length > 0) setDbCategories(d.categories);
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   return (
@@ -116,13 +116,13 @@ export function FeaturedProducts() {
             if (parsed.title) setTitle(parsed.title);
             if (parsed.description) setDescription(parsed.description);
             if (parsed.productSlugs) setProductSlugs(parsed.productSlugs);
-          } catch {}
+          } catch (e) { console.error(e); }
         }
         if (productsData.products) {
           setDbProducts(productsData.products);
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   // Use selected slugs if available, otherwise fallback to bestSellers
@@ -210,10 +210,10 @@ export function BrandStory() {
             if (parsed.description) setDescription(parsed.description);
             if (parsed.bottomMarqueeText) setBottomMarqueeText(parsed.bottomMarqueeText);
             if (parsed.features) setFeatures(parsed.features);
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   React.useEffect(() => {
@@ -440,12 +440,12 @@ export function Recipes() {
             if (parsed.title) setTitle(parsed.title);
             if (parsed.description) setDescription(parsed.description);
             if (parsed.recipeIds) setRecipeIds(parsed.recipeIds);
-          } catch {}
+          } catch (e) { console.error(e); }
         }
         if (recipesData.recipes) setDbRecipes(recipesData.recipes);
         if (productsData.products) setDbProducts(productsData.products);
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   React.useEffect(() => {
@@ -620,13 +620,13 @@ export function Testimonials() {
             if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
             if (parsed.title) setTitle(parsed.title);
             if (parsed.description) setDescription(parsed.description);
-          } catch {}
+          } catch (e) { console.error(e); }
         }
         if (testimonialsData.testimonials) {
           setDbTestimonials(testimonialsData.testimonials);
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   React.useEffect(() => {
@@ -806,10 +806,10 @@ export function InstagramFeed() {
             if (parsed.followText) setFollowText(parsed.followText);
             if (parsed.socialLinks) setSocialLinks(parsed.socialLinks);
             if (parsed.cards && parsed.cards.length > 0) setIgCards(parsed.cards);
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   React.useEffect(() => {
@@ -1012,10 +1012,10 @@ export function TrustStrip() {
           try {
             const parsed = JSON.parse(d.value);
             if (parsed.items && parsed.items.length > 0) setTrustItems(parsed.items);
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   React.useEffect(() => {
@@ -1088,10 +1088,10 @@ export function OurProducts() {
             if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
             if (parsed.title) setTitle(parsed.title);
             if (parsed.items && parsed.items.length > 0) setItems(parsed.items);
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
   return (
     <section className="bg-white px-4 py-20 sm:px-6 lg:px-8 lg:py-28">

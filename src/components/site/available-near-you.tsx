@@ -207,10 +207,10 @@ export default function AvailableNearYou() {
           try {
             const parsed = JSON.parse(d.value);
             if (Array.isArray(parsed) && parsed.length > 0) setLocations(parsed);
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   useEffect(() => {

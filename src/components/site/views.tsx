@@ -106,7 +106,7 @@ export function ShopView() {
           setShopCategories(computed);
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   const category = categoryId ? shopCategories.find((c) => c.id === categoryId) : undefined;
@@ -369,7 +369,7 @@ export function ProductView() {
           setDbProduct(d.product);
         }
       })
-      .catch(() => {})
+      .catch((e) => { console.error(e); })
       .finally(() => setLoadingProduct(false));
   }, [slug]);
 
@@ -392,7 +392,7 @@ export function ProductView() {
           })));
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   const fetchReviews = useCallback(async (productId: string, page: number, append = false) => {
@@ -404,7 +404,7 @@ export function ProductView() {
         setReviews((prev) => (append ? [...prev, ...data.reviews] : data.reviews));
         setHasMoreReviews(data.hasMore);
       }
-    } catch {}
+    } catch (e) { console.error(e); }
     setLoadingReviews(false);
   }, []);
 
@@ -449,7 +449,7 @@ export function ProductView() {
           .then((r) => r.json())
           .then((d) => { if (d.product) setDbProduct(d.product); });
       }
-    } catch {}
+    } catch (e) { console.error(e); }
     setSubmitting(false);
   }
 
@@ -861,7 +861,7 @@ export function RecipesView() {
         setDbProducts(productsData.products || []);
         if (r.length > 0) setOpen(r[0].id);
       })
-      .catch(() => {})
+      .catch((e) => { console.error(e); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -992,10 +992,10 @@ export function AboutView() {
           try {
             const parsed = JSON.parse(d.value);
             setAbout({ ...DEFAULT_ABOUT, ...parsed });
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   useEffect(() => {
@@ -1004,7 +1004,7 @@ export function AboutView() {
       .then((d) => {
         if (d.testimonials && d.testimonials.length > 0) setAboutTestimonials(d.testimonials);
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   return (
@@ -1089,7 +1089,7 @@ export function FaqView() {
           setDbFaqs(d.faqs.map((f: any) => ({ question: f.question, answer: f.answer })));
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   const faqs = dbFaqs.length > 0 ? dbFaqs : DEFAULT_FAQS;

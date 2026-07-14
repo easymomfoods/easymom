@@ -36,10 +36,10 @@ export function Hero() {
           try {
             const parsed = JSON.parse(d.value);
             setHero({ ...fallback, ...parsed });
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {});
+      .catch((e) => { console.error(e); });
   }, []);
 
   // Animate stat counter

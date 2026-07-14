@@ -66,10 +66,10 @@ export default function TrustStripEditor() {
           try {
             const parsed = JSON.parse(d.value);
             setData({ ...defaults, ...parsed });
-          } catch {}
+          } catch (e) { console.error(e); }
         }
       })
-      .catch(() => {})
+      .catch((e) => { console.error(e); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -84,7 +84,7 @@ export default function TrustStripEditor() {
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-    } catch {}
+    } catch (e) { console.error(e); }
     setSaving(false);
   }
 

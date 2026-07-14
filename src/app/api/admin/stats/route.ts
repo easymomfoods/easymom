@@ -56,7 +56,9 @@ export async function GET() {
           }
           productSales[name].count += item.qty || 1;
         }
-      } catch {}
+      } catch (e) {
+        console.error("Failed to parse order items:", e);
+      }
     }
     const topProducts = Object.values(productSales)
       .sort((a, b) => b.count - a.count)
