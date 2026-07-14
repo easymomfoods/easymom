@@ -321,7 +321,7 @@ export function Checkout() {
 
                           <button
                             onClick={placeOrder}
-                            className="flex w-full items-center justify-center gap-2 rounded-[4px] bg-primary py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
+                            className="animate-shine-sweep flex w-full items-center justify-center gap-2 rounded-[4px] bg-primary py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
                           >
                             {paymentMethod === "cod" ? `Place Order — ${inr(total)}` : `I've Paid — ${inr(total)}`}
                           </button>

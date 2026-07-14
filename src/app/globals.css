@@ -224,6 +224,29 @@
     animation: shimmer 1.8s ease-in-out infinite;
   }
 
+  @keyframes shine-sweep {
+    0% { transform: translateX(-100%) skewX(-15deg); }
+    100% { transform: translateX(400%) skewX(-15deg); }
+  }
+  .animate-shine-sweep {
+    position: relative;
+    overflow: hidden;
+  }
+  .animate-shine-sweep::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.35) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%) skewX(-15deg);
+    animation: shine-sweep 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+
   [data-reveal][data-revealed] {
     opacity: 1 !important;
     transform: translateY(0) rotate(0deg) !important;
