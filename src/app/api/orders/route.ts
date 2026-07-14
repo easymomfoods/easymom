@@ -29,6 +29,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    const ALLOWED_CITIES = ["Mangalore", "Bangalore", "Kasaragod"];
+    if (!ALLOWED_CITIES.includes(city)) {
+      return NextResponse.json(
+        { error: "We currently deliver only to Mangalore, Bangalore, and Kasaragod." },
+        { status: 400 }
+      );
+    }
+
     const id = orderId();
     const order = await db.order.create({
       data: {
