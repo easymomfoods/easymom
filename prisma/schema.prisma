@@ -55,7 +55,7 @@ model Product {
 }
 
 model Recipe {
-  id          String    @id
+  id          String    @id @default(cuid())
   title       String
   region      String
   time        String
@@ -67,7 +67,7 @@ model Recipe {
   hue         Int
   active      Boolean   @default(true)
   createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Testimonial {
