@@ -266,9 +266,20 @@ export function CartDrawer() {
                       closeCart();
                       setCheckout(true);
                     }}
-                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-[4px] bg-primary px-5 py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
+                    className="relative mt-3 flex w-full items-center justify-center gap-2 overflow-hidden rounded-[4px] bg-primary px-5 py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
                   >
-                    Checkout securely <ArrowRight className="h-4 w-4" />
+                    <span
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)",
+                        animation: "shine-sweep 3s ease-in-out infinite",
+                        pointerEvents: "none",
+                      }}
+                    />
+                    <span className="relative z-10 flex items-center gap-2">
+                      Checkout securely <ArrowRight className="h-4 w-4" />
+                    </span>
                   </button>
                   <p className="mt-2 text-center text-[11px] text-muted-foreground">
                     Guest checkout · No account needed · Razorpay secured
