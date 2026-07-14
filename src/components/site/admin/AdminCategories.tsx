@@ -75,7 +75,8 @@ export default function AdminCategories() {
       </div>
 
       <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[560px]">
           <thead><tr className="border-b border-stone-100 bg-stone-50/50">
             <th className="text-left px-5 py-3 text-[12px] font-semibold text-stone-500 uppercase">Category</th>
             <th className="text-left px-5 py-3 text-[12px] font-semibold text-stone-500 uppercase">Tagline</th>
@@ -96,6 +97,7 @@ export default function AdminCategories() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {(showAdd || editing) && (

@@ -168,7 +168,7 @@ export function Checkout() {
                               className={inputCls}
                             />
                           </Field>
-                          <div className="grid grid-cols-2 gap-3">
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             <Field label="Full name" required>
                               <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={inputCls} placeholder="Anjali Rao" />
                             </Field>
@@ -189,7 +189,7 @@ export function Checkout() {
                               placeholder="Flat, building, street, area"
                             />
                           </Field>
-                          <div className="grid grid-cols-3 gap-3">
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                             <Field label="City" required>
                               <select required value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} className={inputCls}>
                                 <option value="" disabled>Select city</option>

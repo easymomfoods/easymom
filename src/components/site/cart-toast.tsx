@@ -24,7 +24,7 @@ export function CartToast() {
 
   return (
     <div className="pointer-events-none fixed bottom-5 right-5 z-[100] flex justify-end">
-      <div className="pointer-events-auto relative flex w-[320px] animate-cart-in items-center gap-3 overflow-hidden rounded-2xl border border-stone-200/70 bg-white p-3.5 pr-4 shadow-[0_12px_40px_-12px_rgba(24,16,12,0.35)]">
+      <div className="pointer-events-auto relative flex w-[320px] max-w-[calc(100vw-1.5rem)] animate-cart-in items-center gap-3 overflow-hidden rounded-2xl border border-stone-200/70 bg-white p-3.5 pr-4 shadow-[0_12px_40px_-12px_rgba(24,16,12,0.35)]">
         {/* Accent bar */}
         <span className="absolute left-0 top-0 h-full w-1 bg-[#891816]" />
 
