@@ -39,6 +39,7 @@ import { inr } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { showAddedToCart } from "@/components/site/cart-toast";
+import { useProductLabels } from "@/components/site/product-labels";
 
 type ProductData = {
   id: string;
@@ -358,6 +359,7 @@ export function ProductView() {
   // Try database first, fallback to hardcoded
   const hardcoded = getProductBySlug(slug);
   const p = dbProduct || hardcoded;
+  const labels = useProductLabels();
 
   useEffect(() => {
     if (!slug) return;
@@ -556,16 +558,16 @@ export function ProductView() {
           <p className="mt-5 text-[16px] leading-relaxed text-foreground/80">{p.description}</p>
 
           <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-            <Stat icon={Clock} label="Cook time" value={p.cookingTime} />
-            <Stat icon={Users} label="Serves" value={p.servings} />
-            <Stat icon={ShieldCheck} label="Shelf life" value={p.shelfLife} />
-            <Stat icon={RotateCcw} label="Weight" value={p.weight} />
+            <Stat icon={Clock} label={labels.cookTime} value={p.cookingTime} />
+            <Stat icon={Users} label={labels.serves} value={p.servings} />
+            <Stat icon={ShieldCheck} label={labels.shelfLife} value={p.shelfLife} />
+            <Stat icon={RotateCcw} label={labels.weight} value={p.weight} />
           </div>
 
           <div className="mt-6">
             <p className="mb-2 text-[12px] font-semibold uppercase tracking-wide text-muted-foreground">
-              Inside the blend
-            </p>
+              {labels.insideBlend}
+             </p>
             <div className="flex flex-wrap gap-1.5">
               {p.ingredients.map((ing) => (
                 <span key={ing} className="rounded-full border border-border bg-secondary/40 px-3 py-1.5 text-[12.5px] text-foreground/80">
@@ -590,7 +592,7 @@ export function ProductView() {
                     </>
                   )}
                 </div>
-                <p className="mt-0.5 text-[12px] text-muted-foreground">{p.weight} · incl. all taxes</p>
+                <p className="mt-0.5 text-[12px] text-muted-foreground">{p.weight} {labels.taxSuffix}</p>
               </div>
               <button
                 onClick={() => {

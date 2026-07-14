@@ -38,6 +38,7 @@ export type View =
   | { name: "privacy" }
   | { name: "admin-terms" }
   | { name: "admin-privacy" }
+  | { name: "admin-product-labels" }
   | { name: "track-order"; orderId?: string };
 
 function viewToPath(v: View): string {
@@ -110,6 +111,8 @@ function viewToPath(v: View): string {
       return "/admin/terms";
     case "admin-privacy":
       return "/admin/privacy";
+    case "admin-product-labels":
+      return "/admin/product-labels";
     case "track-order":
       return v.orderId ? `/track-order/${v.orderId}` : "/track-order";
     default:
@@ -154,6 +157,7 @@ function pathToView(pathname: string): View {
     if (parts[1] === "store-locations") return { name: "admin-store-locations" };
     if (parts[1] === "terms") return { name: "admin-terms" };
     if (parts[1] === "privacy") return { name: "admin-privacy" };
+    if (parts[1] === "product-labels") return { name: "admin-product-labels" };
     return { name: "admin" };
   }
   if (parts[0] === "track-order") {
