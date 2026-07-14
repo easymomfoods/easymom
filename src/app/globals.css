@@ -224,11 +224,6 @@
     animation: shimmer 1.8s ease-in-out infinite;
   }
 
-  @keyframes shine-sweep {
-    0% { transform: translateX(-100%) skewX(-15deg); }
-    100% { transform: translateX(400%) skewX(-15deg); }
-  }
-
   [data-reveal][data-revealed] {
     opacity: 1 !important;
     transform: translateY(0) rotate(0deg) !important;
@@ -306,4 +301,9 @@
     75% { transform: scale(0.5) rotateZ(-5deg) translateY(50px) translateX(0px); opacity: 1; }
     100% { transform: scale(0) rotateZ(-10deg) translateY(100px) translateX(-25px); opacity: 0; }
   }
+}
+
+@keyframes shine-sweep {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(400%) skewX(-15deg); }
 }
