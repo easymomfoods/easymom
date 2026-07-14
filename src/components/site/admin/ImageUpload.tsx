@@ -21,10 +21,19 @@ export default function ImageUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleFile(file: File) {
-    if (!file.type.startsWith("image/")) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Only image files are allowed");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File too large (max 5MB)");
+      return;
+    }
     setUploading(true);
+    setError(null);
     try {
       const fd = new FormData();
       fd.append("file", file);
@@ -33,8 +42,12 @@ export default function ImageUpload({
       const data = await res.json();
       if (data.ok) {
         onChange(data.url);
+      } else {
+        setError(data.error || "Upload failed");
       }
-    } catch {}
+    } catch {
+      setError("Upload failed — check your connection");
+    }
     setUploading(false);
   }
 
@@ -101,6 +114,9 @@ export default function ImageUpload({
           e.target.value = "";
         }}
       />
+      {error && (
+        <p className="mt-2 text-[12px] text-red-500">{error}</p>
+      )}
     </div>
   );
 }

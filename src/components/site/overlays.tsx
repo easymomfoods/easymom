@@ -398,7 +398,18 @@ export function SearchOverlay() {
 export function WishlistDrawer() {
   const { wishlistOpen, setWishlistOpen, go } = useUI();
   const { wishlist, toggleWishlist } = useCart();
-  const items = products.filter((p) => wishlist.includes(p.id));
+  const [wishlistProducts, setWishlistProducts] = useState<typeof import("@/lib/data").products>([]);
+
+  useEffect(() => {
+    if (!wishlistOpen || wishlist.length === 0) { setWishlistProducts([]); return; }
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((d) => {
+        const all = d.products || [];
+        setWishlistProducts(all.filter((p: any) => wishlist.includes(p.id)));
+      })
+      .catch(() => {});
+  }, [wishlistOpen, wishlist]);
   return (
     <AnimatePresence>
       {wishlistOpen && (
@@ -421,7 +432,7 @@ export function WishlistDrawer() {
                 <Heart className="h-5 w-5 text-primary" strokeWidth={1.75} />
                 <h2 className="text-[16px] font-semibold">Wishlist</h2>
                 <span className="rounded-full bg-secondary px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-                  {items.length}
+                  {wishlistProducts.length}
                 </span>
               </div>
               <button
@@ -433,7 +444,7 @@ export function WishlistDrawer() {
               </button>
             </div>
             <div className="scroll-elegant flex-1 overflow-y-auto p-4">
-              {items.length === 0 ? (
+              {wishlistProducts.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center gap-3 text-center">
                   <div className="grid h-16 w-16 place-items-center rounded-full bg-secondary">
                     <Heart className="h-7 w-7 text-muted-foreground" strokeWidth={1.5} />
@@ -445,7 +456,7 @@ export function WishlistDrawer() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {items.map((p) => (
+                  {wishlistProducts.map((p) => (
                     <div key={p.id} className="flex gap-3 rounded-[6px] border border-border p-3">
                       <button
                         onClick={() => {

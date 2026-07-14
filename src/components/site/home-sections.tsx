@@ -23,49 +23,6 @@ const ICONS: Record<string, typeof LeafIcon> = {
   flame: FlameIcon,
 };
 
-const DEFAULT_BRAND_STRIP = [
-  "Stone-ground in small batches",
-  "No preservatives, ever",
-  "Sourced from origin",
-  "Roasted, never raw",
-  "Built for the 15-minute cook",
-  "From Mangalore & Kerala",
-  "42,000+ households",
-];
-
-export function BrandStrip() {
-  const [items, setItems] = React.useState(DEFAULT_BRAND_STRIP);
-
-  React.useEffect(() => {
-    fetch("/api/site-content/brand-strip")
-      .then((r) => r.json())
-      .then((d) => {
-        if (d.value) {
-          try {
-            const parsed = JSON.parse(d.value);
-            if (parsed.items && parsed.items.length > 0) setItems(parsed.items);
-          } catch {}
-        }
-      })
-      .catch(() => {});
-  }, []);
-
-  return (
-    <div className="border-y border-border bg-secondary/50 py-3.5">
-      <div className="relative flex overflow-hidden">
-        <div className="flex shrink-0 animate-marquee items-center gap-10 pr-10">
-          {[...items, ...items].map((t, i) => (
-            <span key={i} className="flex items-center gap-3 text-[13px] font-medium text-foreground/70">
-              <span className="h-1 w-1 rounded-full bg-primary" />
-              {t}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 const DEFAULT_CATEGORIES = categories;
 
 export function Categories() {

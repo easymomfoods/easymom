@@ -1,16 +1,16 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Save,
   RotateCcw,
   Plus,
   Trash2,
-  Upload,
   X,
   Sparkles,
   GripVertical,
 } from "lucide-react";
+import ImageUpload from "./ImageUpload";
 
 interface Stat {
   value: string;
@@ -56,8 +56,6 @@ export default function AboutEditor() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [preview, setPreview] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch("/api/site-content/about")
@@ -91,24 +89,6 @@ export default function AboutEditor() {
 
   function handleReset() {
     setData(defaults);
-  }
-
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const form = new FormData();
-      form.append("file", file);
-      form.append("folder", "easymom/brand-story");
-      const res = await fetch("/api/upload", { method: "POST", body: form });
-      const data = await res.json();
-      if (data.url) {
-        setData((prev) => ({ ...prev, image: data.url }));
-      }
-    } catch {}
-    setUploading(false);
-    if (fileRef.current) fileRef.current.value = "";
   }
 
   function addStat() {
@@ -271,27 +251,15 @@ export default function AboutEditor() {
           {/* Image */}
           <div className="bg-white rounded-xl border border-stone-100 p-5 space-y-4">
             <h3 className="text-[14px] font-semibold text-stone-900">Hero Image</h3>
-            <div className="flex items-center gap-4">
-              <div className="h-32 w-24 rounded-lg overflow-hidden border border-stone-200 shrink-0">
-                <img src={data.image} alt={data.imageAlt} className="h-full w-full object-cover" />
-              </div>
-              <div className="flex-1">
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleImageUpload}
-                />
-                <button
-                  onClick={() => fileRef.current?.click()}
-                  disabled={uploading}
-                  className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-stone-700 bg-stone-50 border border-stone-200 rounded-lg hover:bg-stone-100 transition-colors disabled:opacity-50"
-                >
-                  <Upload className="h-4 w-4" />
-                  {uploading ? "Uploading..." : "Upload Image"}
-                </button>
-                <p className="mt-2 text-[12px] text-stone-400">Recommended 800×1000px (4:5 ratio)</p>
+            <div className="flex items-start gap-4">
+              <ImageUpload
+                value={data.image}
+                onChange={(url) => setData({ ...data, image: url })}
+                folder="easymom/brand-story"
+                label="Upload Image"
+              />
+              <div className="pt-8">
+                <p className="text-[12px] text-stone-400">Recommended 800×1000px (4:5 ratio)</p>
               </div>
             </div>
           </div>
