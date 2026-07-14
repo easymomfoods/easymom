@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Loader2, Lock, Globe, Eye, EyeOff, Shield, AlertTriangle } from "lucide-react";
+import { Save, Loader2, Lock, Globe, Eye, EyeOff, Shield, AlertTriangle, type LucideIcon } from "lucide-react";
 
 const SETTINGS_KEYS = [
   "site_name",
@@ -120,7 +120,7 @@ export default function AdminSettings() {
   const labelCls = "block text-[13px] font-medium text-stone-700 mb-1.5";
   const sectionCls = "bg-white rounded-xl border border-stone-100 p-6 space-y-5";
 
-  function Section({ title, icon: Icon, children }: { title: string; icon: any; children: React.ReactNode }) {
+  function Section({ title, icon: Icon, children }: { title: string; icon: LucideIcon; children: React.ReactNode }) {
     return (
       <div className={sectionCls}>
         <div className="flex items-center gap-2.5 pb-3 border-b border-stone-100">

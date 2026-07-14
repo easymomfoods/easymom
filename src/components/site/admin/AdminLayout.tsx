@@ -29,6 +29,7 @@ import {
   Globe,
   Lock,
   MapPin,
+  type LucideIcon,
 } from "lucide-react";
 
 type Notification = {
@@ -210,7 +211,7 @@ export default function AdminLayout({
                     </div>
                   );
                 }
-                const navItem = item as { id: string; label: string; icon: any };
+                const navItem = item as { id: string; label: string; icon: LucideIcon };
                 const active = activePage === navItem.id;
                 return (
                   <button

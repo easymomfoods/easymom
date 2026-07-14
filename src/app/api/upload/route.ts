@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, type UploadApiResponse } from "cloudinary";
 import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth";
 
@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const result = await new Promise<any>((resolve, reject) => {
+    const result = await new Promise<UploadApiResponse>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
           folder,
@@ -57,9 +57,10 @@ export async function POST(req: Request) {
       width: result.width,
       height: result.height,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Upload failed";
     return NextResponse.json(
-      { error: error.message || "Upload failed" },
+      { error: message },
       { status: 500 }
     );
   }
