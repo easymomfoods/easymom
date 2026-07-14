@@ -24,8 +24,11 @@ export function Hero() {
   const [hero, setHero] = useState<HeroData>(fallback);
   const [count, setCount] = useState(0);
   const [countDone, setCountDone] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   const statRef = React.useRef<HTMLDivElement>(null);
   const heroRef = React.useRef<HTMLDivElement>(null);
+  const targetRef = React.useRef(42000);
+  const rafRef = React.useRef<number | null>(null);
 
   // Load hero content from API
   useEffect(() => {
@@ -35,23 +38,33 @@ export function Hero() {
         if (d.value) {
           try {
             const parsed = JSON.parse(d.value);
-            setHero({ ...fallback, ...parsed });
+            setHero({
+              desktopImage: parsed.desktopImage || fallback.desktopImage,
+              mobileImage: parsed.mobileImage || fallback.mobileImage,
+              statNumber: parsed.statNumber?.trim() || fallback.statNumber,
+              statLabel: parsed.statLabel?.trim() || fallback.statLabel,
+              heading: parsed.heading || "",
+              subtitle: parsed.subtitle || "",
+            });
           } catch (e) { console.error(e); }
         }
       })
-      .catch((e) => { console.error(e); });
+      .catch((e) => { console.error(e); })
+      .finally(() => setLoaded(true));
   }, []);
 
-  // Animate stat counter
+  // Animate stat counter — only after data is loaded so it targets the final value
   useEffect(() => {
-    if (!statRef.current) return;
+    if (!loaded || !statRef.current) return;
+    const numStr = hero.statNumber.replace(/[^0-9]/g, "");
+    const target = parseInt(numStr) || 42000;
+    targetRef.current = target;
+
     const o = new IntersectionObserver(
       ([e]) => {
         if (!e.isIntersecting) return;
         o.disconnect();
 
-        const numStr = hero.statNumber.replace(/[^0-9]/g, "");
-        const target = parseInt(numStr) || 42000;
         const duration = 1600;
         const startTime = performance.now();
 
@@ -59,25 +72,28 @@ export function Hero() {
           const elapsed = now - startTime;
           const progress = Math.min(elapsed / duration, 1);
           const eased = 1 - Math.pow(1 - progress, 3);
-          const cur = Math.round(eased * target);
 
-          setCount(cur);
+          setCount(Math.round(eased * target));
 
           if (progress < 1) {
-            requestAnimationFrame(step);
+            rafRef.current = requestAnimationFrame(step);
           } else {
             setCountDone(true);
           }
         };
-        requestAnimationFrame(step);
+        rafRef.current = requestAnimationFrame(step);
       },
       { threshold: 0.5 }
     );
     o.observe(statRef.current);
-    return () => o.disconnect();
-  }, [hero.statNumber]);
+    return () => {
+      o.disconnect();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [loaded]);
 
-  // Reveal animation
+  // Reveal animation — re-run when hero data loads so the conditionally-rendered
+  // heading/subtitle (added after the async fetch) also get observed & revealed
   useEffect(() => {
     if (!heroRef.current) return;
     const o = new IntersectionObserver(
@@ -92,16 +108,14 @@ export function Hero() {
     );
     heroRef.current.querySelectorAll("[data-reveal]").forEach((el) => o.observe(el));
     return () => o.disconnect();
-  }, []);
+  }, [hero]);
 
   // Format displayed count
   function formatCount() {
-    if (countDone) return hero.statNumber;
+    const target = targetRef.current;
+    if (countDone) return target.toLocaleString("en-IN") + "+";
     if (count === 0) return "0";
-    if (hero.statNumber.includes(",")) {
-      return count.toLocaleString("en-IN") + "+";
-    }
-    return String(count) + "+";
+    return count.toLocaleString("en-IN") + "+";
   }
 
   return (
