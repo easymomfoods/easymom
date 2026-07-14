@@ -27,6 +27,7 @@ import {
   CreditCard,
   Globe,
   Lock,
+  MapPin,
 } from "lucide-react";
 
 type Notification = {
@@ -56,6 +57,7 @@ const navItems = [
   { id: "recipes-section", label: "Recipes Section", icon: BookOpen },
   { id: "brand-story", label: "Brand Story", icon: BookOpenCheck },
   { id: "instagram", label: "Instagram Feed", icon: Image },
+  { id: "store-locations", label: "Store Locations", icon: MapPin },
   { id: "trust-strip", label: "Trust Strip", icon: Shield },
   { id: "footer", label: "Footer", icon: ArrowUpRight },
   { id: "about", label: "Our Story", icon: BookOpenCheck },

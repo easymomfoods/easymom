@@ -19,30 +19,30 @@ interface LocationGroup {
   stores: Store[];
 }
 
-const LOCATIONS: LocationGroup[] = [
+const FALLBACK_locations: LocationGroup[] = [
   {
     id: "udupi",
     label: "Udupi",
     stores: [
-      { id: "u1", name: "EasyMom Pantry — Udupi Central", area: "Car Street, Udupi", phone: "+91 98765 43210", image: "/brand/stores/udupi-1.png", storeNumber: "01" },
-      { id: "u2", name: "Spice Junction", area: "Kalsanka, Udupi", phone: "+91 98765 43211", image: "/brand/stores/udupi-2.png", storeNumber: "02" },
-      { id: "u3", name: "Fresh Mart", area: "Manipal Road, Udupi", phone: "+91 98765 43212", image: "/brand/stores/udupi-3.png", storeNumber: "03" },
+      { id: "u1", name: "EasyMom Pantry — Udupi Central", area: "Car Street, Udupi", phone: "+91 98765 43210", image: "", storeNumber: "01" },
+      { id: "u2", name: "Spice Junction", area: "Kalsanka, Udupi", phone: "+91 98765 43211", image: "", storeNumber: "02" },
+      { id: "u3", name: "Fresh Mart", area: "Manipal Road, Udupi", phone: "+91 98765 43212", image: "", storeNumber: "03" },
     ],
   },
   {
     id: "krishnapura",
     label: "Krishnapura",
     stores: [
-      { id: "k1", name: "Krishnapura General Store", area: "Krishnapura, Udupi", phone: "+91 98765 43213", image: "/brand/stores/krishnapura-1.png", storeNumber: "04" },
-      { id: "k2", name: "EasyMom Corner", area: "Opposite Temple, Krishnapura", phone: "+91 98765 43214", image: "/brand/stores/krishnapura-2.png", storeNumber: "05" },
+      { id: "k1", name: "Krishnapura General Store", area: "Krishnapura, Udupi", phone: "+91 98765 43213", image: "", storeNumber: "04" },
+      { id: "k2", name: "EasyMom Corner", area: "Opposite Temple, Krishnapura", phone: "+91 98765 43214", image: "", storeNumber: "05" },
     ],
   },
   {
     id: "bajpe",
     label: "Bajpe",
     stores: [
-      { id: "b1", name: "Bajpe Spice Hub", area: "Bajpe Main Road", phone: "+91 98765 43215", image: "/brand/stores/bajpe-1.png", storeNumber: "06" },
-      { id: "b2", name: "Neighbourhood Store", area: "Near Airport, Bajpe", phone: "+91 98765 43216", image: "/brand/stores/bajpe-2.png", storeNumber: "07" },
+      { id: "b1", name: "Bajpe Spice Hub", area: "Bajpe Main Road", phone: "+91 98765 43215", image: "", storeNumber: "06" },
+      { id: "b2", name: "Neighbourhood Store", area: "Near Airport, Bajpe", phone: "+91 98765 43216", image: "", storeNumber: "07" },
     ],
   },
 ];
@@ -92,7 +92,11 @@ function StoreCard({ store, large }: { store: Store; large?: boolean }) {
           large ? "aspect-[4/3]" : "aspect-square"
         }`}
       >
-        <StorePlaceholder name={store.name} index={parseInt(store.storeNumber)} />
+        {store.image ? (
+          <img src={store.image} alt={store.name} className="h-full w-full object-cover" loading="lazy" />
+        ) : (
+          <StorePlaceholder name={store.name} index={parseInt(store.storeNumber) || 0} />
+        )}
         <div className="absolute left-4 top-4">
           <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-400">
             {store.storeNumber}
@@ -177,6 +181,7 @@ export default function AvailableNearYou() {
   const [scrollWidth, setScrollWidth] = useState(0);
   const containerWidthRef = useRef(0);
   const scrollWidthRef = useRef(0);
+  const [locations, setLocations] = useState<LocationGroup[]>(FALLBACK_locations);
 
   useEffect(() => {
     const mqMobile = window.matchMedia("(max-width: 768px)");
@@ -192,6 +197,20 @@ export default function AvailableNearYou() {
       mqMobile.removeEventListener("change", onMobileChange);
       mqReduced.removeEventListener("change", onReducedChange);
     };
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/site-content/store-locations")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.value) {
+          try {
+            const parsed = JSON.parse(d.value);
+            if (Array.isArray(parsed) && parsed.length > 0) setLocations(parsed);
+          } catch {}
+        }
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -227,7 +246,7 @@ export default function AvailableNearYou() {
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     if (prefersReducedMotion) return;
 
-    const totalStores = LOCATIONS.reduce((sum, loc) => sum + loc.stores.length, 0);
+    const totalStores = locations.reduce((sum, loc) => sum + loc.stores.length, 0);
     const introPortion = containerWidth / (scrollWidth || 1);
     const endPortion = 200 / (scrollWidth || 1);
     const contentStart = introPortion;
@@ -235,8 +254,8 @@ export default function AvailableNearYou() {
     const contentProgress = Math.max(0, Math.min(1, (latest - contentStart) / (contentEnd - contentStart)));
 
     let cumulative = 0;
-    for (let i = 0; i < LOCATIONS.length; i++) {
-      cumulative += LOCATIONS[i].stores.length / totalStores;
+    for (let i = 0; i < locations.length; i++) {
+      cumulative += locations[i].stores.length / totalStores;
       if (contentProgress <= cumulative) {
         setActiveLocation(i);
         break;
@@ -248,10 +267,10 @@ export default function AvailableNearYou() {
     (index: number) => {
       if (!sectionRef.current || isMobile) return;
 
-      const totalStores = LOCATIONS.reduce((sum, loc) => sum + loc.stores.length, 0);
+      const totalStores = locations.reduce((sum, loc) => sum + loc.stores.length, 0);
       let storesBefore = 0;
       for (let i = 0; i < index; i++) {
-        storesBefore += LOCATIONS[i].stores.length;
+        storesBefore += locations[i].stores.length;
       }
       const targetProgress = storesBefore / totalStores;
 
@@ -290,7 +309,7 @@ export default function AvailableNearYou() {
           </div>
 
           <div className="mb-6 flex gap-1.5 overflow-x-auto pb-2">
-            {LOCATIONS.map((loc, i) => (
+            {locations.map((loc, i) => (
               <button
                 key={loc.id}
                 onClick={() => {
@@ -308,7 +327,7 @@ export default function AvailableNearYou() {
             ))}
           </div>
 
-          {LOCATIONS.map((loc) => (
+          {locations.map((loc) => (
             <div key={loc.id} id={`loc-mobile-${loc.id}`} className="mb-12">
               <div className="mb-4 flex items-center gap-3">
                 <div className="h-px flex-1 bg-stone-200" />
@@ -321,7 +340,11 @@ export default function AvailableNearYou() {
                 {loc.stores.map((store) => (
                   <div key={store.id} className="flex gap-4">
                     <div className="h-28 w-24 shrink-0 overflow-hidden bg-stone-100">
-                      <StorePlaceholder name={store.name} index={parseInt(store.storeNumber)} />
+                      {store.image ? (
+                        <img src={store.image} alt={store.name} className="h-full w-full object-cover" loading="lazy" />
+                      ) : (
+                        <StorePlaceholder name={store.name} index={parseInt(store.storeNumber) || 0} />
+                      )}
                     </div>
                     <div className="flex-1 space-y-1">
                       <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-400">
@@ -358,7 +381,7 @@ export default function AvailableNearYou() {
       <div className="sticky top-0 flex h-screen flex-col overflow-hidden pt-16">
         {/* Location nav */}
         <div className="flex items-center gap-1.5 bg-white/80 px-5 py-3 backdrop-blur-md sm:px-8 md:px-12">
-          {LOCATIONS.map((loc, i) => (
+          {locations.map((loc, i) => (
             <button
               key={loc.id}
               onClick={() => scrollToLocation(i)}
@@ -381,7 +404,7 @@ export default function AvailableNearYou() {
         >
           <IntroSlide />
 
-          {LOCATIONS.map((loc, locIdx) => (
+          {locations.map((loc, locIdx) => (
             <React.Fragment key={loc.id}>
               {/* Location divider */}
               <div className="flex h-full shrink-0 flex-col items-center justify-center px-4">

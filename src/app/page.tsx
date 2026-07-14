@@ -50,6 +50,7 @@ import RecipesSectionEditor from "@/components/site/admin/RecipesSectionEditor";
 import AdminRecipes from "@/components/site/admin/AdminRecipes";
 import AdminTestimonials from "@/components/site/admin/AdminTestimonials";
 import InstagramFeedEditor from "@/components/site/admin/InstagramFeedEditor";
+import StoreLocationsEditor from "@/components/site/admin/StoreLocationsEditor";
 import TrustStripEditor from "@/components/site/admin/TrustStripEditor";
 import FooterEditor from "@/components/site/admin/FooterEditor";
 import AboutEditor from "@/components/site/admin/AboutEditor";
@@ -158,6 +159,7 @@ export default function Home() {
         {view.name === "admin-recipes" && <AdminRecipes />}
         {view.name === "admin-testimonials" && <AdminTestimonials />}
         {view.name === "admin-instagram" && <InstagramFeedEditor />}
+        {view.name === "admin-store-locations" && <StoreLocationsEditor />}
         {view.name === "admin-trust-strip" && <TrustStripEditor />}
         {view.name === "admin-footer" && <FooterEditor />}
         {view.name === "admin-about" && <AboutEditor />}
