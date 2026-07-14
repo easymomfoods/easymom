@@ -37,6 +37,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") || "unknown";
+  const rl = await rateLimit("reviews", ip, 3);
+  if (!rl.success) {
+    return NextResponse.json({ error: "Too many requests. Please try again later." }, { status: 429 });
+  }
   try {
     const body = await req.json();
     const { productId, name, email, rating, title, body: reviewBody } = body;

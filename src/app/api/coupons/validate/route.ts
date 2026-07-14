@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") || "unknown";
+  const rl = await rateLimit("coupons", ip, 10);
+  if (!rl.success) {
+    return NextResponse.json({ valid: false });
+  }
   try {
     const { code } = await req.json();
     if (!code) return NextResponse.json({ valid: false });

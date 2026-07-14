@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { verifyPassword, createAdminSession } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") || "unknown";
+  const rl = await rateLimit("admin-login", ip, 5);
+  if (!rl.success) {
+    return NextResponse.json({ error: "Too many login attempts. Please try again later." }, { status: 429 });
+  }
   try {
     const { username, password } = await req.json();
 
