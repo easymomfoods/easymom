@@ -133,6 +133,23 @@ export default function HeroContentEditor() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
+
+            {/* Optional heading overlay */}
+            {data.heading && (
+              <div className="absolute top-1/3 left-0 z-10 w-full px-5 sm:px-10 lg:px-16">
+                <div className="mx-auto max-w-[1200px]">
+                  <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight tracking-tight max-w-2xl">
+                    {data.heading}
+                  </h1>
+                  {data.subtitle && (
+                    <p className="mt-4 text-base sm:text-lg text-white/70 max-w-xl">
+                      {data.subtitle}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div className="absolute bottom-0 left-0 z-10 w-full px-5 pb-8 sm:px-10 sm:pb-12 lg:px-16">
               <div className="mx-auto max-w-[1200px]">
                 <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
