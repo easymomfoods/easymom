@@ -17,8 +17,11 @@ const SHOP_LINKS = [
   { label: "Green Curry", view: { name: "shop" as const, categoryId: "green-curry" } },
   { label: "Ghee Roast Masala", view: { name: "shop" as const, categoryId: "ghee-roast" } },
   { label: "Fish Curry Masala", view: { name: "shop" as const, categoryId: "fish-curry" } },
+  { label: "Fish Fry Masala", view: { name: "shop" as const, categoryId: "fish-fry" } },
   { label: "Red Curry", view: { name: "shop" as const, categoryId: "red-curry" } },
   { label: "Chicken Sukka", view: { name: "shop" as const, categoryId: "chicken-sukka" } },
+  { label: "Palli Curry", view: { name: "shop" as const, categoryId: "palli-curry" } },
+  { label: "Biryani Masala", view: { name: "shop" as const, categoryId: "biryani-masala" } },
 ];
 
 const COMPANY_LINKS = [
@@ -32,8 +35,8 @@ const COMPANY_LINKS = [
 const POLICY_LINKS = [
   { label: "Shipping policy", view: { name: "faq" as const } },
   { label: "Returns & refunds", view: { name: "faq" as const } },
-  { label: "Privacy policy", view: { name: "faq" as const } },
-  { label: "Terms of service", view: { name: "faq" as const } },
+  { label: "Privacy policy", view: { name: "privacy" as const } },
+  { label: "Terms of service", view: { name: "terms" as const } },
 ];
 
 const SOCIAL_ICONS: Record<string, typeof Instagram> = {

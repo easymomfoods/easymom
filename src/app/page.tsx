@@ -26,6 +26,7 @@ import {
   AboutView,
   FaqView,
 } from "@/components/site/views";
+import { LegalView } from "@/components/site/legal-view";
 import TrackOrder from "@/components/site/TrackOrder";
 import {
   HomepageSkeleton,
@@ -55,6 +56,7 @@ import CouponEditor from "@/components/site/admin/CouponEditor";
 import TrustStripEditor from "@/components/site/admin/TrustStripEditor";
 import FooterEditor from "@/components/site/admin/FooterEditor";
 import AboutEditor from "@/components/site/admin/AboutEditor";
+import LegalEditor from "@/components/site/admin/LegalEditor";
 import AdminCategories from "@/components/site/admin/AdminCategories";
 import AdminFaqs from "@/components/site/admin/AdminFaqs";
 import AdminReviews from "@/components/site/admin/AdminReviews";
@@ -165,6 +167,8 @@ export default function Home() {
         {view.name === "admin-trust-strip" && <TrustStripEditor />}
         {view.name === "admin-footer" && <FooterEditor />}
         {view.name === "admin-about" && <AboutEditor />}
+        {view.name === "admin-terms" && <LegalEditor docKey="terms" title="Terms of Service" />}
+        {view.name === "admin-privacy" && <LegalEditor docKey="privacy" title="Privacy Policy" />}
         {view.name === "admin-categories" && <AdminCategories />}
         {view.name === "admin-faqs" && <AdminFaqs />}
         {view.name === "admin-reviews" && <AdminReviews />}
@@ -237,6 +241,16 @@ export default function Home() {
         {view.name === "faq" && (
           <Suspense fallback={<FaqSkeleton />}>
             <FaqView />
+          </Suspense>
+        )}
+        {view.name === "terms" && (
+          <Suspense fallback={<FaqSkeleton />}>
+            <LegalView docKey="terms" label="Terms of Service" />
+          </Suspense>
+        )}
+        {view.name === "privacy" && (
+          <Suspense fallback={<FaqSkeleton />}>
+            <LegalView docKey="privacy" label="Privacy Policy" />
           </Suspense>
         )}
         {view.name === "track-order" && (
