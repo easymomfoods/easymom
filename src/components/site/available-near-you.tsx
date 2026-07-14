@@ -37,14 +37,6 @@ const FALLBACK_locations: LocationGroup[] = [
       { id: "k2", name: "EasyMom Corner", area: "Opposite Temple, Krishnapura", phone: "+91 98765 43214", image: "", storeNumber: "05" },
     ],
   },
-  {
-    id: "bajpe",
-    label: "Bajpe",
-    stores: [
-      { id: "b1", name: "Bajpe Spice Hub", area: "Bajpe Main Road", phone: "+91 98765 43215", image: "", storeNumber: "06" },
-      { id: "b2", name: "Neighbourhood Store", area: "Near Airport, Bajpe", phone: "+91 98765 43216", image: "", storeNumber: "07" },
-    ],
-  },
 ];
 
 function StorePlaceholder({ name, index }: { name: string; index: number }) {
