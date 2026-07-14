@@ -231,11 +231,10 @@ async function main() {
   console.log("\nSeed complete!");
 }
 
-// Simple bcrypt hash (no dependency needed for seed)
+// bcrypt hash
 async function hashPassword(password: string): Promise<string> {
-  const { createHash } = await import("crypto");
-  const SESSION_SECRET = process.env.SESSION_SECRET || "easymom-dev-secret-change-in-prod";
-  return createHash("sha256").update(password + SESSION_SECRET).digest("hex");
+  const bcrypt = require("bcryptjs");
+  return bcrypt.hashSync(password, 10);
 }
 
 main()

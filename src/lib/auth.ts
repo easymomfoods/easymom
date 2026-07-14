@@ -9,11 +9,16 @@ const SESSION_COOKIE = "easymom_admin_session";
 const SESSION_SECRET = process.env.SESSION_SECRET || "easymom-dev-secret-change-in-prod";
 
 export function hashPassword(password: string): string {
-  return createHash("sha256").update(password + SESSION_SECRET).digest("hex");
+  const bcrypt = require("bcryptjs");
+  return bcrypt.hashSync(password, 10);
 }
 
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  const inputHash = hashPassword(password);
+  if (hash.startsWith("$2a$") || hash.startsWith("$2b$") || hash.startsWith("$2y$")) {
+    const bcrypt = require("bcryptjs");
+    return bcrypt.compareSync(password, hash);
+  }
+  const inputHash = createHash("sha256").update(password + SESSION_SECRET).digest("hex");
   try {
     return timingSafeEqual(Buffer.from(inputHash), Buffer.from(hash));
   } catch {
