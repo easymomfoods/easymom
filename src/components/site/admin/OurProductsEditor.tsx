@@ -94,6 +94,7 @@ export default function OurProductsEditor() {
   }
 
   function handleReset() {
+    if (!confirm("Reset all changes to defaults? This cannot be undone.")) return;
     setData(defaults);
   }
 

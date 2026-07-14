@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Plus, Trash2, Pencil, Save, X, GripVertical, Palette } from "lucide-react";
+import { toast } from "sonner";
 
 interface Category {
   id: string;
@@ -41,13 +42,22 @@ export default function AdminCategories() {
       const url = editing ? `/api/admin/categories/${editing.id}` : "/api/admin/categories";
       const method = editing ? "PUT" : "POST";
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      if (res.ok) { fetchCategories(); setEditing(null); setShowAdd(false); setForm({ name: "", tagline: "", description: "", accent: "zinc", hue: 0, sortOrder: 0 }); }
-    } catch (e) { console.error(e); } setSaving(false);
+      if (res.ok) {
+        fetchCategories(); setEditing(null); setShowAdd(false); setForm({ name: "", tagline: "", description: "", accent: "zinc", hue: 0, sortOrder: 0 });
+        toast.success(editing ? "Category updated" : "Category created");
+      } else {
+        toast.error("Failed to save category");
+      }
+    } catch (e) { console.error(e); toast.error("Failed to save category"); } setSaving(false);
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this category?")) return;
-    try { await fetch(`/api/admin/categories/${id}`, { method: "DELETE" }); fetchCategories(); } catch (e) { console.error(e); }
+    try {
+      const res = await fetch(`/api/admin/categories/${id}`, { method: "DELETE" });
+      if (res.ok) { fetchCategories(); toast.success("Category deleted"); }
+      else toast.error("Failed to delete category");
+    } catch (e) { console.error(e); toast.error("Failed to delete category"); }
   }
 
   if (loading) return <div className="animate-pulse h-64 bg-white rounded-xl border border-stone-100" />;

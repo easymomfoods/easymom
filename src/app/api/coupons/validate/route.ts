@@ -4,6 +4,22 @@ import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
+interface StoredCoupon {
+  id: string;
+  code: string;
+  discountPct: number;
+  active: boolean;
+  usageLimit: number | null;
+  used?: number;
+  expiresAt?: string | null;
+  description?: string;
+}
+
+function getCoupons(): StoredCoupon[] {
+  // Coupons are stored in site_content (canonical source, same as the admin editor + cart display)
+  return [];
+}
+
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") || "unknown";
   const rl = await rateLimit("coupons", ip, 10);
@@ -14,15 +30,30 @@ export async function POST(req: NextRequest) {
     const { code } = await req.json();
     if (!code) return NextResponse.json({ valid: false });
 
-    const coupon = await db.coupon.findUnique({ where: { code: code.toUpperCase() } });
-    if (!coupon || !coupon.active) return NextResponse.json({ valid: false });
+    const sc = await db.siteContent.findUnique({ where: { key: "coupons" } });
+    if (!sc) return NextResponse.json({ valid: false });
 
-    if (coupon.usageLimit !== null) {
-      // For now, just check if coupon exists and is active
-      // Usage tracking could be added later
+    const coupons: StoredCoupon[] = JSON.parse(sc.value || "[]");
+    const coupon = coupons.find(
+      (c) => c.code === String(code).toUpperCase() && c.active
+    );
+    if (!coupon) return NextResponse.json({ valid: false });
+
+    // Expiry check
+    if (coupon.expiresAt && new Date(coupon.expiresAt).getTime() < Date.now()) {
+      return NextResponse.json({ valid: false });
     }
 
-    return NextResponse.json({ valid: true, discountPct: coupon.discountPct, code: coupon.code });
+    // Usage limit check
+    if (coupon.usageLimit != null && (coupon.used || 0) >= coupon.usageLimit) {
+      return NextResponse.json({ valid: false });
+    }
+
+    return NextResponse.json({
+      valid: true,
+      discountPct: coupon.discountPct,
+      code: coupon.code,
+    });
   } catch {
     return NextResponse.json({ valid: false });
   }

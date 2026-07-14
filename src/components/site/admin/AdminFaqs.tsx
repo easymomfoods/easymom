@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Plus, Trash2, Pencil, Save, X, GripVertical } from "lucide-react";
+import { toast } from "sonner";
 
 interface Faq {
   id: string;
@@ -39,20 +40,30 @@ export default function AdminFaqs() {
       const url = editing ? `/api/admin/faqs/${editing.id}` : "/api/admin/faqs";
       const method = editing ? "PUT" : "POST";
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      if (res.ok) { fetchFaqs(); setEditing(null); setShowAdd(false); setForm({ question: "", answer: "", sortOrder: 0, active: true }); }
-    } catch (e) { console.error(e); } setSaving(false);
+      if (res.ok) {
+        fetchFaqs(); setEditing(null); setShowAdd(false); setForm({ question: "", answer: "", sortOrder: 0, active: true });
+        toast.success(editing ? "FAQ updated" : "FAQ created");
+      } else {
+        toast.error("Failed to save FAQ");
+      }
+    } catch (e) { console.error(e); toast.error("Failed to save FAQ"); } setSaving(false);
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this FAQ?")) return;
-    try { await fetch(`/api/admin/faqs/${id}`, { method: "DELETE" }); fetchFaqs(); } catch (e) { console.error(e); }
+    try {
+      const res = await fetch(`/api/admin/faqs/${id}`, { method: "DELETE" });
+      if (res.ok) { fetchFaqs(); toast.success("FAQ deleted"); }
+      else toast.error("Failed to delete FAQ");
+    } catch (e) { console.error(e); toast.error("Failed to delete FAQ"); }
   }
 
   async function toggleActive(faq: Faq) {
     try {
-      await fetch(`/api/admin/faqs/${faq.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...faq, active: !faq.active }) });
-      fetchFaqs();
-    } catch (e) { console.error(e); }
+      const res = await fetch(`/api/admin/faqs/${faq.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...faq, active: !faq.active }) });
+      if (res.ok) { fetchFaqs(); toast.success("FAQ updated"); }
+      else toast.error("Failed to update FAQ");
+    } catch (e) { console.error(e); toast.error("Failed to update FAQ"); }
   }
 
   if (loading) return <div className="animate-pulse h-64 bg-white rounded-xl border border-stone-100" />;

@@ -68,6 +68,7 @@ export default function HeroContentEditor() {
   }
 
   function handleReset() {
+    if (!confirm("Reset all changes to defaults? This cannot be undone.")) return;
     setData(defaults);
   }
 

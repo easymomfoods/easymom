@@ -17,6 +17,7 @@ import {
   ImageIcon,
   Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 import ImageUpload from "./ImageUpload";
 
 interface Product {
@@ -96,8 +97,11 @@ export default function AdminProducts() {
         setProducts((prev) =>
           prev.map((p) => (p.id === id ? { ...p, active: !active } : p))
         );
+        toast.success(active ? "Product deactivated" : "Product activated");
+      } else {
+        toast.error("Failed to update status");
       }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error("Failed to update status"); }
   }
 
   async function deleteProduct(id: string) {
@@ -106,8 +110,11 @@ export default function AdminProducts() {
       const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
       if (res.ok) {
         setProducts((prev) => prev.filter((p) => p.id !== id));
+        toast.success("Product deleted");
+      } else {
+        toast.error("Failed to delete product");
       }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error("Failed to delete product"); }
   }
 
   function inr(amount: number) {
@@ -312,6 +319,7 @@ export default function AdminProducts() {
       {editingProduct && (
         <ProductEditModal
           product={editingProduct}
+          categories={categories}
           onClose={() => setEditingProduct(null)}
           onSave={(updated) => {
             setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
@@ -324,6 +332,7 @@ export default function AdminProducts() {
       {showAddForm && (
         <ProductEditModal
           product={null}
+          categories={categories}
           onClose={() => setShowAddForm(false)}
           onSave={(newProduct) => {
             setProducts((prev) => [newProduct, ...prev]);
@@ -365,10 +374,12 @@ function StatCard({
 
 function ProductEditModal({
   product,
+  categories,
   onClose,
   onSave,
 }: {
   product: Product | null;
+  categories: Record<string, string>;
   onClose: () => void;
   onSave: (product: Product) => void;
 }) {
@@ -433,8 +444,13 @@ function ProductEditModal({
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (res.ok) onSave(data.product);
-    } catch (e) { console.error(e); } finally {
+      if (res.ok) {
+        onSave(data.product);
+        toast.success(product ? "Product updated" : "Product created");
+      } else {
+        toast.error(data.error || "Failed to save product");
+      }
+    } catch (e) { console.error(e); toast.error("Failed to save product"); } finally {
       setSaving(false);
     }
   }
@@ -492,7 +508,17 @@ function ProductEditModal({
             </div>
             <div>
               <label className={labelCls}>Category</label>
-              <input type="text" value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })} className={inputCls} placeholder="green-curry" />
+              <select
+                value={form.categoryId}
+                onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
+                className={inputCls}
+                required
+              >
+                <option value="">Select category...</option>
+                {Object.entries(categories).map(([id, name]) => (
+                  <option key={id} value={id}>{name}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className={labelCls}>Price (₹)</label>

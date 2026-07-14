@@ -17,6 +17,7 @@ import {
   Phone,
   StickyNote,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface OrderItem {
   productId: string;
@@ -94,11 +95,15 @@ export default function AdminOrders() {
         if (selectedOrder?.id === orderId) {
           setSelectedOrder((prev) => (prev ? { ...prev, status } : null));
         }
+        toast.success(`Order marked as ${status}`);
+      } else {
+        toast.error("Failed to update status");
       }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error("Failed to update status"); }
   }
 
   async function updatePaymentStatus(orderId: string, paymentStatus: string) {
+    if (!confirm(`Mark this order as ${paymentStatus}?`)) return;
     try {
       const res = await fetch(`/api/admin/orders/${orderId}`, {
         method: "PATCH",
@@ -110,8 +115,11 @@ export default function AdminOrders() {
         if (selectedOrder?.id === orderId) {
           setSelectedOrder((prev) => (prev ? { ...prev, paymentStatus } : null));
         }
+        toast.success(`Payment marked as ${paymentStatus}`);
+      } else {
+        toast.error("Failed to update payment status");
       }
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error("Failed to update payment status"); }
   }
 
   function inr(amount: number) {

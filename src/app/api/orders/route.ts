@@ -69,14 +69,33 @@ export async function POST(req: NextRequest) {
       serverSubtotal += product.price * qty;
     }
 
-    // Validate and apply coupon
+    // Validate and apply coupon (canonical store is site_content)
     let serverDiscount = 0;
+    let appliedCouponCode: string | null = null;
     if (couponCode) {
-      const coupon = await db.coupon.findUnique({ where: { code: couponCode.toUpperCase() } });
-      if (!coupon || !coupon.active) {
+      const normalized = couponCode.toUpperCase();
+      const sc = await db.siteContent.findUnique({ where: { key: "coupons" } });
+      const coupons: { code: string; discountPct: number; active: boolean; usageLimit: number | null; used?: number; expiresAt?: string | null }[] =
+        sc ? JSON.parse(sc.value || "[]") : [];
+      const coupon = coupons.find((c) => c.code === normalized && c.active);
+      if (!coupon) {
         return NextResponse.json({ error: "Invalid coupon code" }, { status: 400 });
       }
+      if (coupon.expiresAt && new Date(coupon.expiresAt).getTime() < Date.now()) {
+        return NextResponse.json({ error: "Coupon has expired" }, { status: 400 });
+      }
+      if (coupon.usageLimit != null && (coupon.used || 0) >= coupon.usageLimit) {
+        return NextResponse.json({ error: "Coupon usage limit reached" }, { status: 400 });
+      }
       serverDiscount = Math.round(serverSubtotal * (coupon.discountPct / 100));
+      appliedCouponCode = coupon.code;
+
+      // Increment usage count in site_content
+      coupon.used = (coupon.used || 0) + 1;
+      await db.siteContent.update({
+        where: { key: "coupons" },
+        data: { value: JSON.stringify(coupons) },
+      });
     }
 
     const serverShipping = SHIPPING_BY_CITY[city] || 50;
@@ -98,7 +117,7 @@ export async function POST(req: NextRequest) {
         discount: serverDiscount,
         shipping: serverShipping,
         total: serverTotal,
-        couponCode: couponCode?.toUpperCase() ?? null,
+        couponCode: appliedCouponCode,
         paymentMethod: paymentMethod === "upi_qr" ? "upi_qr" : "cod",
         paymentStatus: "pending",
         itemsJson: JSON.stringify(

@@ -40,7 +40,7 @@ export const useCart = create<CartState>()(
           if (existing) {
             return {
               lines: s.lines.map((l) =>
-                l.productId === p.id ? { ...l, qty: l.qty + qty } : l
+                l.productId === p.id ? { ...l, qty: Math.min(99, l.qty + qty) } : l
               ),
             };
           }
@@ -68,7 +68,7 @@ export const useCart = create<CartState>()(
             qty <= 0
               ? s.lines.filter((l) => l.productId !== productId)
               : s.lines.map((l) =>
-                  l.productId === productId ? { ...l, qty } : l
+                  l.productId === productId ? { ...l, qty: Math.min(99, qty) } : l
                 ),
         })),
       clear: () => set({ lines: [], coupon: null }),

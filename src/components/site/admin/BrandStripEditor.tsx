@@ -83,7 +83,7 @@ export default function BrandStripEditor() {
         </div>
         <div className="flex items-center gap-3">
           <button onClick={() => setPreview(true)} className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-stone-600 bg-white border border-stone-200 rounded-xl hover:bg-stone-50"><Eye className="h-4 w-4" /> Preview</button>
-          <button onClick={() => setItems(defaults)} className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-stone-600 bg-white border border-stone-200 rounded-xl hover:bg-stone-50"><RotateCcw className="h-4 w-4" /> Reset</button>
+          <button onClick={() => { if (confirm("Reset all changes to defaults? This cannot be undone.")) setItems(defaults); }} className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-stone-600 bg-white border border-stone-200 rounded-xl hover:bg-stone-50"><RotateCcw className="h-4 w-4" /> Reset</button>
           <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium text-white bg-[#891816] rounded-xl hover:bg-[#6d1311] disabled:opacity-50"><Save className="h-4 w-4" />{saving ? "Saving..." : saved ? "Saved!" : "Save"}</button>
         </div>
       </div>

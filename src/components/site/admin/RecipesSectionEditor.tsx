@@ -102,6 +102,7 @@ export default function RecipesSectionEditor() {
   }
 
   function handleReset() {
+    if (!confirm("Reset all changes to defaults? This cannot be undone.")) return;
     setData(defaults);
   }
 

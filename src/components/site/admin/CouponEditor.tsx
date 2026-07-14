@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Save, RotateCcw, Plus, Trash2, Tag, Percent } from "lucide-react";
+import { toast } from "sonner";
 
 interface Coupon {
   id: string;
@@ -9,6 +10,8 @@ interface Coupon {
   discountPct: number;
   active: boolean;
   usageLimit: number | null;
+  used?: number;
+  expiresAt?: string | null;
   description: string;
 }
 
@@ -46,29 +49,45 @@ export default function CouponEditor() {
     setSaving(true);
     setSaved(false);
     try {
+      // Validate uniqueness of codes
+      const codes = coupons.map((c) => c.code.toUpperCase());
+      const uniqueCodes = new Set(codes);
+      if (codes.some((c) => !c) || uniqueCodes.size !== codes.length) {
+        toast.error("Each coupon must have a unique code");
+        setSaving(false);
+        return;
+      }
       await fetch("/api/site-content/coupons", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ value: JSON.stringify(coupons) }),
       });
       setSaved(true);
+      toast.success("Coupons saved");
       setTimeout(() => setSaved(false), 2000);
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e); toast.error("Failed to save coupons"); }
     setSaving(false);
+  }
+
+  function handleReset() {
+    if (!confirm("Reset all coupons to defaults? This cannot be undone.")) return;
+    setCoupons(defaults);
+    toast.success("Coupons reset");
   }
 
   function addCoupon() {
     setCoupons([
       ...coupons,
-      { id: generateId(), code: "", discountPct: 10, active: true, usageLimit: null, description: "" },
+      { id: generateId(), code: "", discountPct: 10, active: true, usageLimit: null, used: 0, expiresAt: null, description: "" },
     ]);
   }
 
   function removeCoupon(idx: number) {
+    if (!confirm("Delete this coupon?")) return;
     setCoupons(coupons.filter((_, i) => i !== idx));
   }
 
-  function updateCoupon(idx: number, field: keyof Coupon, value: any) {
+  function updateCoupon(idx: number, field: keyof Coupon, value: string | number | boolean | null) {
     const next = [...coupons];
     next[idx] = { ...next[idx], [field]: value };
     setCoupons(next);
@@ -89,6 +108,9 @@ export default function CouponEditor() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <button onClick={handleReset} disabled={saving} className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-medium text-stone-600 bg-white border border-stone-200 rounded-xl hover:bg-stone-50 disabled:opacity-50">
+            <RotateCcw className="h-4 w-4" /> Reset
+          </button>
           <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-5 py-2.5 text-[13px] font-medium text-white bg-[#891816] rounded-xl hover:bg-[#6d1311] disabled:opacity-50">
             <Save className="h-4 w-4" />{saving ? "Saving..." : saved ? "Saved!" : "Save"}
           </button>
@@ -117,6 +139,9 @@ export default function CouponEditor() {
               <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${coupon.active ? "bg-emerald-50 text-emerald-700" : "bg-stone-100 text-stone-500"}`}>
                 {coupon.active ? "Active" : "Inactive"}
               </span>
+              {coupon.used != null && coupon.usageLimit != null && (
+                <span className="text-[11px] text-stone-400">{coupon.used}/{coupon.usageLimit} used</span>
+              )}
             </div>
             <button onClick={() => removeCoupon(idx)} className="p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50">
               <Trash2 className="h-4 w-4" />
@@ -141,7 +166,7 @@ export default function CouponEditor() {
                   min={1}
                   max={100}
                   value={coupon.discountPct}
-                  onChange={(e) => updateCoupon(idx, "discountPct", Number(e.target.value))}
+                  onChange={(e) => updateCoupon(idx, "discountPct", Math.min(100, Math.max(1, Number(e.target.value) || 0)))}
                   className={inputCls}
                 />
                 <Percent className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-stone-400" />
@@ -159,6 +184,18 @@ export default function CouponEditor() {
               />
             </div>
             <div>
+              <label className={labelCls}>Expires (optional)</label>
+              <input
+                type="date"
+                value={coupon.expiresAt ? coupon.expiresAt.slice(0, 10) : ""}
+                onChange={(e) => updateCoupon(idx, "expiresAt", e.target.value ? new Date(e.target.value).toISOString() : null)}
+                className={inputCls}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
               <label className={labelCls}>Active</label>
               <button
                 onClick={() => updateCoupon(idx, "active", !coupon.active)}
@@ -171,16 +208,15 @@ export default function CouponEditor() {
                 {coupon.active ? "Active" : "Inactive"}
               </button>
             </div>
-          </div>
-
-          <div>
-            <label className={labelCls}>Description (internal note)</label>
-            <input
-              value={coupon.description}
-              onChange={(e) => updateCoupon(idx, "description", e.target.value)}
-              className={inputCls}
-              placeholder="e.g. Welcome discount for new customers"
-            />
+            <div>
+              <label className={labelCls}>Description (internal note)</label>
+              <input
+                value={coupon.description}
+                onChange={(e) => updateCoupon(idx, "description", e.target.value)}
+                className={inputCls}
+                placeholder="e.g. Welcome discount for new customers"
+              />
+            </div>
           </div>
         </div>
       ))}

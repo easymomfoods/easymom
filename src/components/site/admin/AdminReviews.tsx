@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Check, Trash2, Star, Eye, Clock, X } from "lucide-react";
+import { toast } from "sonner";
 
 interface Review {
   id: string;
@@ -33,21 +34,27 @@ export default function AdminReviews() {
 
   async function approveReview(id: string) {
     try {
-      await fetch(`/api/admin/reviews/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ active: true }) });
-      fetchReviews();
-    } catch (e) { console.error(e); }
+      const res = await fetch(`/api/admin/reviews/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ active: true }) });
+      if (res.ok) { fetchReviews(); toast.success("Review approved"); }
+      else toast.error("Failed to approve review");
+    } catch (e) { console.error(e); toast.error("Failed to approve review"); }
   }
 
   async function rejectReview(id: string) {
     try {
-      await fetch(`/api/admin/reviews/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ active: false }) });
-      fetchReviews();
-    } catch (e) { console.error(e); }
+      const res = await fetch(`/api/admin/reviews/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ active: false }) });
+      if (res.ok) { fetchReviews(); toast.success("Review rejected"); }
+      else toast.error("Failed to reject review");
+    } catch (e) { console.error(e); toast.error("Failed to reject review"); }
   }
 
   async function deleteReview(id: string) {
     if (!confirm("Delete this review?")) return;
-    try { await fetch(`/api/admin/reviews/${id}`, { method: "DELETE" }); fetchReviews(); } catch (e) { console.error(e); }
+    try {
+      const res = await fetch(`/api/admin/reviews/${id}`, { method: "DELETE" });
+      if (res.ok) { fetchReviews(); toast.success("Review deleted"); }
+      else toast.error("Failed to delete review");
+    } catch (e) { console.error(e); toast.error("Failed to delete review"); }
   }
 
   const filtered = reviews.filter((r) => filter === "all" || (filter === "pending" && !r.active) || (filter === "approved" && r.active));
