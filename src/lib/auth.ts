@@ -9,8 +9,11 @@ const SESSION_COOKIE = "easymom_admin_session";
 
 function getSessionSecret(): string {
   const secret = process.env.SESSION_SECRET;
-  if (!secret || secret === "easymom-dev-secret-change-in-prod") {
-    throw new Error("SESSION_SECRET env var must be set in production");
+  if (!secret) {
+    throw new Error("SESSION_SECRET env var must be set");
+  }
+  if (process.env.NODE_ENV === "production" && secret === "easymom-dev-secret-change-in-prod") {
+    throw new Error("SESSION_SECRET must be changed from default in production");
   }
   return secret;
 }
