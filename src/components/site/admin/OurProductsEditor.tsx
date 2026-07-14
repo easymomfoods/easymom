@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import {
   Save,
   Eye,
@@ -81,6 +82,22 @@ export default function OurProductsEditor() {
   async function handleSave() {
     setSaving(true);
     setSaved(false);
+
+    // Validate required fields: slug, name, and image on every card
+    const missing = data.items.findIndex(
+      (it) => !it.slug.trim() || !it.name.trim() || !it.img.trim()
+    );
+    if (missing !== -1) {
+      const m = data.items[missing];
+      const fields: string[] = [];
+      if (!m.name.trim()) fields.push("Name");
+      if (!m.slug.trim()) fields.push("Slug");
+      if (!m.img.trim()) fields.push("Image");
+      toast.error(`Card ${missing + 1} is missing required field(s): ${fields.join(", ")}`);
+      setSaving(false);
+      return;
+    }
+
     try {
       await fetch("/api/site-content/our-products", {
         method: "PUT",
@@ -372,10 +389,10 @@ function SortableCard({
       {editing && (
         <div className="px-4 py-4 space-y-4 border-t border-stone-100">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
-                Name
-              </label>
+              <div>
+                <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
+                  Name <span className="text-red-500">*</span>
+                </label>
               <input
                 type="text"
                 value={item.name}
@@ -384,10 +401,10 @@ function SortableCard({
                 placeholder="Red Curry"
               />
             </div>
-            <div>
-              <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
-                Slug (product link)
-              </label>
+              <div>
+                <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
+                  Slug (product link) <span className="text-red-500">*</span>
+                </label>
               <input
                 type="text"
                 value={item.slug}
@@ -401,7 +418,7 @@ function SortableCard({
             value={item.img}
             onChange={(url) => onUpdate("img", url)}
             folder="easymom/categories"
-            label="Card Image"
+            label="Card Image *"
           />
         </div>
       )}

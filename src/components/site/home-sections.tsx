@@ -9,6 +9,7 @@ import {
   Users,
   MapPin,
   ChevronRight,
+  PackageOpen,
 } from "lucide-react";
 import { PackageIcon, LeafIcon, CircularArrowIcon, MortarIcon, FlameIcon, ShieldIcon } from "./icons";
 import { categories, products, recipes, testimonials, brandValues, type Product } from "@/lib/data";
@@ -1123,11 +1124,17 @@ export function OurProducts() {
                 style={{ boxShadow: shadows[i] }}
               >
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[5px]">
-                  <img
-                    src={p.img}
-                    alt={p.name}
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                  />
+                  {p.img ? (
+                    <img
+                      src={p.img}
+                      alt={p.name}
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                    />
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center bg-stone-200">
+                      <PackageOpen className="h-8 w-8 text-stone-300" />
+                    </div>
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-4">
                     <h3 className="text-[17px] font-semibold text-white">{p.name}</h3>

@@ -126,11 +126,17 @@ export default function HeroContentEditor() {
         /* ── Live Preview ── */
         <div className="bg-white rounded-xl border border-stone-100 overflow-hidden">
           <div className="relative h-[400px] sm:h-[500px] overflow-hidden bg-zinc-950">
-            <img
-              src={data.desktopImage}
-              alt="Hero preview"
-              className="h-full w-full object-cover"
-            />
+            {data.desktopImage ? (
+              <img
+                src={data.desktopImage}
+                alt="Hero preview"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center bg-stone-800 text-stone-400 text-sm">
+                No desktop image set
+              </div>
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent" />
 
