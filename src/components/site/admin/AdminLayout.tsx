@@ -163,6 +163,7 @@ export default function AdminLayout({
               <button
                 key={navItem.id}
                 onClick={() => onNavigate(navItem.id)}
+                onMouseDown={(e) => e.preventDefault()}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all ${
                   active
                     ? "bg-[#891816]/8 text-[#891816]"

@@ -197,14 +197,22 @@ export const useUI = create<UIState>((set, get) => ({
   cartToast: null,
   go: (v) => {
     const path = viewToPath(v);
+    const currentView = get().view;
     const currentPath = window.location.pathname;
     if (path !== currentPath) {
       window.history.pushState(v, "", path);
     }
     set({ view: v, mobileNavOpen: false, searchOpen: false });
-    requestAnimationFrame(() => {
-      window.scrollTo({ top: 0, behavior: "instant" });
-    });
+    // Only force-scroll to top when crossing the admin/public boundary.
+    // Within the admin dashboard, keep the current scroll position so
+    // switching sections doesn't yank the page back to the top.
+    const fromAdmin = currentView.name.startsWith("admin");
+    const toAdmin = v.name.startsWith("admin");
+    if (!(fromAdmin && toAdmin)) {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "instant" });
+      });
+    }
     return true;
   },
   openCart: () => set({ cartOpen: true }),
