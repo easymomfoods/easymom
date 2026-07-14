@@ -176,6 +176,8 @@ const FALLBACK_BRAND_STORY = {
   features: brandValues,
 };
 
+const DEFAULT_MARQUEE_TEXT = FALLBACK_BRAND_STORY.marqueeText;
+
 export function BrandStory() {
   const [count, setCount] = React.useState(0);
   const [countDone, setCountDone] = React.useState(false);

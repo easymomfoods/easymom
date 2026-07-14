@@ -39,6 +39,8 @@ export type Product = {
   servings: string;
   tags: string[];
   hue: number; // 0-360 base hue for card visual
+  active?: boolean;
+  createdAt?: string;
 };
 
 export type Recipe = {

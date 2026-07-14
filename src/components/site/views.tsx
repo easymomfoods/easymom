@@ -32,6 +32,7 @@ import {
   getCategoryById,
   brandStats,
   type SpiceLevel,
+  type Product,
 } from "@/lib/data";
 import { ProductCard } from "./product-card";
 import { inr } from "@/lib/format";
@@ -49,22 +50,23 @@ type ProductData = {
   weight: string;
   rating: number;
   reviewCount: number;
-  badge: string | null;
-  bestSeller: boolean;
-  isNew: boolean;
-  img: string | null;
-  images: string[];
+  badge?: string;
+  bestSeller?: boolean;
+  isNew?: boolean;
+  img?: string;
+  images?: string[];
   shortDesc: string;
   description: string;
   ingredients: string[];
   origin: string;
   shelfLife: string;
-  spiceLevel: string;
+  spiceLevel: SpiceLevel;
   cookingTime: string;
   servings: string;
   tags: string[];
   hue: number;
-  active: boolean;
+  active?: boolean;
+  createdAt?: string;
 };
 
 const LEVELS: SpiceLevel[] = ["Medium", "Hot"];
@@ -140,7 +142,7 @@ export function ShopView() {
           if (a.active !== b.active) return a.active ? -1 : 1;
           const bs = Number(b.bestSeller) - Number(a.bestSeller);
           if (bs !== 0) return bs;
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return new Date(b.createdAt || "").getTime() - new Date(a.createdAt || "").getTime();
         });
     }
     return list;
@@ -343,7 +345,7 @@ export function ProductView() {
   const [loadingProduct, setLoadingProduct] = useState(true);
   const [allProducts, setAllProducts] = useState(DEFAULT_PRODUCTS);
   const [allCategories, setAllCategories] = useState(DEFAULT_CATEGORIES);
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<{ id: string; name: string; rating: number; title: string; body: string; createdAt: string }[]>([]);
   const [reviewPage, setReviewPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(false);
   const [loadingReviews, setLoadingReviews] = useState(false);
@@ -519,7 +521,7 @@ export function ProductView() {
           <div className="flex-1 min-w-0">
             <div className="relative overflow-hidden rounded-[6px] border border-border aspect-square bg-stone-50">
               <img
-                src={selectedImg === -1 ? p.img : (p.images && p.images[selectedImg]) || p.img}
+                src={selectedImg === -1 ? (p.img || "") : (p.images && p.images[selectedImg]) || p.img || ""}
                 alt={p.name}
                 className="w-full h-full object-cover"
               />
@@ -614,7 +616,7 @@ export function ProductView() {
               </div>
               <button
                 onClick={() => {
-                  add(p, qty);
+                  add(p as Product, qty);
                   showAddedToCart(p.name, qty);
                 }}
                 className="flex flex-1 items-center justify-center gap-2 rounded-[4px] bg-primary px-5 py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
@@ -934,7 +936,7 @@ export function RecipesView() {
                         className="overflow-hidden"
                       >
                         <ol className="mt-5 space-y-3 border-t border-border pt-5">
-                          {r.steps.map((s, idx) => (
+                          {r.steps.map((s: string, idx: number) => (
                             <li key={idx} className="flex gap-3 text-[14px] leading-relaxed text-foreground/85">
                               <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-primary text-[12px] font-semibold text-primary-foreground">
                                 {idx + 1}
@@ -1065,15 +1067,15 @@ export function AboutView() {
   );
 }
 
-const DEFAULT_FAQS = [
-  { q: "How long does delivery take?", a: "Orders are dispatched within 24 hours from our Mangalore facility. Metro cities receive in 2–3 days, the rest of India in 4–6 days. International orders to the UAE, UK, Singapore, USA, Canada and Australia take 7–12 days, shipped DDP." },
-  { q: "Are your masalas preservative-free?", a: "Entirely. No preservatives, no added colour, no anti-caking agents. The shelf life comes from low-moisture roasting and airtight packaging, not chemistry. Read the back of any pouch — it reads like a recipe." },
-  { q: "What's the shelf life?", a: "8–12 months unopened, depending on the blend. Once opened, use within 3 months and keep the pouch sealed in a cool, dry place away from direct sunlight." },
-  { q: "Do you ship internationally?", a: "Yes — we currently ship to the UAE, UK, Singapore, USA, Canada and Australia. Duties are prepaid at checkout (DDP) so there are no surprise charges on delivery." },
-  { q: "What's your return policy?", a: "If a blend arrives damaged or isn't what you expected, write to hello@easymom.in within 7 days and we'll replace or refund — no questions, no fuss. Spoilage in transit is on us." },
-  { q: "Is the packaging recyclable?", a: "Our pouches are recyclable LDPE (category 4). The outer mailer is recycled kraft. We're transitioning to compostable pouches across the range by Q3 2025." },
-  { q: "How do I track my order?", a: "Every order gets a tracking link by email and SMS within 24 hours of dispatch. You can also track from the order confirmation page." },
-  { q: "Do you offer bulk or gifting?", a: "Yes — we do corporate gifting, wedding favours and wholesale. Write to hello@easymom.in with your requirements and we'll put together a custom selection." },
+const DEFAULT_FAQS: { question: string; answer: string }[] = [
+  { question: "How long does delivery take?", answer: "Orders are dispatched within 24 hours from our Mangalore facility. Metro cities receive in 2–3 days, the rest of India in 4–6 days. International orders to the UAE, UK, Singapore, USA, Canada and Australia take 7–12 days, shipped DDP." },
+  { question: "Are your masalas preservative-free?", answer: "Entirely. No preservatives, no added colour, no anti-caking agents. The shelf life comes from low-moisture roasting and airtight packaging, not chemistry. Read the back of any pouch — it reads like a recipe." },
+  { question: "What's the shelf life?", answer: "8–12 months unopened, depending on the blend. Once opened, use within 3 months and keep the pouch sealed in a cool, dry place away from direct sunlight." },
+  { question: "Do you ship internationally?", answer: "Yes — we currently ship to the UAE, UK, Singapore, USA, Canada and Australia. Duties are prepaid at checkout (DDP) so there are no surprise charges on delivery." },
+  { question: "What's your return policy?", answer: "If a blend arrives damaged or isn't what you expected, write to hello@easymom.in within 7 days and we'll replace or refund — no questions, no fuss. Spoilage in transit is on us." },
+  { question: "Is the packaging recyclable?", answer: "Our pouches are recyclable LDPE (category 4). The outer mailer is recycled kraft. We're transitioning to compostable pouches across the range by Q3 2025." },
+  { question: "How do I track my order?", answer: "Every order gets a tracking link by email and SMS within 24 hours of dispatch. You can also track from the order confirmation page." },
+  { question: "Do you offer bulk or gifting?", answer: "Yes — we do corporate gifting, wedding favours and wholesale. Write to hello@easymom.in with your requirements and we'll put together a custom selection." },
 ];
 
 export function FaqView() {
@@ -1115,7 +1117,7 @@ export function FaqView() {
               onClick={() => setOpen(open === i ? null : i)}
               className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
             >
-              <span className="text-[15px] font-semibold text-foreground">{f.question || f.q}</span>
+              <span className="text-[15px] font-semibold text-foreground">{f.question}</span>
               <ChevronRight className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", open === i && "rotate-90")} />
             </button>
             <AnimatePresence>
@@ -1127,7 +1129,7 @@ export function FaqView() {
                   transition={{ duration: 0.28 }}
                   className="overflow-hidden"
                 >
-                  <p className="px-5 pb-5 text-[14px] leading-relaxed text-muted-foreground">{f.answer || f.a}</p>
+                  <p className="px-5 pb-5 text-[14px] leading-relaxed text-muted-foreground">{f.answer}</p>
                 </motion.div>
               )}
             </AnimatePresence>

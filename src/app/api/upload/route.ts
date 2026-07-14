@@ -44,7 +44,8 @@ export async function POST(req: Request) {
         },
         (error, result) => {
           if (error) reject(error);
-          else resolve(result);
+          else if (result) resolve(result);
+          else reject(new Error("Upload failed"));
         }
       );
       stream.end(buffer);

@@ -1,6 +1,7 @@
 import { Ratelimit } from "@upstash/ratelimit";
 
-let redisClient: ReturnType<typeof import("@upstash/redis").Redis> | null = undefined;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let redisClient: any = undefined;
 
 function getRedis() {
   if (redisClient !== undefined) return redisClient;
@@ -10,6 +11,7 @@ function getRedis() {
     redisClient = null;
     return redisClient;
   }
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { Redis } = require("@upstash/redis");
   redisClient = new Redis({ url, token });
   return redisClient;

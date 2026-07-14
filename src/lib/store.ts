@@ -53,6 +53,7 @@ export const useCart = create<CartState>()(
                 slug: p.slug,
                 price: p.price,
                 weight: p.weight,
+                img: p.img || "",
                 hue: p.hue,
                 qty,
               },

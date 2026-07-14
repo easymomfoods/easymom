@@ -30,17 +30,17 @@ export async function POST(req: Request) {
     const body = await req.json();
     const recipe = await db.recipe.create({
       data: {
-        title: body.title || "",
-        region: body.region || "",
-        time: body.time || "5 min",
-        serves: body.serves || "4",
-        difficulty: body.difficulty || "Easy",
-        productSlug: body.productSlug || "",
-        excerpt: body.excerpt || "",
+        title: String(body.title || ""),
+        region: String(body.region || ""),
+        time: String(body.time || "5 min"),
+        serves: String(body.serves || "4"),
+        difficulty: String(body.difficulty || "Easy"),
+        productSlug: String(body.productSlug || ""),
+        excerpt: String(body.excerpt || ""),
         steps: JSON.stringify(body.steps || []),
-        hue: body.hue || 0,
+        hue: Number(body.hue) || 0,
         active: body.active !== false,
-      },
+      } as never,
     });
     return NextResponse.json({ ok: true, recipe: { ...recipe, steps: JSON.parse(recipe.steps) } });
   } catch (e) {

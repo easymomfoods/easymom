@@ -32,6 +32,8 @@ export type View =
   | { name: "admin-brand-strip" }
   | { name: "admin-profile" }
   | { name: "admin-settings" }
+  | { name: "admin-coupons" }
+  | { name: "admin-store-locations" }
   | { name: "track-order"; orderId?: string };
 
 function viewToPath(v: View): string {

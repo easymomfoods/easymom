@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useUI } from "@/lib/ui-store";
-import { useCart, cartSubtotal, cartCount } from "@/lib/store";
+import { useCart, cartSubtotal, cartCount, type CartLine } from "@/lib/store";
 import { products, categories } from "@/lib/data";
 import { inr } from "@/lib/format";
 import { ProductCard } from "./product-card";
@@ -116,7 +116,7 @@ export function CartDrawer() {
       .then((r) => r.json())
       .then((d) => {
         if (!d.products) return;
-        const productMap = new Map(d.products.map((p: { id: string; img: string; price: number; name: string; weight: string }) => [p.id, p]));
+        const productMap = new Map<string, { id: string; img: string; price: number; name: string; weight: string }>(d.products.map((p: { id: string; img: string; price: number; name: string; weight: string }) => [p.id, p]));
         let changed = false;
         const updated = lines.map((l) => {
           const fresh = productMap.get(l.productId);
