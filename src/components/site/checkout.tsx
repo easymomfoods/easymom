@@ -321,9 +321,20 @@ export function Checkout() {
 
                           <button
                             onClick={placeOrder}
-                            className="animate-shine-sweep flex w-full items-center justify-center gap-2 rounded-[4px] bg-primary py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
+                            className="relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[4px] bg-primary py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
                           >
-                            {paymentMethod === "cod" ? `Place Order — ${inr(total)}` : `I've Paid — ${inr(total)}`}
+                            <span
+                              style={{
+                                position: "absolute",
+                                inset: 0,
+                                background: "linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%)",
+                                animation: "shine-sweep 3s ease-in-out infinite",
+                                pointerEvents: "none",
+                              }}
+                            />
+                            <span className="relative z-10">
+                              {paymentMethod === "cod" ? `Place Order — ${inr(total)}` : `I've Paid — ${inr(total)}`}
+                            </span>
                           </button>
                         </div>
                       )}
