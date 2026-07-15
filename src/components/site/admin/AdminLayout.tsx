@@ -205,7 +205,7 @@ export default function AdminLayout({
             <div className="relative">
               <p className="text-[11px] font-bold text-white/60 uppercase tracking-wider mb-1">Premium</p>
               <p className="text-sm font-bold text-white leading-snug">Taste.<br />Pure Authenticity.</p>
-              <button className="mt-3 px-3 py-1.5 bg-white text-[#891816] text-[12px] font-semibold rounded-md hover:bg-white/90 transition-colors">
+              <button onClick={() => window.open("/", "_blank")} className="mt-3 px-3 py-1.5 bg-white text-[#891816] text-[12px] font-semibold rounded-md hover:bg-white/90 transition-colors">
                 Shop Now →
               </button>
             </div>

@@ -153,7 +153,7 @@ export default function DashboardContent() {
           <p className="text-sm text-white/60 mt-2 max-w-xs leading-relaxed">
             {stats?.pendingOrders ? `${stats.pendingOrders} pending order${stats.pendingOrders !== 1 ? "s" : ""} awaiting processing` : "All caught up — no pending orders."}
           </p>
-          <button className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-[#c8a960] text-[#1a0f0a] text-[13px] font-semibold rounded-lg hover:bg-[#d4b86a] transition-colors w-fit">
+          <button onClick={() => go({ name: "admin-products" })} className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 bg-[#c8a960] text-[#1a0f0a] text-[13px] font-semibold rounded-lg hover:bg-[#d4b86a] transition-colors w-fit">
             Explore Products <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>
