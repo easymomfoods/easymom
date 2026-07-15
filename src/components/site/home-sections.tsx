@@ -103,6 +103,7 @@ export function FeaturedProducts() {
   const [description, setDescription] = React.useState(FALLBACK_FEATURED.description);
   const [productSlugs, setProductSlugs] = React.useState<string[]>(FALLBACK_FEATURED.productSlugs);
   const [dbProducts, setDbProducts] = React.useState<any[]>([]);
+  const [loaded, setLoaded] = React.useState(false);
 
   React.useEffect(() => {
     Promise.all([
@@ -122,11 +123,11 @@ export function FeaturedProducts() {
         if (productsData.products) {
           setDbProducts(productsData.products);
         }
+        setLoaded(true);
       })
-      .catch((e) => { console.error(e); });
+      .catch((e) => { console.error(e); setLoaded(true); });
   }, []);
 
-  // Use selected slugs if available, otherwise fallback to bestSellers
   const featured = productSlugs.length > 0
     ? productSlugs
         .map((slug) => dbProducts.find((p: any) => p.slug === slug))
@@ -134,7 +135,7 @@ export function FeaturedProducts() {
         .slice(0, 4)
     : dbProducts.length > 0
       ? dbProducts.filter((p: any) => p.bestSeller).slice(0, 4)
-      : products.filter((p) => p.bestSeller).slice(0, 4);
+      : [];
 
   return (
     <section className="bg-secondary/30">
@@ -150,14 +151,35 @@ export function FeaturedProducts() {
             onClick={() => go({ name: "shop" })}
             className="group inline-flex items-center gap-1.5 rounded-[4px] border border-border bg-card px-4 py-2.5 text-[13px] font-semibold text-foreground transition hover:border-foreground/30"
           >
-            View all {dbProducts.length || products.length} blends
+            View all {dbProducts.length > 0 ? dbProducts.length : 7} blends
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
         <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
-          {featured.map((p: any, i: number) => (
-            <ProductCard key={p.id || p.slug} product={p} index={i} />
-          ))}
+          {!loaded
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="overflow-hidden rounded-[6px] border border-border">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                  </div>
+                  <div className="space-y-3 p-4">
+                    <div className="relative h-3 w-3/4 overflow-hidden rounded-full bg-stone-100">
+                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                    </div>
+                    <div className="relative h-3 w-1/2 overflow-hidden rounded-full bg-stone-100">
+                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                    </div>
+                    <div className="flex items-center gap-2 pt-1">
+                      <div className="relative h-4 w-16 overflow-hidden rounded-full bg-stone-100">
+                        <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            : featured.map((p: any, i: number) => (
+                <ProductCard key={p.id || p.slug} product={p} index={i} />
+              ))}
         </div>
       </div>
     </section>
