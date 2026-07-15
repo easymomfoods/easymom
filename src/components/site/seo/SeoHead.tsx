@@ -31,7 +31,7 @@ const SEO_DATA: Record<string, { title: string; description: string; image: stri
   about: {
     title: "Our Story — EasyMom Foods | Founded by Mahammad Sinan",
     description:
-      "EasyMom began in a Mangalore kitchen in 2019, founded by Mahammad Sinan. We work with small spice co-ops across South India to bring you stone-ground masalas with no preservatives.",
+      "EasyMom began in a Mangalore kitchen in 2025, founded by Mahammad Sinan. We work with small spice co-ops across South India to bring you stone-ground masalas with no preservatives.",
     image: "/brand/story-grind.png",
   },
   faq: {

@@ -970,7 +970,7 @@ const DEFAULT_ABOUT = {
   eyebrow: "Our story",
   heading: "A South Indian kitchen, made effortless.",
   paragraph1:
-    "EasyMom began in a Mangalore kitchen in 2019, when a working mother ground her mother's chicken masala blend into a pouch so her sister in Dubai could taste home on a Wednesday. The pouch kept getting passed around — to colleagues, neighbours, friends abroad — until it became clear this was bigger than one family.",
+    "EasyMom began in a Mangalore kitchen in 2025, when a working mother ground her mother's chicken masala blend into a pouch so her sister in Dubai could taste home on a Wednesday. The pouch kept getting passed around — to colleagues, neighbours, friends abroad — until it became clear this was bigger than one family.",
   paragraph2:
     "Today we work with small spice co-ops across Karnataka, Kerala and Tamil Nadu, grinding in batches under 20kg on slow stones. Every blend is a real recipe from a real kitchen — built so a 15-minute cook still tastes like a 90-minute one.",
   founder: "Mahammad Sinan",
