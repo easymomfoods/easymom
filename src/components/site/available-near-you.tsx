@@ -220,12 +220,42 @@ export default function AvailableNearYou() {
     measure();
     window.addEventListener("resize", measure);
     return () => window.removeEventListener("resize", measure);
-  }, [isMobile]);
+  }, [isMobile, locations]);
+
+  useEffect(() => {
+    if (!scrollContainerRef.current || !sectionRef.current) return;
+    const timer = setTimeout(() => {
+      if (scrollContainerRef.current && sectionRef.current) {
+        const cw = sectionRef.current.offsetWidth;
+        const sw = scrollContainerRef.current.scrollWidth;
+        setContainerWidth(cw);
+        setScrollWidth(sw);
+        containerWidthRef.current = cw;
+        scrollWidthRef.current = sw;
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [locations]);
+
+  useEffect(() => {
+    const handler = () => {
+      if (scrollContainerRef.current && sectionRef.current) {
+        const cw = sectionRef.current.offsetWidth;
+        const sw = scrollContainerRef.current.scrollWidth;
+        setContainerWidth(cw);
+        setScrollWidth(sw);
+        containerWidthRef.current = cw;
+        scrollWidthRef.current = sw;
+      }
+    };
+    window.addEventListener("load", handler);
+    return () => window.removeEventListener("load", handler);
+  }, []);
 
   const horizontalDistance = Math.max(scrollWidth - containerWidth, 0);
 
   const sectionHeight = horizontalDistance > 0
-    ? horizontalDistance + (typeof window !== "undefined" ? window.innerHeight : 800)
+    ? horizontalDistance + (typeof window !== "undefined" ? window.innerHeight : 800) + 200
     : 800;
 
   const { scrollYProgress } = useScroll({
