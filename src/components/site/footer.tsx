@@ -58,7 +58,7 @@ const DEFAULTS = {
     { platform: "twitter", label: "Twitter", href: "#" },
   ],
   whatsapp: "",
-  fssai: "10024051000678",
+  fssai: "21225066000075",
 };
 
 export function Footer() {

@@ -33,7 +33,7 @@ const defaults: FooterData = {
     { platform: "youtube", label: "YouTube", href: "#" },
     { platform: "twitter", label: "Twitter", href: "#" },
   ],
-  fssai: "10024051000678",
+  fssai: "21225066000075",
 };
 
 const inputCls =
@@ -230,7 +230,7 @@ export default function FooterEditor() {
                   value={data.fssai}
                   onChange={(e) => setData({ ...data, fssai: e.target.value })}
                   className={inputCls}
-                  placeholder="10024051000678"
+                  placeholder="21225066000075"
                 />
               </div>
             </div>
