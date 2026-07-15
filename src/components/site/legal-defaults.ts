@@ -28,11 +28,11 @@ const TERMS_SECTIONS: LegalSection[] = [
   },
   {
     heading: "5. Returns & refunds",
-    body: "If a product arrives damaged or is not as described, contact hello@easymom.in within 7 days for a replacement or refund.",
+    body: "If a product arrives damaged or is not as described, contact easymomfoods@gmail.com within 7 days for a replacement or refund.",
   },
   {
     heading: "6. Contact",
-    body: "Questions about these terms? Write to us at hello@easymom.in and we'll respond within 2 business days.",
+    body: "Questions about these terms? Write to us at easymomfoods@gmail.com and we'll respond within 2 business days.",
   },
 ];
 
@@ -55,11 +55,11 @@ const PRIVACY_SECTIONS: LegalSection[] = [
   },
   {
     heading: "5. Your rights",
-    body: "You may request access to, correction of, or deletion of your personal data by emailing hello@easymom.in. We will action valid requests within 30 days.",
+    body: "You may request access to, correction of, or deletion of your personal data by emailing easymomfoods@gmail.com. We will action valid requests within 30 days.",
   },
   {
     heading: "6. Contact",
-    body: "For any privacy-related questions, write to us at hello@easymom.in and we'll respond within 2 business days.",
+    body: "For any privacy-related questions, write to us at easymomfoods@gmail.com and we'll respond within 2 business days.",
   },
 ];
 

@@ -1098,7 +1098,7 @@ export function FaqView() {
         <p className="text-[12px] font-semibold uppercase tracking-[0.18em] text-primary">Help centre</p>
         <h1 className="mt-3 text-[36px] font-semibold tracking-tight sm:text-[44px]">Frequently asked</h1>
         <p className="mx-auto mt-4 max-w-lg text-[15px] text-muted-foreground">
-          Everything about shipping, ingredients, storage and returns. Can't find your answer? Write to hello@easymom.in.
+          Everything about shipping, ingredients, storage and returns. Can't find your answer? Write to easymomfoods@gmail.com.
         </p>
       </div>
       <div className="mt-10 space-y-3">

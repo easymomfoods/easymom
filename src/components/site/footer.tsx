@@ -49,11 +49,11 @@ const SOCIAL_ICONS: Record<string, typeof Instagram> = {
 
 const DEFAULTS = {
   tagline: "Authentic South Indian masalas, ground fresh in small batches. Homemade flavour, built for the modern stove.",
-  email: "hello@easymom.in",
-  phone: "+91 80 1234 5678",
+  email: "easymomfoods@gmail.com",
+  phone: "+91 99012 61232",
   address: "Mangalore, Karnataka 575001",
   socials: [
-    { platform: "instagram", label: "Instagram", href: "#" },
+    { platform: "instagram", label: "Instagram", href: "https://www.instagram.com/easymomfoods/" },
     { platform: "youtube", label: "YouTube", href: "#" },
     { platform: "twitter", label: "Twitter", href: "#" },
   ],

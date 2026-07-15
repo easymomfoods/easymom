@@ -154,7 +154,7 @@ function EndSlide() {
         Can't find a store near you? Reach out — we're expanding fast.
       </p>
       <a
-        href="mailto:hello@easymom.in"
+        href="mailto:easymomfoods@gmail.com"
         className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-[#891816] hover:underline"
       >
         Get in touch <ArrowUpRight className="h-3.5 w-3.5" />
