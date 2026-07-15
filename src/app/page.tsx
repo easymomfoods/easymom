@@ -39,6 +39,10 @@ import {
 } from "@/components/site/page-skeletons";
 import AdminLogin from "@/components/site/admin/AdminLogin";
 import AdminLayout from "@/components/site/admin/AdminLayout";
+import { SeoHead } from "@/components/site/seo/SeoHead";
+import { ProductJsonLd } from "@/components/site/seo/ProductJsonLd";
+import { FaqJsonLd } from "@/components/site/seo/FaqJsonLd";
+import { BreadcrumbJsonLd } from "@/components/site/seo/BreadcrumbJsonLd";
 import DashboardContent from "@/components/site/admin/DashboardContent";
 import AdminOrders from "@/components/site/admin/AdminOrders";
 import AdminProducts from "@/components/site/admin/AdminProducts";
@@ -204,6 +208,10 @@ export default function Home() {
   // Public views — suppressHydrationWarning because Zustand view state may differ server/client
   return (
     <div className="flex min-h-screen flex-col bg-background" suppressHydrationWarning>
+      <SeoHead />
+      <ProductJsonLd />
+      <FaqJsonLd />
+      <BreadcrumbJsonLd />
       <Nav />
 
       <main className="flex-1">

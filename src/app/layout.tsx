@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s · EasyMom Foods",
   },
   description:
-    "Premium authentic South Indian masalas and ready-to-cook blends from Mangalore and Kerala. Homemade taste, fast cooking, no preservatives. Trusted by 42,000+ families across India and abroad.",
+    "Premium authentic South Indian masalas and ready-to-cook blends from Mangalore and Kerala. Homemade taste, fast cooking, no preservatives. Trusted by 42,000+ families. Founded by Mahammad Sinan.",
   keywords: [
     "EasyMom",
     "South Indian masala",
@@ -40,6 +40,12 @@ export const metadata: Metadata = {
     "premium spices India",
     "no preservative masala",
     "instant curry paste",
+    "buy spices online India",
+    "authentic masala online",
+    "Mangalore masala delivery",
+    "South Indian curry paste",
+    "stone ground spices",
+    "Mahammad Sinan",
   ],
   authors: [{ name: "EasyMom Foods" }],
   creator: "EasyMom Foods",
@@ -51,7 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "EasyMom Foods — Authentic South Indian Masalas, Made Effortless",
     description:
-      "Premium South Indian masalas from Mangalore. No prep, no oil, ready in 5 minutes. Trusted by 42,000+ families.",
+      "Premium South Indian masalas from Mangalore. No prep, no oil, ready in 5 minutes. Trusted by 42,000+ families. Founded by Mahammad Sinan.",
     url: "https://easymom.co.in",
     siteName: "EasyMom Foods",
     images: [
@@ -69,7 +75,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "EasyMom Foods — Authentic South Indian Masalas",
     description:
-      "Premium South Indian masalas from Mangalore. No prep, no oil, ready in 5 minutes.",
+      "Premium South Indian masalas from Mangalore. No prep, no oil, ready in 5 minutes. Founded by Mahammad Sinan.",
     images: ["/brand/easymom-logo.png"],
   },
   robots: {
@@ -87,8 +93,12 @@ const jsonLd = {
   url: "https://easymom.co.in",
   logo: "https://easymom.co.in/brand/easymom-logo.png",
   description:
-    "Premium authentic South Indian masalas and ready-to-cook blends from Mangalore and Kerala. No prep, no oil, ready in 5 minutes.",
+    "Premium authentic South Indian masalas and ready-to-cook blends from Mangalore and Kerala. No prep, no oil, ready in 5 minutes. Founded by Mahammad Sinan.",
   knowsAbout: ["South Indian cuisine", "Masala blends", "Mangalorean recipes", "Kerala spices"],
+  founder: {
+    "@type": "Person",
+    name: "Mahammad Sinan",
+  },
   contactPoint: {
     "@type": "ContactPoint",
     telephone: "+91 99012 61232",
