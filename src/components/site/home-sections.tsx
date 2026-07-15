@@ -725,13 +725,13 @@ export function Testimonials() {
 }
 
 const DEFAULT_IG_CARDS = [
-  { id: "ig1", img: "/brand/products/red-curry1.png", label: "Red Curry" },
-  { id: "ig2", img: "/brand/products/green-curry1.png", label: "Green Curry" },
-  { id: "ig3", img: "/brand/products/chicken-sukka-masala1.png", label: "Chicken Sukka" },
-  { id: "ig4", img: "/brand/easymom-banner.png", label: "EasyMom" },
-  { id: "ig5", img: "/brand/products/ghee-roast1.png", label: "Ghee Roast" },
-  { id: "ig6", img: "/brand/products/fish-curry1.png", label: "Fish Curry" },
-  { id: "ig7", img: "/brand/products/palli-curry1.png", label: "Palli Curry" },
+  { id: "ig1", img: "/brand/products/red-curry1.png", label: "Red Curry", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig2", img: "/brand/products/green-curry1.png", label: "Green Curry", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig3", img: "/brand/products/chicken-sukka-masala1.png", label: "Chicken Sukka", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig4", img: "/brand/easymom-banner.png", label: "EasyMom", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig5", img: "/brand/products/ghee-roast1.png", label: "Ghee Roast", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig6", img: "/brand/products/fish-curry1.png", label: "Fish Curry", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig7", img: "/brand/products/palli-curry1.png", label: "Palli Curry", url: "https://www.instagram.com/easymomfoods/" },
 ];
 
 const CARD_W = 200;
@@ -911,6 +911,7 @@ export function InstagramFeed() {
                 onHoverStart={() => animDone && setHovered(i)}
                 onHoverEnd={() => setHovered(null)}
               >
+                <a href={card.url || "https://www.instagram.com/easymomfoods/"} target="_blank" rel="noopener noreferrer">
                 <div
                   className="overflow-hidden rounded-[30px]"
                   style={{
@@ -948,6 +949,7 @@ export function InstagramFeed() {
                     </div>
                   </div>
                 </div>
+                </a>
               </motion.div>
             );
           })}

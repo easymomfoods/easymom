@@ -17,6 +17,7 @@ interface IGCard {
   id: string;
   img: string;
   label: string;
+  url: string;
 }
 
 interface IGData {
@@ -33,13 +34,13 @@ const defaults: IGData = {
   followText: "Follow EasyMom",
   socialLinks: ["Instagram", "YouTube", "TikTok", "Twitter"],
   cards: [
-    { id: "ig1", img: "/brand/products/red-curry1.png", label: "Red Curry" },
-    { id: "ig2", img: "/brand/products/green-curry1.png", label: "Green Curry" },
-    { id: "ig3", img: "/brand/products/chicken-sukka-masala1.png", label: "Chicken Sukka" },
-    { id: "ig4", img: "/brand/easymom-banner.png", label: "EasyMom" },
-    { id: "ig5", img: "/brand/products/ghee-roast1.png", label: "Ghee Roast" },
-    { id: "ig6", img: "/brand/products/fish-curry1.png", label: "Fish Curry" },
-    { id: "ig7", img: "/brand/products/palli-curry1.png", label: "Palli Curry" },
+    { id: "ig1", img: "/brand/products/red-curry1.png", label: "Red Curry", url: "https://www.instagram.com/easymomfoods/" },
+    { id: "ig2", img: "/brand/products/green-curry1.png", label: "Green Curry", url: "https://www.instagram.com/easymomfoods/" },
+    { id: "ig3", img: "/brand/products/chicken-sukka-masala1.png", label: "Chicken Sukka", url: "https://www.instagram.com/easymomfoods/" },
+    { id: "ig4", img: "/brand/easymom-banner.png", label: "EasyMom", url: "https://www.instagram.com/easymomfoods/" },
+    { id: "ig5", img: "/brand/products/ghee-roast1.png", label: "Ghee Roast", url: "https://www.instagram.com/easymomfoods/" },
+    { id: "ig6", img: "/brand/products/fish-curry1.png", label: "Fish Curry", url: "https://www.instagram.com/easymomfoods/" },
+    { id: "ig7", img: "/brand/products/palli-curry1.png", label: "Palli Curry", url: "https://www.instagram.com/easymomfoods/" },
   ],
 };
 
@@ -88,8 +89,9 @@ export default function InstagramFeedEditor() {
   }
 
   function addCard() {
+    if (data.cards.length >= 7) return;
     const newId = `ig${Date.now()}`;
-    setData({ ...data, cards: [...data.cards, { id: newId, img: "", label: "" }] });
+    setData({ ...data, cards: [...data.cards, { id: newId, img: "", label: "", url: "https://www.instagram.com/easymomfoods/" }] });
     setEditingIdx(data.cards.length);
   }
 
@@ -209,8 +211,8 @@ export default function InstagramFeedEditor() {
           <div className="bg-white rounded-xl border border-stone-100 p-5">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-[14px] font-semibold text-stone-900">Feed Cards ({data.cards.length})</h3>
-              <button onClick={addCard} className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-[#891816] bg-[#891816]/8 rounded-lg hover:bg-[#891816]/15 transition-colors">
-                <Plus className="h-4 w-4" /> Add Card
+              <button onClick={addCard} disabled={data.cards.length >= 7} className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-[#891816] bg-[#891816]/8 rounded-lg hover:bg-[#891816]/15 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                <Plus className="h-4 w-4" /> Add Card {data.cards.length >= 7 && "(max 7)"}
               </button>
             </div>
             <div className="space-y-3">
@@ -235,6 +237,10 @@ export default function InstagramFeedEditor() {
                       <div>
                         <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">Label</label>
                         <input type="text" value={card.label} onChange={(e) => updateCard(idx, "label", e.target.value)} className="w-full h-10 px-3 rounded-lg border border-stone-200 text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-[#891816]/10 focus:border-[#891816]/30" placeholder="Red Curry" />
+                      </div>
+                      <div>
+                        <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">Instagram Post URL</label>
+                        <input type="url" value={card.url} onChange={(e) => updateCard(idx, "url", e.target.value)} className="w-full h-10 px-3 rounded-lg border border-stone-200 text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-[#891816]/10 focus:border-[#891816]/30" placeholder="https://www.instagram.com/p/..." />
                       </div>
                       <ImageUpload value={card.img} onChange={(url) => updateCard(idx, "img", url)} folder="easymom/instagram" label="Card Image" />
                     </div>
@@ -270,7 +276,7 @@ export default function InstagramFeedEditor() {
             <div className="flex items-start gap-3">
               <Sparkles className="h-4 w-4 text-[#891816] mt-0.5 shrink-0" />
               <p className="text-[13px] text-stone-600 leading-relaxed">
-                7 cards recommended for the fan layout. Images are uploaded automatically.
+                Maximum 7 cards for the fan layout. Each card can have its own Instagram post URL — defaults to your profile if left empty.
                 Social links appear at the bottom of the section.
               </p>
             </div>
