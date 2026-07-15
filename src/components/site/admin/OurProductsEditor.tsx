@@ -308,7 +308,7 @@ export default function OurProductsEditor() {
               <Sparkles className="h-4 w-4 text-[#891816] mt-0.5 shrink-0" />
               <p className="text-[13px] text-stone-600 leading-relaxed">
                 Each card links to a product page using the slug. Upload images via
-                drag & drop — they&apos;ll be hosted on Cloudinary automatically.
+                drag & drop — they&apos;ll be uploaded and stored automatically.
               </p>
             </div>
           </div>

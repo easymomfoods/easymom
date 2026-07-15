@@ -473,7 +473,7 @@ export default function BrandStoryEditor() {
               <Sparkles className="h-4 w-4 text-[#891816] mt-0.5 shrink-0" />
               <p className="text-[13px] text-stone-600 leading-relaxed">
                 The scrolling marquee text repeats automatically. Feature cards
-                support images (uploaded to Cloudinary) or icon+text layout.
+                support images (uploaded automatically) or icon+text layout.
               </p>
             </div>
           </div>

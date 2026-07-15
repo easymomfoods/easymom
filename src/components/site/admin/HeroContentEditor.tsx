@@ -297,7 +297,7 @@ export default function HeroContentEditor() {
                 <Sparkles className="h-4 w-4 text-[#891816] mt-0.5 shrink-0" />
                 <p className="text-[13px] text-stone-600 leading-relaxed">
                   Changes save to the database and appear on the live site
-                  immediately. Drag & drop images to upload to Cloudinary, or
+                  immediately. Drag & drop images to upload automatically, or
                   paste any image URL.
                 </p>
               </div>

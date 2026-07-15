@@ -270,7 +270,7 @@ export default function InstagramFeedEditor() {
             <div className="flex items-start gap-3">
               <Sparkles className="h-4 w-4 text-[#891816] mt-0.5 shrink-0" />
               <p className="text-[13px] text-stone-600 leading-relaxed">
-                7 cards recommended for the fan layout. Images upload to Cloudinary.
+                7 cards recommended for the fan layout. Images are uploaded automatically.
                 Social links appear at the bottom of the section.
               </p>
             </div>

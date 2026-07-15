@@ -53,3 +53,19 @@ prompt
 server.log
 # Skills directory
 /skills/
+
+# Turso local client temp files
+auth
+auth-wal
+
+# Generated schema DDL
+turso-schema.sql
+
+# Local SQLite dev database
+prisma/db/*.db
+prisma/db/*.db-journal
+prisma/db/*.db-wal
+prisma/db/*.db-shm
+
+# Temp debug/test scripts (committed cleaned up)
+*.mts.bak

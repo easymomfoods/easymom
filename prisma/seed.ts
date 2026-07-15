@@ -2,9 +2,9 @@
 // Populates the database with products, categories, recipes, testimonials from data.ts
 // Run: npx tsx prisma/seed.ts
 
-import { PrismaClient } from "@prisma/client";
+import { db } from "../src/lib/db";
 
-const prisma = new PrismaClient();
+const prisma = db;
 
 async function main() {
   console.log("Seeding database...\n");

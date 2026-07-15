@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const db = new PrismaClient();
+import { db } from "../src/lib/db";
 
 async function main() {
   const product = await db.product.update({
