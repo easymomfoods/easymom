@@ -16,7 +16,7 @@ export async function GET() {
       tags: JSON.parse(p.tags || "[]"),
     }));
 
-    return NextResponse.json({ products: parsed, activeProducts: parsed.filter((p) => p.active) });
+    return NextResponse.json({ products: parsed });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({ error: msg }, { status: 500 });

@@ -72,26 +72,26 @@ type ProductData = {
 
 const LEVELS: SpiceLevel[] = ["Medium", "Hot"];
 
-const DEFAULT_PRODUCTS = products.filter((p) => p.active !== false);
+const DEFAULT_PRODUCTS = products;
 const DEFAULT_CATEGORIES = categories;
 
 export function ShopView() {
   const { view, go, activeLevels, toggleLevel, clearLevels, maxPrice, setMaxPrice, sortBy, setSortBy } = useUI();
   const categoryId = view.name === "shop" ? view.categoryId : undefined;
   const [showFilters, setShowFilters] = useState(false);
-  const [shopProducts, setShopProducts] = useState(DEFAULT_PRODUCTS);
+  const [shopProducts, setShopProducts] = useState<ProductData[]>([]);
   const [shopCategories, setShopCategories] = useState(DEFAULT_CATEGORIES);
+  const [shopLoaded, setShopLoaded] = useState(false);
 
   useEffect(() => {
     fetch("/api/products")
       .then((r) => r.json())
       .then((d) => {
-        const list = d.activeProducts || d.products || [];
-        if (list.length > 0) {
-          setShopProducts(list);
+        if (d.products && d.products.length > 0) {
+          setShopProducts(d.products);
           // compute categories from products
           const catMap = new Map<string, { id: string; name: string; count: number }>();
-          for (const p of list) {
+          for (const p of d.products) {
             const existing = catMap.get(p.categoryId);
             if (existing) {
               existing.count++;
@@ -109,8 +109,9 @@ export function ShopView() {
           }));
           setShopCategories(computed);
         }
+        setShopLoaded(true);
       })
-      .catch((e) => { console.error(e); });
+      .catch((e) => { console.error(e); setShopLoaded(true); });
   }, []);
 
   const category = categoryId ? shopCategories.find((c) => c.id === categoryId) : undefined;
@@ -292,9 +293,33 @@ export function ShopView() {
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-5">
-              {filtered.map((p, i) => (
-                <ProductCard key={p.id} product={p} index={i} />
-              ))}
+              {!shopLoaded
+                ? Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="overflow-hidden rounded-[6px] border border-border">
+                      <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
+                        <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                      </div>
+                      <div className="space-y-3 p-4">
+                        <div className="relative h-3 w-3/4 overflow-hidden rounded-full bg-stone-100">
+                          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                        </div>
+                        <div className="relative h-3 w-1/2 overflow-hidden rounded-full bg-stone-100">
+                          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                          <div className="relative h-4 w-16 overflow-hidden rounded-full bg-stone-100">
+                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                          </div>
+                          <div className="relative h-4 w-12 overflow-hidden rounded-full bg-stone-100">
+                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                : filtered.map((p, i) => (
+                    <ProductCard key={p.id} product={p} index={i} />
+                  ))}
             </div>
           )}
         </div>
