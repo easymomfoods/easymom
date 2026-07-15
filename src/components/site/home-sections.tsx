@@ -908,9 +908,49 @@ export function InstagramFeed() {
                   duration: 0.7,
                   delay: pairDelay,
                 }}
-                onHoverStart={() => animDone && setHovered(i)}
-                onHoverEnd={() => setHovered(null)}
+                onHoverStart={() => !isMobile && animDone && setHovered(i)}
+                onHoverEnd={() => !isMobile && setHovered(null)}
+                onTap={() => isMobile && animDone && setHovered(hovered === i ? null : i)}
               >
+                {isMobile ? (
+                <div
+                  className="overflow-hidden rounded-[30px]"
+                  style={{
+                    boxShadow: s.shadow,
+                    transition: "box-shadow 0.55s cubic-bezier(0.33,1,0.68,1)",
+                  }}
+                >
+                  <div className="relative aspect-[9/16] overflow-hidden bg-zinc-100">
+                    <img
+                      src={card.img}
+                      alt={card.label}
+                      className="h-full w-full object-cover"
+                      style={{
+                        transform: hovered === i && animDone ? "scale(1.04)" : "scale(1)",
+                        transition: "transform 0.6s cubic-bezier(0.33,1,0.68,1)",
+                      }}
+                    />
+                    <div
+                      className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"
+                      style={{
+                        opacity: hovered === i && animDone ? 1 : 0,
+                        transition: "opacity 0.4s ease",
+                      }}
+                    />
+                    <div
+                      className="absolute bottom-0 left-0 right-0 p-5"
+                      style={{
+                        opacity: hovered === i && animDone ? 1 : 0,
+                        transform: hovered === i && animDone ? "translateY(0)" : "translateY(4px)",
+                        transition: "opacity 0.35s ease 0.06s, transform 0.35s ease 0.06s",
+                      }}
+                    >
+                      <p className="text-[14px] font-medium text-white">{card.label}</p>
+                      <p className="mt-1 text-[11px] text-white/55">View on Instagram</p>
+                    </div>
+                  </div>
+                </div>
+                ) : (
                 <a href={card.url || "https://www.instagram.com/easymomfoods/"} target="_blank" rel="noopener noreferrer">
                 <div
                   className="overflow-hidden rounded-[30px]"
@@ -950,6 +990,7 @@ export function InstagramFeed() {
                   </div>
                 </div>
                 </a>
+                )}
               </motion.div>
             );
           })}
