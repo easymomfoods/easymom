@@ -946,7 +946,7 @@ export function InstagramFeed() {
                       }}
                     >
                       <p className="text-[14px] font-medium text-white">{card.label}</p>
-                      <p className="mt-1 text-[11px] text-white/55">View on Instagram</p>
+                      <a href={card.url || "https://www.instagram.com/easymomfoods/"} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="mt-1 inline-block text-[11px] text-white/55 underline underline-offset-2">View on Instagram</a>
                     </div>
                   </div>
                 </div>
