@@ -488,6 +488,46 @@ export function ProductView() {
   }
 
   if (!p) {
+    if (loadingProduct) {
+      return (
+        <div className="mx-auto max-w-[1280px] px-4 pb-20 pt-24 sm:px-6 lg:px-8 lg:pt-28">
+          <div className="mb-6 flex gap-2">
+            <div className="h-3 w-12 rounded-full bg-stone-100" />
+            <div className="h-3 w-8 rounded-full bg-stone-100" />
+            <div className="h-3 w-16 rounded-full bg-stone-100" />
+          </div>
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-14">
+            <div className="flex flex-col-reverse gap-4 lg:flex-row lg:gap-5">
+              <div className="flex gap-3 lg:flex-col lg:w-[100px] shrink-0">
+                {[1, 2].map((i) => (
+                  <div key={i} className="relative shrink-0 w-[72px] h-[72px] lg:w-[100px] lg:h-[100px] overflow-hidden rounded-lg border-2 border-border bg-stone-100">
+                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                  </div>
+                ))}
+              </div>
+              <div className="relative flex-1 aspect-square overflow-hidden rounded-[6px] border border-border bg-stone-100">
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+              </div>
+            </div>
+            <div className="space-y-5">
+              <div className="h-4 w-20 rounded-full bg-stone-100" />
+              <div className="h-8 w-3/4 rounded-full bg-stone-100" />
+              <div className="h-4 w-1/2 rounded-full bg-stone-100" />
+              <div className="flex gap-3 pt-2">
+                <div className="h-10 w-28 rounded-full bg-stone-100" />
+                <div className="h-10 w-24 rounded-full bg-stone-100" />
+              </div>
+              <div className="space-y-2 pt-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-3 w-full rounded-full bg-stone-100" />
+                ))}
+              </div>
+              <div className="h-12 w-full rounded-xl bg-stone-100 pt-4" />
+            </div>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="mx-auto max-w-2xl px-4 py-32 text-center">
         <p className="text-[18px] font-semibold">Blend not found</p>
