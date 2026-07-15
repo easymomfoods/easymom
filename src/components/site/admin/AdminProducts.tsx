@@ -405,7 +405,9 @@ function ProductEditModal({
     ingredients: Array.isArray(product?.ingredients) ? product!.ingredients.join(", ") : "",
     tags: Array.isArray(product?.tags) ? product!.tags.join(", ") : "",
   });
-  const [galleryImages, setGalleryImages] = useState<string[]>(product?.images || []);
+  const [galleryImages, setGalleryImages] = useState<string[]>(
+    (product?.images || []).filter((img: string) => img !== product?.img)
+  );
   const [previewIdx, setPreviewIdx] = useState(0);
   const [uploadingSlot, setUploadingSlot] = useState<number | null>(null);
   const allImages = [form.img, ...galleryImages].filter(Boolean);
@@ -436,7 +438,7 @@ function ProductEditModal({
         ingredients: form.ingredients.split(",").map((s) => s.trim()).filter(Boolean),
         tags: form.tags.split(",").map((s) => s.trim()).filter(Boolean),
         badge: form.badge || null,
-        images: galleryImages.filter(Boolean),
+        images: galleryImages.filter((img: string) => img !== form.img),
       };
       const res = await fetch(url, {
         method,
