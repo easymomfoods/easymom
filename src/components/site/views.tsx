@@ -275,51 +275,55 @@ export function ShopView() {
         {/* grid */}
         <div>
           <p className="mb-4 text-[13px] text-muted-foreground">
-            {filtered.length} {filtered.length === 1 ? "blend" : "blends"}
+            {!shopLoaded ? "\u00A0" : `${filtered.length} ${filtered.length === 1 ? "blend" : "blends"}`}
           </p>
-          {filtered.length === 0 ? (
-            <div className="rounded-[6px] border border-dashed border-border py-20 text-center">
-              <p className="text-[15px] font-medium text-foreground">No blends match these filters</p>
-              <button
-                onClick={() => {
-                  clearLevels();
-                  setMaxPrice(200);
-                  go({ name: "shop" });
-                }}
-                className="mt-3 text-[13px] font-semibold text-primary underline-offset-2 hover:underline"
-              >
-                Reset filters
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-5">
-              {!shopLoaded
-                ? Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className="overflow-hidden rounded-[6px] border border-border">
-                      <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
+          {!shopLoaded || filtered.length === 0 ? (
+            !shopLoaded ? (
+              <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-5">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="overflow-hidden rounded-[6px] border border-border">
+                    <div className="relative aspect-[4/5] overflow-hidden bg-stone-100">
+                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                    </div>
+                    <div className="space-y-3 p-4">
+                      <div className="relative h-3 w-3/4 overflow-hidden rounded-full bg-stone-100">
                         <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
                       </div>
-                      <div className="space-y-3 p-4">
-                        <div className="relative h-3 w-3/4 overflow-hidden rounded-full bg-stone-100">
+                      <div className="relative h-3 w-1/2 overflow-hidden rounded-full bg-stone-100">
+                        <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                      </div>
+                      <div className="flex items-center gap-2 pt-1">
+                        <div className="relative h-4 w-16 overflow-hidden rounded-full bg-stone-100">
                           <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
                         </div>
-                        <div className="relative h-3 w-1/2 overflow-hidden rounded-full bg-stone-100">
+                        <div className="relative h-4 w-12 overflow-hidden rounded-full bg-stone-100">
                           <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
-                        </div>
-                        <div className="flex items-center gap-2 pt-1">
-                          <div className="relative h-4 w-16 overflow-hidden rounded-full bg-stone-100">
-                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
-                          </div>
-                          <div className="relative h-4 w-12 overflow-hidden rounded-full bg-stone-100">
-                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
-                          </div>
                         </div>
                       </div>
                     </div>
-                  ))
-                : filtered.map((p, i) => (
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-[6px] border border-dashed border-border py-20 text-center">
+                <p className="text-[15px] font-medium text-foreground">No blends match these filters</p>
+                <button
+                  onClick={() => {
+                    clearLevels();
+                    setMaxPrice(200);
+                    go({ name: "shop" });
+                  }}
+                  className="mt-3 text-[13px] font-semibold text-primary underline-offset-2 hover:underline"
+                >
+                  Reset filters
+                </button>
+              </div>
+            )
+          ) : (
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 lg:gap-5">
+              {filtered.map((p, i) => (
                     <ProductCard key={p.id} product={p} index={i} />
-                  ))}
+              ))}
             </div>
           )}
         </div>
