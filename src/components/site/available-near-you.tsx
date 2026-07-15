@@ -319,50 +319,28 @@ export default function AvailableNearYou() {
             ))}
           </div>
 
-          {locations.map((loc) => (
-            <div key={loc.id} id={`loc-mobile-${loc.id}`} className="mb-12">
-              <div className="mb-4 flex items-center gap-3">
-                <div className="h-px flex-1 bg-stone-200" />
-                <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400">
-                  {loc.label}
-                </span>
-                <div className="h-px flex-1 bg-stone-200" />
-              </div>
-              <div className="space-y-6">
-                {loc.stores.map((store) => (
-                  <div key={store.id} className="flex gap-4">
-                    <div className="h-28 w-24 shrink-0 overflow-hidden bg-stone-100">
-                      {store.image ? (
-                        <img src={store.image} alt={store.name} className="h-full w-full object-cover" loading="lazy" />
-                      ) : (
-                        <StorePlaceholder name={store.name} index={parseInt(store.storeNumber) || 0} />
-                      )}
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-400">
-                        {store.storeNumber}
-                      </span>
-                      <h4 className="text-[14px] font-semibold text-stone-900">{store.name}</h4>
-                      <p className="flex items-center gap-1.5 text-[12px] text-stone-500">
-                        <MapPin className="h-3 w-3 shrink-0" /> {store.area}
-                      </p>
-                      <p className="flex items-center gap-1.5 text-[12px] text-stone-500">
-                        <Phone className="h-3 w-3 shrink-0" /> {store.phone}
-                      </p>
-                      <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.area + ", India")}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 pt-0.5 text-[12px] font-medium text-[#891816] hover:underline"
-                      >
-                        Get Directions <ArrowUpRight className="h-3 w-3" />
-                      </a>
-                    </div>
+          <div className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide" style={{ WebkitOverflowScrolling: "touch" }}>
+            <div className="flex gap-4">
+              {locations.map((loc) => (
+                <React.Fragment key={loc.id}>
+                  <div className="flex shrink-0 flex-col items-center justify-center px-2">
+                    <div className="h-10 w-px bg-stone-200" />
+                    <span className="my-2 text-[9px] font-semibold uppercase tracking-[0.2em] text-stone-400 [writing-mode:vertical-lr]">
+                      {loc.label}
+                    </span>
+                    <div className="h-10 w-px bg-stone-200" />
                   </div>
-                ))}
-              </div>
+                  {loc.stores.map((store, storeIdx) => (
+                    <StoreCard key={store.id} store={store} large={storeIdx % 3 === 0} />
+                  ))}
+                </React.Fragment>
+              ))}
             </div>
-          ))}
+          </div>
+
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <span className="text-[10px] font-medium text-stone-400">Scroll to explore →</span>
+          </div>
         </div>
       </section>
     );
