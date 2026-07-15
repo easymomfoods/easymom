@@ -72,7 +72,7 @@ type ProductData = {
 
 const LEVELS: SpiceLevel[] = ["Medium", "Hot"];
 
-const DEFAULT_PRODUCTS = products;
+const DEFAULT_PRODUCTS = products.filter((p) => p.active !== false);
 const DEFAULT_CATEGORIES = categories;
 
 export function ShopView() {
@@ -86,11 +86,12 @@ export function ShopView() {
     fetch("/api/products")
       .then((r) => r.json())
       .then((d) => {
-        if (d.products && d.products.length > 0) {
-          setShopProducts(d.products);
+        const list = d.activeProducts || d.products || [];
+        if (list.length > 0) {
+          setShopProducts(list);
           // compute categories from products
           const catMap = new Map<string, { id: string; name: string; count: number }>();
-          for (const p of d.products) {
+          for (const p of list) {
             const existing = catMap.get(p.categoryId);
             if (existing) {
               existing.count++;
