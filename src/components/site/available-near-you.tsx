@@ -206,7 +206,7 @@ export default function AvailableNearYou() {
   }, []);
 
   useEffect(() => {
-    if (isMobile || !scrollContainerRef.current || !sectionRef.current) return;
+    if (!scrollContainerRef.current || !sectionRef.current) return;
     const measure = () => {
       if (scrollContainerRef.current && sectionRef.current) {
         const cw = sectionRef.current.offsetWidth;
@@ -257,7 +257,7 @@ export default function AvailableNearYou() {
 
   const scrollToLocation = useCallback(
     (index: number) => {
-      if (!sectionRef.current || isMobile) return;
+      if (!sectionRef.current) return;
 
       const totalStores = locations.reduce((sum, loc) => sum + loc.stores.length, 0);
       let storesBefore = 0;
@@ -279,72 +279,8 @@ export default function AvailableNearYou() {
 
       window.scrollTo({ top: targetScrollY, behavior: "smooth" });
     },
-    [isMobile, containerWidth, scrollWidth]
+    [containerWidth, scrollWidth]
   );
-
-  if (isMobile || prefersReducedMotion) {
-    return (
-      <section className="bg-white py-16 sm:py-20">
-        <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
-          <div className="mb-10">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#891816]">
-              Available Near You
-            </p>
-            <h2 className="mt-3 text-[36px] font-semibold leading-[1.05] tracking-[-0.02em] text-stone-900 sm:text-[48px]">
-              FIND EASYMOM
-              <br />
-              NEAR YOU
-            </h2>
-            <p className="mt-4 max-w-[380px] text-[15px] leading-relaxed text-stone-500">
-              Your favourite EasyMom products are now available at selected stores near you.
-            </p>
-          </div>
-
-          <div className="mb-6 flex gap-1.5 overflow-x-auto pb-2">
-            {locations.map((loc, i) => (
-              <button
-                key={loc.id}
-                onClick={() => {
-                  const el = document.getElementById(`loc-mobile-${loc.id}`);
-                  el?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-                className={`shrink-0 rounded-[3px] px-3.5 py-2 text-[12px] font-medium transition ${
-                  activeLocation === i
-                    ? "bg-[#891816] text-white"
-                    : "bg-stone-100 text-stone-600 hover:bg-stone-200"
-                }`}
-              >
-                {loc.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide" style={{ WebkitOverflowScrolling: "touch" }}>
-            <div className="flex gap-4">
-              {locations.map((loc) => (
-                <React.Fragment key={loc.id}>
-                  <div className="flex shrink-0 flex-col items-center justify-center px-2">
-                    <div className="h-10 w-px bg-stone-200" />
-                    <span className="my-2 text-[9px] font-semibold uppercase tracking-[0.2em] text-stone-400 [writing-mode:vertical-lr]">
-                      {loc.label}
-                    </span>
-                    <div className="h-10 w-px bg-stone-200" />
-                  </div>
-                  {loc.stores.map((store, storeIdx) => (
-                    <StoreCard key={store.id} store={store} large={storeIdx % 3 === 0} />
-                  ))}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-4 flex items-center justify-center gap-2">
-            <span className="text-[10px] font-medium text-stone-400">Scroll to explore →</span>
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section ref={sectionRef} className="relative bg-white" style={{ height: `${sectionHeight}px` }}>
