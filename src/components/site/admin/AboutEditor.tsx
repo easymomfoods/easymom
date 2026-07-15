@@ -22,6 +22,7 @@ interface AboutData {
   heading: string;
   paragraph1: string;
   paragraph2: string;
+  founder: string;
   image: string;
   imageAlt: string;
   stats: Stat[];
@@ -34,6 +35,7 @@ const defaults: AboutData = {
     "EasyMom began in a Mangalore kitchen in 2019, when a working mother ground her mother's chicken masala blend into a pouch so her sister in Dubai could taste home on a Wednesday. The pouch kept getting passed around — to colleagues, neighbours, friends abroad — until it became clear this was bigger than one family.",
   paragraph2:
     "Today we work with small spice co-ops across Karnataka, Kerala and Tamil Nadu, grinding in batches under 20kg on slow stones. Every blend is a real recipe from a real kitchen — built so a 15-minute cook still tastes like a 90-minute one.",
+  founder: "Mahammad Sinan",
   image: "/brand/story-grind.png",
   imageAlt: "Grinding spices in a stone mortar",
   stats: [
@@ -245,6 +247,16 @@ export default function AboutEditor() {
                 className={textareaCls}
                 rows={4}
                 placeholder="Today we work with small spice co-ops..."
+              />
+            </div>
+            <div>
+              <label className={labelCls}>Founder Name</label>
+              <input
+                type="text"
+                value={data.founder}
+                onChange={(e) => setData({ ...data, founder: e.target.value })}
+                className={inputCls}
+                placeholder="Mahammad Sinan"
               />
             </div>
           </div>

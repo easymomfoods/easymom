@@ -973,6 +973,7 @@ const DEFAULT_ABOUT = {
     "EasyMom began in a Mangalore kitchen in 2019, when a working mother ground her mother's chicken masala blend into a pouch so her sister in Dubai could taste home on a Wednesday. The pouch kept getting passed around — to colleagues, neighbours, friends abroad — until it became clear this was bigger than one family.",
   paragraph2:
     "Today we work with small spice co-ops across Karnataka, Kerala and Tamil Nadu, grinding in batches under 20kg on slow stones. Every blend is a real recipe from a real kitchen — built so a 15-minute cook still tastes like a 90-minute one.",
+  founder: "Mahammad Sinan",
   image: "/brand/story-grind.png",
   imageAlt: "Grinding spices in a stone mortar",
   stats: [
@@ -1031,6 +1032,11 @@ export function AboutView() {
           {about.paragraph2 && (
             <p className="mt-4 text-[16px] leading-relaxed text-foreground/80">
               {about.paragraph2}
+            </p>
+          )}
+          {about.founder && (
+            <p className="mt-6 text-[14px] font-semibold text-foreground">
+              — {about.founder}, Founder
             </p>
           )}
         </div>
