@@ -158,7 +158,7 @@ export default function AdminLayout({
       <aside className="hidden lg:flex lg:w-[220px] xl:w-[240px] flex-col fixed inset-y-0 left-0 bg-white border-r border-stone-200/80 z-40">
         {/* Logo */}
         <div className="h-16 flex items-center px-5 border-b border-stone-100">
-          <img src="/brand/easymom-logo.png" alt="EasyMom" className="h-9" />
+          <img src="/brand/easymom-logo.png" alt="EasyMom" className="h-16" />
         </div>
 
         {/* Nav */}
@@ -219,7 +219,7 @@ export default function AdminLayout({
           <div className="absolute inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
           <aside className="absolute inset-y-0 left-0 w-[260px] bg-white shadow-xl flex flex-col">
             <div className="h-16 flex items-center justify-between px-5 border-b border-stone-100">
-              <img src="/brand/easymom-logo.png" alt="EasyMom" className="h-8" />
+              <img src="/brand/easymom-logo.png" alt="EasyMom" className="h-14" />
               <button onClick={() => setSidebarOpen(false)} className="p-1.5 rounded-lg hover:bg-stone-100">
                 <X className="h-5 w-5 text-stone-500" />
               </button>
