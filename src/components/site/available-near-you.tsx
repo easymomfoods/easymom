@@ -360,6 +360,9 @@ export default function AvailableNearYou() {
         <motion.div
           ref={scrollContainerRef}
           style={{ x }}
+          drag="x"
+          dragElastic={0}
+          dragSnapToOrigin
           className="flex flex-1 items-center gap-12 pl-5 sm:pl-8 md:pl-12"
         >
           <IntroSlide />
