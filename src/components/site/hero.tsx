@@ -128,7 +128,7 @@ export function Hero() {
             <img
               src={hero.desktopImage}
               alt="EasyMom — Authentic South Indian masala spices"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover sm:object-center object-[center_15%]"
               fetchPriority="high"
             />
           </picture>
