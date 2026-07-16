@@ -6,11 +6,6 @@ import { rateLimit } from "@/lib/rate-limit";
 export const runtime = "nodejs";
 
 const ALLOWED_CITIES = ["Mangalore", "Bangalore", "Kasaragod"];
-const SHIPPING_BY_CITY: Record<string, number> = {
-  Mangalore: 40,
-  Bangalore: 60,
-  Kasaragod: 50,
-};
 
 export async function POST(req: NextRequest) {
   const ip = req.headers.get("x-forwarded-for") || "unknown";
@@ -98,7 +93,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const serverShipping = SHIPPING_BY_CITY[city] || 50;
+    const serverShipping = 0;
     const serverTotal = Math.max(0, serverSubtotal - serverDiscount + serverShipping);
 
     const id = orderId();
