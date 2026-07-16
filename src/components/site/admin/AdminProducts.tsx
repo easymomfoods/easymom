@@ -699,10 +699,11 @@ function ProductEditModal({
                       {form.freeItemImage ? (
                         <img src={form.freeItemImage} alt="Free item" className="w-full h-full object-cover rounded-lg" />
                       ) : (
-                        <>
+                        <div className="flex flex-col items-center justify-center">
                           <Plus className="h-4 w-4 text-stone-400 mb-0.5" />
                           <span className="text-[7px] text-stone-400 leading-tight">Image</span>
-                        </>}
+                        </div>
+                      )}
                       <input
                         type="file"
                         accept="image/*"
