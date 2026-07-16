@@ -21,7 +21,7 @@ export async function PUT(
     const data: Record<string, unknown> = {};
     if (body.name !== undefined) data.name = body.name;
     if (body.slug !== undefined) data.slug = body.slug;
-    if (body.categoryId !== undefined) data.categoryId = body.categoryId;
+    if (body.categoryId !== undefined) data.category = { connect: { id: body.categoryId } };
     if (body.price !== undefined) data.price = Number(body.price);
     if (body.mrp !== undefined) data.mrp = Number(body.mrp);
     if (body.weight !== undefined) data.weight = body.weight;
