@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { MapPin, Phone, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { motion, useScroll, useTransform, useMotionValue } from "framer-motion";
+import { MapPin, Phone, ArrowUpRight } from "lucide-react";
 import { useHomepageData } from "@/lib/page-data-context";
 
 interface Store {
@@ -183,10 +183,8 @@ export default function AvailableNearYou() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeLocation, setActiveLocation] = useState(0);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
   const [locations, setLocations] = useState<LocationGroup[]>(FALLBACK_locations);
-  const lastManualScroll = useRef(0);
+  const dragOffsetRef = useRef(0);
   const initData = useHomepageData();
 
   useEffect(() => {
@@ -210,54 +208,6 @@ export default function AvailableNearYou() {
       .catch((e) => { console.error(e); });
   }, [initData]);
 
-  const updateScrollButtons = useCallback(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 10);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
-  }, []);
-
-  useEffect(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    el.addEventListener("scroll", updateScrollButtons, { passive: true });
-    updateScrollButtons();
-    return () => el.removeEventListener("scroll", updateScrollButtons);
-  }, [updateScrollButtons, locations]);
-
-  const scrollBy = useCallback((dir: "left" | "right") => {
-    scrollContainerRef.current?.scrollBy({ left: dir === "left" ? -400 : 400, behavior: "smooth" });
-  }, []);
-
-  const scrollToLocation = useCallback((index: number) => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    const child = el.children[index + 1] as HTMLElement;
-    if (child) {
-      child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
-    }
-    setActiveLocation(index);
-  }, []);
-
-  const onScroll = useCallback(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    lastManualScroll.current = Date.now();
-    const scrollPos = el.scrollLeft + el.clientWidth / 2;
-    let bestIdx = 0;
-    let bestDist = Infinity;
-    for (let i = 0; i < locations.length; i++) {
-      const childIdx = i + 1;
-      const child = el.children[childIdx] as HTMLElement;
-      if (child) {
-        const dist = Math.abs(child.offsetLeft - scrollPos);
-        if (dist < bestDist) { bestDist = dist; bestIdx = i; }
-      }
-    }
-    setActiveLocation(bestIdx);
-  }, [locations]);
-
-  // ── Scroll-driven: vertical scroll → horizontal scrollLeft ──
   const [containerWidth, setContainerWidth] = useState(0);
   const [scrollWidth, setScrollWidth] = useState(0);
 
@@ -284,41 +234,56 @@ export default function AvailableNearYou() {
     offset: ["start start", "end end"],
   });
 
-  const scrollLeftTarget = useTransform(scrollYProgress, [0, 1], [0, horizontalDistance]);
+  const scrollDrivenX = useTransform(scrollYProgress, [0, 1], [0, -horizontalDistance]);
+
+  const x = useMotionValue(0);
 
   useEffect(() => {
-    const unsubscribe = scrollLeftTarget.on("change", (val) => {
-      if (Date.now() - lastManualScroll.current < 600) return;
-      const el = scrollContainerRef.current;
-      if (el) el.scrollLeft = val;
+    const unsub = scrollDrivenX.on("change", (scrollVal) => {
+      x.set(scrollVal + dragOffsetRef.current);
     });
-    return unsubscribe;
-  }, [scrollLeftTarget]);
-  // ── end scroll-driven ──
+    return unsub;
+  }, [scrollDrivenX, x]);
+
+  const handleDragEnd = useCallback(
+    (_: any, info: { offset: { x: number }; velocity: { x: number } }) => {
+      dragOffsetRef.current += info.offset.x;
+      const targetX = scrollDrivenX.get() + dragOffsetRef.current;
+      x.set(targetX);
+    },
+    [scrollDrivenX, x]
+  );
+
+  const scrollToLocation = useCallback((index: number) => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const child = el.children[index + 1] as HTMLElement;
+    if (child) {
+      child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+    }
+    setActiveLocation(index);
+  }, []);
+
+  const onScroll = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const scrollPos = el.scrollLeft + el.clientWidth / 2;
+    let bestIdx = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i < locations.length; i++) {
+      const childIdx = i + 1;
+      const child = el.children[childIdx] as HTMLElement;
+      if (child) {
+        const dist = Math.abs(child.offsetLeft - scrollPos);
+        if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+      }
+    }
+    setActiveLocation(bestIdx);
+  }, [locations]);
 
   return (
     <section ref={sectionRef} className="relative bg-white" style={{ height: `${sectionHeight}px` }}>
       <div className="sticky top-0 flex h-screen flex-col overflow-hidden pt-16">
-        {/* Arrow buttons */}
-        {canScrollLeft && (
-          <button
-            onClick={() => scrollBy("left")}
-            className="absolute left-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-md backdrop-blur-sm transition hover:bg-white md:flex"
-            aria-label="Scroll left"
-          >
-            <ChevronLeft className="h-5 w-5 text-stone-700" />
-          </button>
-        )}
-        {canScrollRight && (
-          <button
-            onClick={() => scrollBy("right")}
-            className="absolute right-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-md backdrop-blur-sm transition hover:bg-white md:flex"
-            aria-label="Scroll right"
-          >
-            <ChevronRight className="h-5 w-5 text-stone-700" />
-          </button>
-        )}
-
         {/* Location nav */}
         <div className="flex items-center gap-1.5 bg-white/80 px-5 py-3 backdrop-blur-md sm:px-8 md:px-12">
           {locations.map((loc, i) => (
@@ -337,22 +302,20 @@ export default function AvailableNearYou() {
         </div>
 
         {/* Horizontal scroll track */}
-        <div
+        <motion.div
           ref={scrollContainerRef}
           onScroll={onScroll}
-          className="flex flex-1 items-start gap-12 overflow-x-auto px-5 pb-4 sm:px-8 md:px-12 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-          style={{ scrollSnapType: "x mandatory" }}
+          style={{ x }}
+          drag="x"
+          onDragEnd={handleDragEnd}
+          className="flex flex-1 items-center gap-12 overflow-x-auto pl-5 sm:pl-8 md:pl-12 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
-          <div style={{ scrollSnapAlign: "start" }}>
-            <IntroSlide />
-          </div>
+          <IntroSlide />
 
           {locations.map((loc, locIdx) => (
             <React.Fragment key={loc.id}>
-              <div
-                style={{ scrollSnapAlign: "start" }}
-                className="flex shrink-0 flex-col items-center justify-center px-2"
-              >
+              {/* Location divider */}
+              <div className="flex h-full shrink-0 flex-col items-center justify-center px-4">
                 <div className="h-16 w-px bg-stone-200" />
                 <span className="my-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 [writing-mode:vertical-lr]">
                   {loc.label}
@@ -360,30 +323,24 @@ export default function AvailableNearYou() {
                 <div className="h-16 w-px bg-stone-200" />
               </div>
 
-              <div
-                style={{ scrollSnapAlign: "start" }}
-                className="flex shrink-0 items-center gap-6"
-              >
-                {loc.stores.map((store, storeIdx) => {
-                  const isLarge = storeIdx % 3 === 0;
-                  const isOffset = storeIdx % 2 === 1;
-                  return (
-                    <div
-                      key={store.id}
-                      className={`shrink-0 ${isOffset ? "mt-10" : "mb-10"}`}
-                    >
-                      <StoreCard store={store} large={isLarge} />
-                    </div>
-                  );
-                })}
-              </div>
+              {/* Store cards — editorial asymmetric layout */}
+              {loc.stores.map((store, storeIdx) => {
+                const isLarge = storeIdx % 3 === 0;
+                const isOffset = storeIdx % 2 === 1;
+                return (
+                  <div
+                    key={store.id}
+                    className={`shrink-0 self-center ${isOffset ? "mt-10" : "mb-10"}`}
+                  >
+                    <StoreCard store={store} large={isLarge} />
+                  </div>
+                );
+              })}
             </React.Fragment>
           ))}
 
-          <div style={{ scrollSnapAlign: "start" }}>
-            <EndSlide />
-          </div>
-        </div>
+          <EndSlide />
+        </motion.div>
       </div>
     </section>
   );
