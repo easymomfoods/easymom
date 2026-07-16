@@ -107,7 +107,7 @@ export default function DashboardContent() {
     "Ghee Roast Masala": "/brand/products/ghee-roast1.png",
     "Red Curry": "/brand/products/red-curry1.png",
     "Fish Curry Masala": "/brand/products/fish-curry1.png",
-    "Chicken Sukka": "/brand/products/chicken-sukka-masala1.png",
+    "Pepper Chilli Masala": "/brand/products/pepper-chilli-masala1.png",
     "Palli Curry": "/brand/products/palli-curry1.png",
   };
 

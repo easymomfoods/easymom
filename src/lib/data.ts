@@ -120,7 +120,7 @@ export const categories: Category[] = [
     hue: 0,
   },
   {
-    id: "chicken-sukka",
+    id: "pepper-chilli",
     name: "Pepper Chilli Masala",
     tagline: "Fiery, aromatic, bold",
     description:
@@ -272,15 +272,15 @@ export const products: Product[] = [
   {
     id: "p6",
     name: "Pepper Chilli Masala",
-    slug: "chicken-sukka-masala",
-    categoryId: "chicken-sukka",
+    slug: "pepper-chilli-masala",
+    categoryId: "pepper-chilli",
     price: 129,
     mrp: 199,
     weight: "450 g",
     rating: 4.8,
     reviewCount: 145,
-    img: "/brand/products/chicken-sukka-masala1.png",
-    images: ["/brand/products/chicken-sukka-masala2.png"],
+    img: "/brand/products/pepper-chilli-masala1.png",
+    images: ["/brand/products/pepper-chilli-masala2.png"],
     shortDesc: "Bold pepper and chilli paste for a fiery, aromatic stir-fry.",
     description:
       "Bold pepper and chilli paste for a fiery, aromatic stir-fry. No prep, no oil. Just add chicken, water, and simmer 5 minutes.",

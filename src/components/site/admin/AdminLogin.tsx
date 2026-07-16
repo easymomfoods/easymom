@@ -60,7 +60,7 @@ export default function AdminLogin({ onLogin }: { onLogin: () => void }) {
               "/brand/products/ghee-roast1.png",
               "/brand/products/red-curry1.png",
               "/brand/products/fish-curry1.png",
-              "/brand/products/chicken-sukka-masala1.png",
+              "/brand/products/pepper-chilli-masala1.png",
               "/brand/products/palli-curry1.png",
             ].map((src, i) => (
               <div key={i} className="w-32 h-40 rounded-lg overflow-hidden bg-white/10 backdrop-blur-sm">

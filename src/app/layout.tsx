@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     "green curry paste",
     "red curry paste",
     "fish curry masala",
-    "chicken sukka masala",
+    "pepper chilli masala",
     "ready to cook",
     "premium spices India",
     "no preservative masala",

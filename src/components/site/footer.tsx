@@ -19,7 +19,7 @@ const SHOP_LINKS = [
   { label: "Fish Curry Masala", view: { name: "shop" as const, categoryId: "fish-curry" } },
   { label: "Fish Fry Masala", view: { name: "shop" as const, categoryId: "fish-fry" } },
   { label: "Red Curry", view: { name: "shop" as const, categoryId: "red-curry" } },
-  { label: "Chicken Sukka", view: { name: "shop" as const, categoryId: "chicken-sukka" } },
+  { label: "Pepper Chilli Masala", view: { name: "shop" as const, categoryId: "pepper-chilli" } },
   { label: "Palli Curry", view: { name: "shop" as const, categoryId: "palli-curry" } },
   { label: "Biryani Masala", view: { name: "shop" as const, categoryId: "biryani-masala" } },
 ];
