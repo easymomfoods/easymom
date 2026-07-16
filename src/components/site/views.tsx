@@ -588,12 +588,26 @@ export function ProductView() {
                 </span>
               </button>
             ))}
+            {/* Free item image */}
+            {p.freeItemImage && (
+              <button
+                onClick={() => setSelectedImg(-2)}
+                className={`relative shrink-0 w-[72px] h-[72px] lg:w-[100px] lg:h-[100px] overflow-hidden rounded-lg border-2 transition-all ${
+                  selectedImg === -2 ? "border-leaf shadow-md" : "border-leaf/40 hover:border-leaf/60"
+                }`}
+              >
+                <img src={p.freeItemImage} alt={`Free: ${p.freeItemName}`} className="h-full w-full object-cover" />
+                <span className="absolute bottom-0 left-0 right-0 bg-leaf/80 text-[9px] text-white text-center py-0.5 font-medium">
+                  Free
+                </span>
+              </button>
+            )}
           </div>
           {/* Left: main display */}
           <div className="flex-1 min-w-0">
             <div className="relative overflow-hidden rounded-[6px] border border-border aspect-square bg-stone-50">
               <img
-                src={selectedImg === -1 ? (p.img || "") : (p.images && p.images[selectedImg]) || p.img || ""}
+                src={selectedImg === -2 ? (p.freeItemImage || "") : selectedImg === -1 ? (p.img || "") : (p.images && p.images[selectedImg]) || p.img || ""}
                 alt={p.name}
                 className="w-full h-full object-cover"
               />
@@ -646,6 +660,18 @@ export function ProductView() {
               ))}
             </div>
           </div>
+
+          {/* Free item badge */}
+          {p.freeItemName && (
+            <div className="mt-5 rounded-[6px] border border-leaf/30 bg-leaf/5 p-4 flex items-center gap-3">
+              {p.freeItemImage && <img src={p.freeItemImage} alt={p.freeItemName} className="h-14 w-14 rounded-lg object-cover shrink-0" />}
+              <div>
+                <p className="text-[12px] font-bold uppercase tracking-wide text-leaf">Free Gift</p>
+                <p className="text-[14px] font-semibold text-foreground">{p.freeItemName}</p>
+                <p className="text-[12px] text-muted-foreground">Included with this purchase</p>
+              </div>
+            </div>
+          )}
 
           {/* price + add */}
           <div className="mt-7 rounded-[6px] border border-border bg-card p-5">
