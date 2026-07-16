@@ -16,6 +16,25 @@ const SETTINGS_KEYS = [
   "whatsapp_number",
 ];
 
+const inputCls =
+  "w-full h-11 px-4 rounded-xl border border-stone-200 bg-stone-50/50 text-[14px] text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#891816]/15 focus:border-[#891816]/40 focus:bg-white transition-all";
+const labelCls = "block text-[13px] font-medium text-stone-700 mb-1.5";
+const sectionCls = "bg-white rounded-xl border border-stone-100 p-6 space-y-5";
+
+function Section({ title, icon: Icon, children }: { title: string; icon: LucideIcon; children: React.ReactNode }) {
+  return (
+    <div className={sectionCls}>
+      <div className="flex items-center gap-2.5 pb-3 border-b border-stone-100">
+        <div className="h-8 w-8 rounded-lg bg-[#891816]/8 flex items-center justify-center">
+          <Icon className="h-4 w-4 text-[#891816]" />
+        </div>
+        <h2 className="text-[15px] font-semibold text-stone-900">{title}</h2>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 export default function AdminSettings() {
   const [fields, setFields] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -113,25 +132,6 @@ export default function AdminSettings() {
       setPwError("Something went wrong");
     }
     setPwSaving(false);
-  }
-
-  const inputCls =
-    "w-full h-11 px-4 rounded-xl border border-stone-200 bg-stone-50/50 text-[14px] text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#891816]/15 focus:border-[#891816]/40 focus:bg-white transition-all";
-  const labelCls = "block text-[13px] font-medium text-stone-700 mb-1.5";
-  const sectionCls = "bg-white rounded-xl border border-stone-100 p-6 space-y-5";
-
-  function Section({ title, icon: Icon, children }: { title: string; icon: LucideIcon; children: React.ReactNode }) {
-    return (
-      <div className={sectionCls}>
-        <div className="flex items-center gap-2.5 pb-3 border-b border-stone-100">
-          <div className="h-8 w-8 rounded-lg bg-[#891816]/8 flex items-center justify-center">
-            <Icon className="h-4 w-4 text-[#891816]" />
-          </div>
-          <h2 className="text-[15px] font-semibold text-stone-900">{title}</h2>
-        </div>
-        {children}
-      </div>
-    );
   }
 
   if (loading) {

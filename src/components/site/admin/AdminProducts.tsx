@@ -372,6 +372,10 @@ function StatCard({
   );
 }
 
+const inputCls =
+  "w-full h-11 px-4 rounded-xl border border-stone-200 bg-stone-50/50 text-[14px] text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#891816]/15 focus:border-[#891816]/40 focus:bg-white transition-all";
+const labelCls = "block text-[13px] font-medium text-stone-700 mb-1.5";
+
 function ProductEditModal({
   product,
   categories,
@@ -460,10 +464,6 @@ function ProductEditModal({
       setSaving(false);
     }
   }
-
-  const inputCls =
-    "w-full h-11 px-4 rounded-xl border border-stone-200 bg-stone-50/50 text-[14px] text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#891816]/15 focus:border-[#891816]/40 focus:bg-white transition-all";
-  const labelCls = "block text-[13px] font-medium text-stone-700 mb-1.5";
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
