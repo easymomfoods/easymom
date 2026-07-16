@@ -139,7 +139,7 @@ export function FeaturedProducts() {
 
   return (
     <section className="bg-secondary/30">
-      <div className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+      <div className="mx-auto max-w-[1280px] px-4 pt-10 pb-20 sm:px-6 lg:px-8 lg:pt-14 lg:pb-28">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeader
             align="left"
