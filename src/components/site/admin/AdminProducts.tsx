@@ -447,13 +447,7 @@ function ProductEditModal({
       });
       const data = await res.json();
       if (res.ok) {
-        const p = data.product;
-        if (p) {
-          if (typeof p.images === "string") p.images = JSON.parse(p.images || "[]");
-          if (typeof p.ingredients === "string") p.ingredients = JSON.parse(p.ingredients || "[]");
-          if (typeof p.tags === "string") p.tags = JSON.parse(p.tags || "[]");
-        }
-        onSave(p);
+        onSave(data.product);
         toast.success(product ? "Product updated" : "Product created");
       } else {
         toast.error(data.error || "Failed to save product");

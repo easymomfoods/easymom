@@ -101,7 +101,12 @@ export async function POST(req: NextRequest) {
     // Increment category count
     await db.category.update({ where: { id: categoryId }, data: { count: { increment: 1 } } }).catch(() => {});
 
-    return NextResponse.json({ ok: true, product });
+    return NextResponse.json({ ok: true, product: {
+      ...product,
+      images: JSON.parse(product.images || "[]"),
+      ingredients: JSON.parse(product.ingredients || "[]"),
+      tags: JSON.parse(product.tags || "[]"),
+    } });
   } catch (e) {
     console.error("PRODUCT_CREATE_ERROR:", e);
     const msg = e instanceof Error ? e.message : "Unknown error";

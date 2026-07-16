@@ -58,7 +58,12 @@ export async function PUT(
       data,
     });
 
-    return NextResponse.json({ ok: true, product });
+    return NextResponse.json({ ok: true, product: {
+      ...product,
+      images: JSON.parse(product.images || "[]"),
+      ingredients: JSON.parse(product.ingredients || "[]"),
+      tags: JSON.parse(product.tags || "[]"),
+    } });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({ error: msg }, { status: 500 });
