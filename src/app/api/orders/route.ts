@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
             return {
               productId: i.productId,
               name: isFree ? (i as any).name || "Free Item" : (p?.name || ""),
-              price: isFree ? 0 : p.price,
+              price: isFree ? 0 : (p?.price ?? 0),
               qty: Math.max(1, Math.min(99, Math.floor(i.qty))),
               img: isFree ? (i as any).img || "" : (p?.img || ""),
               weight: isFree ? "Free" : (p?.weight || ""),

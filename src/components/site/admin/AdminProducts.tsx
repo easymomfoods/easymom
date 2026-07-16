@@ -408,8 +408,8 @@ function ProductEditModal({
     isNew: product?.isNew || false,
     ingredients: Array.isArray(product?.ingredients) ? product!.ingredients.join(", ") : "",
     tags: Array.isArray(product?.tags) ? product!.tags.join(", ") : "",
-    freeItemName: product?.freeItemName || "",
-    freeItemImage: product?.freeItemImage || "",
+    freeItemName: (product as any)?.freeItemName || "",
+    freeItemImage: (product as any)?.freeItemImage || "",
   });
   const [galleryImages, setGalleryImages] = useState<string[]>(
     (product?.images || []).filter((img: string) => img !== product?.img)

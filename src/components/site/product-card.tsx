@@ -78,7 +78,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
             {images.map((img, i) => (
               <img
                 key={i}
-                src={img}
+                src={img ?? ""}
                 alt={`${product.name} ${i + 1}`}
                 loading={i === 0 ? "eager" : "lazy"}
                 className={cn(
