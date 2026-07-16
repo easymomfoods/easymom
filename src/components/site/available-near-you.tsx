@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { motion, useScroll, useTransform, useMotionValue, useMotionValueEvent } from "framer-motion";
 import { MapPin, Phone, ArrowUpRight } from "lucide-react";
 import { useHomepageData } from "@/lib/page-data-context";
 
@@ -180,12 +179,17 @@ function EndSlide() {
 }
 
 export default function AvailableNearYou() {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [activeLocation, setActiveLocation] = useState(0);
   const [locations, setLocations] = useState<LocationGroup[]>(FALLBACK_locations);
-  const dragOffset = useMotionValue(0);
   const initData = useHomepageData();
+  const isDown = useRef(false);
+  const startX = useRef(0);
+  const startScrollLeft = useRef(0);
+  const velX = useRef(0);
+  const rafId = useRef(0);
+  const lastMoveTime = useRef(0);
+  const lastMoveX = useRef(0);
 
   useEffect(() => {
     if (initData?.siteContent?.["store-locations"]) {
@@ -208,83 +212,73 @@ export default function AvailableNearYou() {
       .catch((e) => { console.error(e); });
   }, [initData]);
 
-  const [containerWidth, setContainerWidth] = useState(0);
-  const [scrollWidth, setScrollWidth] = useState(0);
-
-  useEffect(() => {
-    if (!scrollContainerRef.current || !sectionRef.current) return;
-    const measure = () => {
-      if (scrollContainerRef.current && sectionRef.current) {
-        setContainerWidth(sectionRef.current.offsetWidth);
-        setScrollWidth(scrollContainerRef.current.scrollWidth);
-      }
-    };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, [locations]);
-
-  const horizontalDistance = Math.max(scrollWidth - containerWidth, 0);
-  const sectionHeight = horizontalDistance > 0
-    ? horizontalDistance + (typeof window !== "undefined" ? window.innerHeight : 800) + 200
-    : 800;
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ["start start", "end end"],
-  });
-
-  const scrollDrivenX = useTransform(scrollYProgress, [0, 1], [0, -horizontalDistance]);
-
-  const x = useMotionValue(0);
-
-  // Keep x = scrollDrivenX + dragOffset whenever scrollDrivenX changes
-  useMotionValueEvent(scrollDrivenX, "change", (scrollVal) => {
-    x.set(scrollVal + dragOffset.get());
-  });
-
-  const pointerState = useRef<{ startX: number; startY: number; dragging: boolean; pointerId: number } | null>(null);
-
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    pointerState.current = { startX: e.clientX, startY: e.clientY, dragging: false, pointerId: e.pointerId };
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-  }, []);
-
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    const ps = pointerState.current;
-    if (!ps) return;
-    const dx = e.clientX - ps.startX;
-    const dy = e.clientY - ps.startY;
-    if (!ps.dragging) {
-      if (Math.abs(dx) < 5 || Math.abs(dx) < Math.abs(dy)) return;
-      ps.dragging = true;
+  const onPointerDown = (e: React.PointerEvent) => {
+    isDown.current = true;
+    startX.current = e.clientX;
+    const el = scrollRef.current;
+    if (el) {
+      startScrollLeft.current = el.scrollLeft;
+      el.setPointerCapture(e.pointerId);
     }
-    x.set(scrollDrivenX.get() + dragOffset.get() + dx);
-  }, [scrollDrivenX, dragOffset, x]);
+    cancelAnimationFrame(rafId.current);
+    velX.current = 0;
+  };
 
-  const handlePointerUp = useCallback((e: React.PointerEvent) => {
-    const ps = pointerState.current;
-    if (!ps) return;
-    if (ps.dragging) dragOffset.set(dragOffset.get() + (e.clientX - ps.startX));
-    pointerState.current = null;
-  }, [dragOffset]);
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!isDown.current) return;
+    const dx = e.clientX - startX.current;
+    const el = scrollRef.current;
+    if (el) el.scrollLeft = startScrollLeft.current - dx;
+    const now = Date.now();
+    if (now - lastMoveTime.current > 20) {
+      velX.current = e.clientX - lastMoveX.current;
+      lastMoveTime.current = now;
+      lastMoveX.current = e.clientX;
+    }
+  };
 
-  const scrollToLocation = useCallback((index: number) => {
-    const el = scrollContainerRef.current;
+  const onPointerUp = () => {
+    if (!isDown.current) return;
+    isDown.current = false;
+    if (Math.abs(velX.current) > 2) {
+      const el = scrollRef.current;
+      if (!el) return;
+      const decay = () => {
+        velX.current *= 0.95;
+        el.scrollLeft -= velX.current;
+        if (Math.abs(velX.current) > 0.5) rafId.current = requestAnimationFrame(decay);
+      };
+      rafId.current = requestAnimationFrame(decay);
+    }
+  };
+
+  const scrollToLocation = (index: number) => {
+    const el = scrollRef.current;
     if (!el) return;
     const child = el.children[index + 1] as HTMLElement;
     if (child) {
-      const targetX =
-        -(child as HTMLElement).offsetLeft +
-        (sectionRef.current?.offsetWidth || 0) / 2 -
-        100;
-      dragOffset.set(targetX - scrollDrivenX.get());
+      child.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
     }
     setActiveLocation(index);
-  }, [scrollDrivenX, dragOffset]);
+  };
+
+  const onScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const center = el.scrollLeft + el.clientWidth / 2;
+    let bestIdx = 0, bestDist = Infinity;
+    for (let i = 0; i < locations.length; i++) {
+      const child = el.children[i + 1] as HTMLElement;
+      if (child) {
+        const dist = Math.abs(child.offsetLeft - center);
+        if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+      }
+    }
+    setActiveLocation(bestIdx);
+  };
 
   return (
-    <section ref={sectionRef} className="relative bg-white" style={{ height: `${sectionHeight}px` }}>
+    <section className="relative bg-white">
       <div className="sticky top-0 flex h-screen flex-col overflow-hidden pt-16">
         {/* Location nav */}
         <div className="flex items-center gap-1.5 bg-white/80 px-5 py-3 backdrop-blur-md sm:px-8 md:px-12">
@@ -304,13 +298,14 @@ export default function AvailableNearYou() {
         </div>
 
         {/* Horizontal scroll track */}
-        <motion.div
-          ref={scrollContainerRef}
-          style={{ x }}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          className="flex flex-1 cursor-grab touch-none items-center gap-12 pl-5 sm:pl-8 md:pl-12 active:cursor-grabbing"
+        <div
+          ref={scrollRef}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          onScroll={onScroll}
+          className="flex flex-1 cursor-grab touch-pan-y items-center gap-12 overflow-x-auto pl-5 sm:pl-8 md:pl-12 active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           <IntroSlide />
 
@@ -342,7 +337,7 @@ export default function AvailableNearYou() {
           ))}
 
           <EndSlide />
-        </motion.div>
+        </div>
       </div>
     </section>
   );
