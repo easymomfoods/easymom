@@ -102,7 +102,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         {!product.active && (
           <>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent z-10" />
-            <div className="absolute inset-x-0 bottom-14 z-20 flex justify-center pointer-events-none">
+            <div className="absolute inset-x-0 bottom-4 sm:bottom-14 z-20 flex justify-center pointer-events-none">
               <span className="inline-block rounded bg-stone-900/80 backdrop-blur-sm px-3 py-1 text-[10px] font-bold text-white uppercase tracking-[0.18em]">
                 Currently Unavailable
               </span>
