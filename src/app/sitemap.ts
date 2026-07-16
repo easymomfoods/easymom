@@ -33,10 +33,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   let categoryPages: MetadataRoute.Sitemap = [];
   try {
     const categories = await db.category.findMany({
-      select: { slug: true, updatedAt: true },
+      select: { id: true, updatedAt: true },
     });
     categoryPages = categories.map((c) => ({
-      url: `${base}/shop/${c.slug}`,
+      url: `${base}/shop/${c.id}`,
       lastModified: c.updatedAt,
       changeFrequency: "weekly" as const,
       priority: 0.7,
