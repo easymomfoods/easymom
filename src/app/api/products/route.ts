@@ -17,15 +17,20 @@ export async function GET() {
     }));
 
     // Fetch freeItem fields (added via ALTER TABLE, Prisma doesn't know them)
-    const freeRows = await db.$executeRawUnsafe("SELECT id, freeItemName, freeItemImage FROM Product WHERE freeItemName IS NOT NULL") as unknown[];
-    const freeMap = new Map<string, { freeItemName: string; freeItemImage: string }>();
-    for (const row of freeRows as { id: string; freeItemName: string; freeItemImage: string }[]) {
-      freeMap.set(row.id, { freeItemName: row.freeItemName, freeItemImage: row.freeItemImage });
-    }
-    const merged = parsed.map((p) => {
-      const free = freeMap.get(p.id);
-      return free ? { ...p, ...free } : p;
-    });
+    let merged = parsed;
+    try {
+      const freeRows = await db.$queryRawUnsafe("SELECT id, freeItemName, freeItemImage FROM Product WHERE freeItemName IS NOT NULL");
+      if (Array.isArray(freeRows) && freeRows.length > 0) {
+        const freeMap = new Map<string, { freeItemName: string; freeItemImage: string }>();
+        for (const row of freeRows as { id: string; freeItemName: string; freeItemImage: string }[]) {
+          freeMap.set(row.id, { freeItemName: row.freeItemName, freeItemImage: row.freeItemImage });
+        }
+        merged = parsed.map((p) => {
+          const free = freeMap.get(p.id);
+          return free ? { ...p, ...free } : p;
+        });
+      }
+    } catch { /* freeItem columns may not exist yet */ }
 
     return NextResponse.json({ products: merged });
   } catch (e) {

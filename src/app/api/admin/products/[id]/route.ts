@@ -65,12 +65,15 @@ export async function PUT(
       await db.$executeRawUnsafe("UPDATE Product SET freeItemName = ?, freeItemImage = ? WHERE id = ?", freeName, freeImg, id);
     }
 
+    let freeFields: Record<string, string> = {};
+    try {
+      const rows = await db.$queryRawUnsafe("SELECT freeItemName, freeItemImage FROM Product WHERE id = ?", id);
+      if (Array.isArray(rows) && rows.length > 0) freeFields = rows[0] as Record<string, string>;
+    } catch { /* freeItem columns may not exist yet */ }
+
     return NextResponse.json({ ok: true, product: {
       ...product,
-      ...await (async () => {
-        const rows = await db.$executeRawUnsafe("SELECT freeItemName, freeItemImage FROM Product WHERE id = ?", id) as unknown[];
-        return rows.length > 0 ? rows[0] : {};
-      })(),
+      ...freeFields,
       images: JSON.parse(product.images || "[]"),
       ingredients: JSON.parse(product.ingredients || "[]"),
       tags: JSON.parse(product.tags || "[]"),

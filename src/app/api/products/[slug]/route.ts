@@ -25,11 +25,13 @@ export async function GET(
     };
 
     // Fetch freeItem fields
-    const freeRows = await db.$executeRawUnsafe("SELECT freeItemName, freeItemImage FROM Product WHERE id = ?", product.id) as unknown[];
-    if (freeRows.length > 0) {
-      const free = freeRows[0] as { freeItemName: string; freeItemImage: string };
-      if (free.freeItemName) { parsed.freeItemName = free.freeItemName; parsed.freeItemImage = free.freeItemImage; }
-    }
+    try {
+      const freeRows = await db.$queryRawUnsafe("SELECT freeItemName, freeItemImage FROM Product WHERE id = ?", product.id);
+      if (Array.isArray(freeRows) && freeRows.length > 0) {
+        const free = freeRows[0] as { freeItemName: string; freeItemImage: string };
+        if (free.freeItemName) { parsed.freeItemName = free.freeItemName; parsed.freeItemImage = free.freeItemImage; }
+      }
+    } catch { /* freeItem columns may not exist yet */ }
 
     return NextResponse.json({ product: parsed });
   } catch (e) {
