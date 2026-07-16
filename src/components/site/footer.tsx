@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useUI } from "@/lib/ui-store";
 import { useEffect, useState } from "react";
+import { useHomepageData } from "@/lib/page-data-context";
 
 const SHOP_LINKS = [
   { label: "Green Curry", view: { name: "shop" as const, categoryId: "green-curry" } },
@@ -64,8 +65,23 @@ const DEFAULTS = {
 export function Footer() {
   const go = useUI((s) => s.go);
   const [footer, setFooter] = useState(DEFAULTS);
+  const initData = useHomepageData();
 
   useEffect(() => {
+    if (initData?.siteContent) {
+      const sc = initData.siteContent;
+      const parsed: Record<string, any> = {};
+      if (sc.footer) { try { Object.assign(parsed, JSON.parse(sc.footer)); } catch {} }
+      const socials: any[] = [];
+      if (sc.social_instagram) socials.push({ platform: "instagram", label: "Instagram", href: sc.social_instagram });
+      if (sc.social_youtube) socials.push({ platform: "youtube", label: "YouTube", href: sc.social_youtube });
+      if (sc.social_twitter) socials.push({ platform: "twitter", label: "Twitter", href: sc.social_twitter });
+      if (sc.social_facebook) socials.push({ platform: "facebook", label: "Facebook", href: sc.social_facebook });
+      if (socials.length > 0) parsed.socials = socials;
+      if (sc.whatsapp_number) parsed.whatsapp = `https://wa.me/91${sc.whatsapp_number}`;
+      setFooter({ ...DEFAULTS, ...parsed });
+      return;
+    }
     Promise.all([
       fetch("/api/site-content/footer").then((r) => r.json()),
       fetch("/api/site-content/social_instagram").then((r) => r.json()),
@@ -87,7 +103,7 @@ export function Footer() {
         setFooter({ ...DEFAULTS, ...parsed });
       })
       .catch(() => {});
-  }, []);
+  }, [initData]);
 
   return (
     <footer className="border-t border-zinc-100 bg-white">

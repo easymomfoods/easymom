@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { CartToast } from "@/components/site/cart-toast";
 import { PageLoader } from "@/components/site/page-loader";
+import { HomepageDataProvider } from "@/lib/page-data-context";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -125,7 +126,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {children}
+        <HomepageDataProvider>{children}</HomepageDataProvider>
         <Toaster />
         <SonnerToaster position="bottom-right" richColors />
         <CartToast />

@@ -7,7 +7,9 @@ export const runtime = "nodejs";
 const SITE_CONTENT_KEYS = [
   "hero", "brand-story", "featured", "our-products",
   "recipes-section", "testimonials-section", "instagram-feed",
-  "trust-strip", "store-locations",
+  "trust-strip", "store-locations", "footer",
+  "social_instagram", "social_facebook", "social_twitter",
+  "social_youtube", "whatsapp_number",
 ] as const;
 
 export async function GET() {

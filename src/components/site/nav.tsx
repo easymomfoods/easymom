@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useUI } from "@/lib/ui-store";
 import { useCart } from "@/lib/store";
+import { useHomepageData } from "@/lib/page-data-context";
 import { categories as defaultCategories, products as defaultProducts } from "@/lib/data";
 import { cartCount } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -31,12 +32,18 @@ export function Nav() {
   const [megaOpen, setMegaOpen] = useState<string | null>(null);
   const [navCategories, setNavCategories] = useState(defaultCategories);
   const [navProducts, setNavProducts] = useState(defaultProducts);
+  const initData = useHomepageData();
 
   useEffect(() => {
     setMobileNav(false);
   }, [view, setMobileNav]);
 
   useEffect(() => {
+    if (initData) {
+      if (initData.categories?.length) setNavCategories(initData.categories);
+      if (initData.products?.length) setNavProducts(initData.products);
+      return;
+    }
     Promise.all([
       fetch("/api/categories").then((r) => r.json()),
       fetch("/api/products").then((r) => r.json()),
@@ -46,7 +53,7 @@ export function Nav() {
         if (prodData.products && prodData.products.length > 0) setNavProducts(prodData.products);
       })
       .catch(() => {});
-  }, []);
+  }, [initData]);
 
   return (
     <>
@@ -246,13 +253,15 @@ export function Nav() {
 function MobileNav() {
   const { go, setMobileNav } = useUI();
   const [mobileCategories, setMobileCategories] = useState(defaultCategories);
+  const initData = useHomepageData();
 
   useEffect(() => {
+    if (initData?.categories?.length) { setMobileCategories(initData.categories); return; }
     fetch("/api/categories")
       .then((r) => r.json())
       .then((d) => { if (d.categories && d.categories.length > 0) setMobileCategories(d.categories); })
       .catch(() => {});
-  }, []);
+  }, [initData]);
 
   return (
     <motion.div
