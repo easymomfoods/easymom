@@ -404,6 +404,8 @@ function ProductEditModal({
     isNew: product?.isNew || false,
     ingredients: Array.isArray(product?.ingredients) ? product!.ingredients.join(", ") : "",
     tags: Array.isArray(product?.tags) ? product!.tags.join(", ") : "",
+    freeItemName: product?.freeItemName || "",
+    freeItemImage: product?.freeItemImage || "",
   });
   const [galleryImages, setGalleryImages] = useState<string[]>(
     (product?.images || []).filter((img: string) => img !== product?.img)
@@ -439,6 +441,8 @@ function ProductEditModal({
         tags: form.tags.split(",").map((s) => s.trim()).filter(Boolean),
         badge: form.badge || null,
         images: galleryImages.filter((img: string) => img !== form.img),
+        freeItemName: form.freeItemName.trim() || null,
+        freeItemImage: form.freeItemImage || null,
       };
       const res = await fetch(url, {
         method,
@@ -668,6 +672,60 @@ function ProductEditModal({
                   )}
                 </div>
               </div>
+            </div>
+            {/* Free Item Section */}
+            <div className="col-span-2">
+              {form.freeItemName ? (
+                <div className="p-3 bg-green-50 rounded-xl border border-green-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[13px] font-semibold text-green-800">Free Item</span>
+                    <button
+                      type="button"
+                      onClick={() => setForm({ ...form, freeItemName: "", freeItemImage: "" })}
+                      className="text-[12px] text-red-500 hover:text-red-600"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  <div className="flex gap-3">
+                    <input
+                      type="text"
+                      value={form.freeItemName}
+                      onChange={(e) => setForm({ ...form, freeItemName: e.target.value })}
+                      className={inputCls}
+                      placeholder="Free item name"
+                    />
+                    <label className="w-16 h-16 shrink-0 rounded-lg border-2 border-dashed border-stone-300 hover:border-green-400 flex flex-col items-center justify-center cursor-pointer hover:bg-green-50 transition-all">
+                      {form.freeItemImage ? (
+                        <img src={form.freeItemImage} alt="Free item" className="w-full h-full object-cover rounded-lg" />
+                      ) : (
+                        <>
+                          <Plus className="h-4 w-4 text-stone-400 mb-0.5" />
+                          <span className="text-[7px] text-stone-400 leading-tight">Image</span>
+                        )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) uploadAndSet(file, (url) => setForm({ ...form, freeItemImage: url }), 99);
+                          e.target.value = "";
+                        }}
+                      />
+                    </label>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, freeItemName: " " })}
+                  className="w-full py-2.5 border-2 border-dashed border-green-300 rounded-xl text-[13px] font-medium text-green-700 hover:bg-green-50 hover:border-green-400 transition-all flex items-center justify-center gap-2"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add Free Item
+                </button>
+              )}
             </div>
             <div className="col-span-2">
               <label className={labelCls}>Short Description</label>

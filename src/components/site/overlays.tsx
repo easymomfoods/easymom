@@ -48,7 +48,7 @@ function CartLineItem({ l }: { l: CartLine }) {
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      className="flex gap-3 rounded-[6px] border border-border bg-card p-3"
+      className={`flex gap-3 rounded-[6px] border bg-card p-3 ${l.isFree ? "border-leaf/30 bg-leaf/5" : "border-border"}`}
     >
       <div className="h-16 w-16 shrink-0 overflow-hidden rounded-[6px] bg-stone-100">
         {l.img ? (
@@ -61,23 +61,34 @@ function CartLineItem({ l }: { l: CartLine }) {
       </div>
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-start justify-between gap-2">
-          <p className="line-clamp-2 text-[13.5px] font-semibold leading-snug text-foreground">{l.name}</p>
+          <div className="flex items-center gap-2 min-w-0">
+            <p className="line-clamp-2 text-[13.5px] font-semibold leading-snug text-foreground">{l.name}</p>
+            {l.isFree && (
+              <span className="shrink-0 rounded bg-leaf px-1.5 py-0.5 text-[9px] font-bold text-white uppercase">FREE</span>
+            )}
+          </div>
           <button onClick={() => remove(l.productId)} className="grid h-7 w-7 shrink-0 place-items-center rounded-[4px] text-muted-foreground transition hover:bg-destructive/10 hover:text-destructive" aria-label="Remove">
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
-        <span className="text-[11px] text-muted-foreground">{l.weight}</span>
+        <span className="text-[11px] text-muted-foreground">{l.isFree ? "Free with " + l.freeItemName?.split(" ")[0] : l.weight}</span>
         <div className="mt-auto flex items-center justify-between pt-2">
-          <div className="flex items-center rounded-[4px] border border-border">
-            <button onClick={handleMinus} className="grid h-7 w-7 place-items-center text-foreground/70 hover:text-foreground active:scale-75 transition-transform duration-150" aria-label="Decrease">
-              <Minus className="h-3.5 w-3.5" />
-            </button>
-            <span ref={qtyPop.ref} className="w-7 text-center text-[13px] font-semibold" style={{ animation: "pop 0.25s ease-out" }}>{l.qty}</span>
-            <button onClick={handlePlus} className="grid h-7 w-7 place-items-center text-foreground/70 hover:text-foreground active:scale-75 transition-transform duration-150" aria-label="Increase">
-              <Plus className="h-3.5 w-3.5" />
-            </button>
-          </div>
-          <span ref={pricePop.ref} className="text-[14px] font-semibold text-foreground" style={{ animation: "pop 0.25s ease-out" }}>{inr(l.price * l.qty)}</span>
+          {l.isFree ? (
+            <span className="text-[14px] font-semibold text-leaf">FREE</span>
+          ) : (
+            <>
+              <div className="flex items-center rounded-[4px] border border-border">
+                <button onClick={handleMinus} className="grid h-7 w-7 place-items-center text-foreground/70 hover:text-foreground active:scale-75 transition-transform duration-150" aria-label="Decrease">
+                  <Minus className="h-3.5 w-3.5" />
+                </button>
+                <span ref={qtyPop.ref} className="w-7 text-center text-[13px] font-semibold" style={{ animation: "pop 0.25s ease-out" }}>{l.qty}</span>
+                <button onClick={handlePlus} className="grid h-7 w-7 place-items-center text-foreground/70 hover:text-foreground active:scale-75 transition-transform duration-150" aria-label="Increase">
+                  <Plus className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <span ref={pricePop.ref} className="text-[14px] font-semibold text-foreground" style={{ animation: "pop 0.25s ease-out" }}>{inr(l.price * l.qty)}</span>
+            </>
+          )}
         </div>
       </div>
     </motion.div>

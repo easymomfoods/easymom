@@ -26,9 +26,10 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
   const wished = wishlist.includes(product.id);
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
 
-  const allImages = [product.img, ...(product.images || [])].filter(Boolean);
+  const allImages = [product.img, ...(product.images || []), product.freeItemImage].filter(Boolean);
   const uniqueImages = [...new Set(allImages)];
   const images = uniqueImages.length > 1 ? uniqueImages : null;
+  const hasFreeItem = !!product.freeItemName && !!product.freeItemImage;
   const [hoverIdx, setHoverIdx] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -132,6 +133,14 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
                 {discount}% off
               </span>
             )}
+          </div>
+        )}
+        {/* free item blink */}
+        {product.active && hasFreeItem && (
+          <div className="absolute left-3 bottom-14 z-20">
+            <span className="inline-block rounded bg-leaf/90 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white animate-pulse">
+              Free — {product.freeItemName}
+            </span>
           </div>
         )}
         {/* price tag */}

@@ -40,6 +40,8 @@ export type Product = {
   tags: string[];
   hue: number; // 0-360 base hue for card visual
   active?: boolean;
+  freeItemName?: string | null;
+  freeItemImage?: string | null;
   createdAt?: string;
 };
 

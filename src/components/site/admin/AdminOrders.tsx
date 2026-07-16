@@ -27,6 +27,8 @@ interface OrderItem {
   weight: string;
   img: string;
   qty: number;
+  isFree?: boolean;
+  freeItemName?: string;
 }
 
 interface Order {
@@ -361,7 +363,7 @@ export default function AdminOrders() {
                 <p className="text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-3">Order Items</p>
                 <div className="space-y-2">
                   {selectedOrder.items.map((item, i) => (
-                    <div key={i} className="flex items-center gap-3 p-2.5 bg-stone-50 rounded-lg">
+                    <div key={i} className={`flex items-center gap-3 p-2.5 rounded-lg ${item.isFree ? "bg-green-50 border border-green-200" : "bg-stone-50"}`}>
                       <div className="h-11 w-11 rounded-lg bg-white border border-stone-200/50 overflow-hidden shrink-0">
                         {item.img ? (
                           <img src={item.img} alt={item.name} className="h-full w-full object-cover" />
@@ -372,10 +374,17 @@ export default function AdminOrders() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-medium text-stone-900 truncate">{item.name}</p>
-                        <p className="text-[12px] text-stone-500">{item.weight} × {item.qty}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[13px] font-medium text-stone-900 truncate">{item.name}</p>
+                          {item.isFree && (
+                            <span className="shrink-0 rounded bg-green-600 px-1.5 py-0.5 text-[9px] font-bold text-white uppercase">FREE</span>
+                          )}
+                        </div>
+                        <p className="text-[12px] text-stone-500">{item.isFree ? "Free item" : `${item.weight} × ${item.qty}`}</p>
                       </div>
-                      <p className="text-[13px] font-semibold text-stone-900">{inr(item.price * item.qty)}</p>
+                      <p className={`text-[13px] font-semibold ${item.isFree ? "text-green-600" : "text-stone-900"}`}>
+                        {item.isFree ? "FREE" : inr(item.price * item.qty)}
+                      </p>
                     </div>
                   ))}
                 </div>

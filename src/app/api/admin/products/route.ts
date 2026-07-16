@@ -95,6 +95,8 @@ export async function POST(req: NextRequest) {
         tags: JSON.stringify(body.tags || []),
         hue: Number(body.hue) || 0,
         active: body.active !== false,
+        freeItemName: body.freeItemName || null,
+        freeItemImage: body.freeItemImage || null,
       },
     });
 

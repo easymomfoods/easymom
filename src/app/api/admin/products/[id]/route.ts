@@ -43,6 +43,8 @@ export async function PUT(
     if (body.tags !== undefined) data.tags = JSON.stringify(body.tags);
     if (body.hue !== undefined) data.hue = Number(body.hue);
     if (body.active !== undefined) data.active = body.active;
+    if (body.freeItemName !== undefined) data.freeItemName = body.freeItemName || null;
+    if (body.freeItemImage !== undefined) data.freeItemImage = body.freeItemImage || null;
 
     // Auto-create category if categoryId is changing to a new one
     if (body.categoryId) {

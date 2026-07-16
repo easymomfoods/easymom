@@ -13,6 +13,8 @@ export type CartLine = {
   img: string;
   hue: number;
   qty: number;
+  isFree?: boolean;
+  freeItemName?: string;
 };
 
 type CartState = {
@@ -37,31 +39,53 @@ export const useCart = create<CartState>()(
       add: (p, qty = 1) =>
         set((s) => {
           const existing = s.lines.find((l) => l.productId === p.id);
-          if (existing) {
-            return {
-              lines: s.lines.map((l) =>
+          let newLines = existing
+            ? s.lines.map((l) =>
                 l.productId === p.id ? { ...l, qty: Math.min(99, l.qty + qty) } : l
-              ),
-            };
+              )
+            : [
+                ...s.lines,
+                {
+                  productId: p.id,
+                  name: p.name,
+                  slug: p.slug,
+                  price: p.price,
+                  weight: p.weight,
+                  img: p.img || "",
+                  hue: p.hue,
+                  qty,
+                },
+              ];
+
+          // Auto-add free item if product has one
+          if (p.freeItemName && p.freeItemImage) {
+            const freeId = `${p.id}-free`;
+            const existingFree = newLines.find((l) => l.productId === freeId);
+            if (!existingFree) {
+              newLines = [
+                ...newLines,
+                {
+                  productId: freeId,
+                  name: `${p.freeItemName}`,
+                  slug: p.slug,
+                  price: 0,
+                  weight: "Free",
+                  img: p.freeItemImage,
+                  hue: p.hue,
+                  qty,
+                  isFree: true,
+                  freeItemName: p.freeItemName,
+                },
+              ];
+            }
           }
-          return {
-            lines: [
-              ...s.lines,
-              {
-                productId: p.id,
-                name: p.name,
-                slug: p.slug,
-                price: p.price,
-                weight: p.weight,
-                img: p.img || "",
-                hue: p.hue,
-                qty,
-              },
-            ],
-          };
+
+          return { lines: newLines };
         }),
       remove: (productId) =>
-        set((s) => ({ lines: s.lines.filter((l) => l.productId !== productId) })),
+        set((s) => ({
+          lines: s.lines.filter((l) => l.productId !== productId && l.productId !== `${productId}-free`),
+        })),
       setQty: (productId, qty) =>
         set((s) => ({
           lines:

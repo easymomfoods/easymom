@@ -26,35 +26,37 @@ model Category {
 }
 
 model Product {
-  id           String   @id @default(cuid())
-  name         String
-  slug         String   @unique
-  categoryId   String
-  category     Category @relation(fields: [categoryId], references: [id])
-  price        Int
-  mrp          Int
-  weight       String
-  rating       Float    @default(0)
-  reviewCount  Int      @default(0)
-  badge        String?
-  bestSeller   Boolean  @default(false)
-  isNew        Boolean  @default(false)
-  img          String?
-  images       String   @default("[]") // JSON array of image paths
-  shortDesc    String
-  description  String
-  ingredients  String   @default("[]") // JSON array
-  origin       String
-  shelfLife    String
-  spiceLevel   String
-  cookingTime  String
-  servings     String
-  tags         String   @default("[]") // JSON array
-  hue          Int
-  active       Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  reviews      Review[]
+  id             String   @id @default(cuid())
+  name           String
+  slug           String   @unique
+  categoryId     String
+  category       Category @relation(fields: [categoryId], references: [id])
+  price          Int
+  mrp            Int
+  weight         String
+  rating         Float    @default(0)
+  reviewCount    Int      @default(0)
+  badge          String?
+  bestSeller     Boolean  @default(false)
+  isNew          Boolean  @default(false)
+  img            String?
+  images         String   @default("[]") // JSON array of image paths
+  shortDesc      String
+  description    String
+  ingredients    String   @default("[]") // JSON array
+  origin         String
+  shelfLife      String
+  spiceLevel     String
+  cookingTime    String
+  servings       String
+  tags           String   @default("[]") // JSON array
+  hue            Int
+  active         Boolean  @default(true)
+  freeItemName   String?
+  freeItemImage  String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  reviews        Review[]
 
   @@index([categoryId])
   @@index([active])
