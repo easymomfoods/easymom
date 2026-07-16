@@ -7,7 +7,7 @@ const SEO_DATA: Record<string, { title: string; description: string; image: stri
   home: {
     title: "EasyMom Foods — Authentic South Indian Masalas, Made Effortless",
     description:
-      "Premium authentic South Indian masalas and ready-to-cook blends from Mangalore and Kerala. Homemade taste, fast cooking, no preservatives. Trusted by 42,000+ families. Founded by Mahammad Sinan.",
+      "Premium authentic South Indian masalas and ready-to-cook blends from Mangalore and Kerala. Homemade taste, fast cooking, no preservatives. Trusted by 25,000+ families. Founded by Mahammad Sinan.",
     image: "/brand/easymom-logo.png",
   },
   shop: {
@@ -19,7 +19,7 @@ const SEO_DATA: Record<string, { title: string; description: string; image: stri
   product: {
     title: "Buy South Indian Masala Online — EasyMom Foods",
     description:
-      "Premium South Indian masala blend, stone-ground in small batches. No preservatives, no artificial colours. Ready in 5 minutes. Trusted by 42,000+ families.",
+      "Premium South Indian masala blend, stone-ground in small batches. No preservatives, no artificial colours. Ready in 5 minutes. Trusted by 25,000+ families.",
     image: "/brand/easymom-logo.png",
   },
   recipes: {

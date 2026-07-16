@@ -14,7 +14,7 @@ interface HeroData {
 const fallback: HeroData = {
   desktopImage: "/brand/easymom-banner.png",
   mobileImage: "/brand/easymom-hero-mobile.png",
-  statNumber: "42,000+",
+  statNumber: "25,000+",
   statLabel: "Kitchens trust us",
   heading: "",
   subtitle: "",
@@ -27,7 +27,7 @@ export function Hero() {
   const [loaded, setLoaded] = useState(false);
   const statRef = React.useRef<HTMLDivElement>(null);
   const heroRef = React.useRef<HTMLDivElement>(null);
-  const targetRef = React.useRef(42000);
+  const targetRef = React.useRef(25000);
   const rafRef = React.useRef<number | null>(null);
 
   // Load hero content from API
@@ -57,7 +57,7 @@ export function Hero() {
   useEffect(() => {
     if (!loaded || !statRef.current) return;
     const numStr = hero.statNumber.replace(/[^0-9]/g, "");
-    const target = parseInt(numStr) || 42000;
+    const target = parseInt(numStr) || 25000;
     targetRef.current = target;
 
     const o = new IntersectionObserver(

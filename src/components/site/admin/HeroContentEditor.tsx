@@ -24,7 +24,7 @@ interface HeroData {
 const defaults: HeroData = {
   desktopImage: "/brand/easymom-banner.png",
   mobileImage: "/brand/easymom-hero-mobile.png",
-  statNumber: "42,000+",
+  statNumber: "25,000+",
   statLabel: "Kitchens trust us",
   heading: "",
   subtitle: "",
@@ -215,7 +215,7 @@ export default function HeroContentEditor() {
               <div className="space-y-3">
                 <div>
                   <label className="block text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
-                    Number (e.g. 42,000+)
+                    Number (e.g. 25,000+)
                   </label>
                   <input
                     type="text"

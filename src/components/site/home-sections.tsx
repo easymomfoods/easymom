@@ -92,7 +92,7 @@ export function Categories() {
 const FALLBACK_FEATURED = {
   eyebrow: "Most loved",
   title: "The blends people reorder",
-  description: "The four that earned their place in 42,000 kitchens — and keep earning it.",
+  description: "The four that earned their place in 25,000 kitchens — and keep earning it.",
   productSlugs: [] as string[],
 };
 
@@ -621,7 +621,7 @@ export function Recipes() {
 }
 
 const FALLBACK_TESTIMONIALS_SECTION = {
-  eyebrow: "Trusted in 42,000 kitchens",
+  eyebrow: "Trusted in 25,000 kitchens",
   title: "What families actually say",
   description: "From Bengaluru to Dubai to London — the reviews that keep us grinding.",
 };

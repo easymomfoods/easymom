@@ -10,7 +10,7 @@ const defaults = [
   "Roasted, never raw",
   "Built for the 15-minute cook",
   "From Mangalore & Kerala",
-  "42,000+ households",
+  "25,000+ households",
 ];
 
 const inputCls = "w-full h-10 px-3 rounded-lg border border-stone-200 text-[13px] text-stone-700 focus:outline-none focus:ring-2 focus:ring-[#891816]/10 focus:border-[#891816]/30";

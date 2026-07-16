@@ -38,7 +38,7 @@ interface Product {
 const defaults: FeaturedData = {
   eyebrow: "Most loved",
   title: "The blends people reorder",
-  description: "The four that earned their place in 42,000 kitchens — and keep earning it.",
+  description: "The four that earned their place in 25,000 kitchens — and keep earning it.",
   productSlugs: [],
 };
 

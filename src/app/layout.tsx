@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s · EasyMom Foods",
   },
   description:
-    "Premium authentic South Indian masalas and ready-to-cook blends from Mangalore and Kerala. Homemade taste, fast cooking, no preservatives. Trusted by 42,000+ families. Founded by Mahammad Sinan.",
+    "Premium authentic South Indian masalas and ready-to-cook blends from Mangalore and Kerala. Homemade taste, fast cooking, no preservatives. Trusted by 25,000+ families. Founded by Mahammad Sinan.",
   keywords: [
     "EasyMom",
     "South Indian masala",
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "EasyMom Foods — Authentic South Indian Masalas, Made Effortless",
     description:
-      "Premium South Indian masalas from Mangalore. No prep, no oil, ready in 5 minutes. Trusted by 42,000+ families. Founded by Mahammad Sinan.",
+      "Premium South Indian masalas from Mangalore. No prep, no oil, ready in 5 minutes. Trusted by 25,000+ families. Founded by Mahammad Sinan.",
     url: "https://easymom.co.in",
     siteName: "EasyMom Foods",
     images: [

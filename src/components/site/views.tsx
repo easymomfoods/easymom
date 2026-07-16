@@ -1162,7 +1162,7 @@ export function AboutView() {
 
       {/* testimonials */}
       <div className="mt-20">
-        <h2 className="text-center text-[28px] font-semibold tracking-tight">Trusted in 42,000 kitchens</h2>
+        <h2 className="text-center text-[28px] font-semibold tracking-tight">Trusted in 25,000 kitchens</h2>
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {aboutTestimonials.map((t) => (
             <figure key={t.id} className="flex flex-col rounded-[6px] border border-border bg-card p-6">
