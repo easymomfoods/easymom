@@ -80,6 +80,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
                 key={i}
                 src={img}
                 alt={`${product.name} ${i + 1}`}
+                loading={i === 0 ? "eager" : "lazy"}
                 className={cn(
                   "absolute inset-0 h-full w-full object-cover transition-all duration-700 ease-out",
                   product.active ? "group-hover:scale-105" : "grayscale",
@@ -92,6 +93,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           <img
             src={product.img}
             alt={product.name}
+            loading="eager"
             className={cn(
               "h-full w-full object-cover transition-transform duration-700 ease-out",
               product.active ? "group-hover:scale-105" : " grayscale"

@@ -569,7 +569,7 @@ export function ProductView() {
                   selectedImg === -1 ? "border-primary shadow-md" : "border-border hover:border-stone-300"
                 }`}
               >
-                <img src={p.img} alt={`${p.name} main`} className="h-full w-full object-cover" />
+                <img src={p.img} alt={`${p.name} main`} className="h-full w-full object-cover" loading="eager" />
                 <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[9px] text-white text-center py-0.5 font-medium">
                   Image 1
                 </span>
@@ -584,7 +584,7 @@ export function ProductView() {
                   selectedImg === i ? "border-primary shadow-md" : "border-border hover:border-stone-300"
                 }`}
               >
-                <img src={img} alt={`${p.name} ${i + 2}`} className="h-full w-full object-cover" />
+                <img src={img} alt={`${p.name} ${i + 2}`} className="h-full w-full object-cover" loading="eager" />
                 <span className="absolute bottom-0 left-0 right-0 bg-black/60 text-[9px] text-white text-center py-0.5 font-medium">
                   Image {i + 2}
                 </span>
@@ -598,7 +598,7 @@ export function ProductView() {
                   selectedImg === -2 ? "border-leaf shadow-md" : "border-leaf/40 hover:border-leaf/60"
                 }`}
               >
-                <img src={p.freeItemImage} alt={`Free: ${p.freeItemName}`} className="h-full w-full object-cover" />
+                <img src={p.freeItemImage} alt={`Free: ${p.freeItemName}`} className="h-full w-full object-cover" loading="eager" />
                 <span className="absolute bottom-0 left-0 right-0 bg-leaf/80 text-[9px] text-white text-center py-0.5 font-medium">
                   Free
                 </span>
@@ -612,6 +612,7 @@ export function ProductView() {
                 src={selectedImg === -2 ? (p.freeItemImage || "") : selectedImg === -1 ? (p.img || "") : (p.images && p.images[selectedImg]) || p.img || ""}
                 alt={p.name}
                 className="w-full h-full object-cover"
+                loading="eager"
               />
             </div>
           </div>
