@@ -243,12 +243,31 @@ export default function AvailableNearYou() {
     x.set(scrollVal + dragOffset.get());
   });
 
-  const handleDragEnd = useCallback(
-    (_: any, info: { offset: { x: number } }) => {
-      dragOffset.set(dragOffset.get() + info.offset.x);
-    },
-    [dragOffset]
-  );
+  const pointerState = useRef<{ startX: number; startY: number; dragging: boolean; pointerId: number } | null>(null);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    pointerState.current = { startX: e.clientX, startY: e.clientY, dragging: false, pointerId: e.pointerId };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  }, []);
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    const ps = pointerState.current;
+    if (!ps) return;
+    const dx = e.clientX - ps.startX;
+    const dy = e.clientY - ps.startY;
+    if (!ps.dragging) {
+      if (Math.abs(dx) < 5 || Math.abs(dx) < Math.abs(dy)) return;
+      ps.dragging = true;
+    }
+    x.set(scrollDrivenX.get() + dragOffset.get() + dx);
+  }, [scrollDrivenX, dragOffset, x]);
+
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    const ps = pointerState.current;
+    if (!ps) return;
+    if (ps.dragging) dragOffset.set(dragOffset.get() + (e.clientX - ps.startX));
+    pointerState.current = null;
+  }, [dragOffset]);
 
   const scrollToLocation = useCallback((index: number) => {
     const el = scrollContainerRef.current;
@@ -288,10 +307,10 @@ export default function AvailableNearYou() {
         <motion.div
           ref={scrollContainerRef}
           style={{ x }}
-          drag="x"
-          dragMomentum={false}
-          onDragEnd={handleDragEnd}
-          className="flex flex-1 items-center gap-12 pl-5 sm:pl-8 md:pl-12"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          className="flex flex-1 cursor-grab touch-none items-center gap-12 pl-5 sm:pl-8 md:pl-12 active:cursor-grabbing"
         >
           <IntroSlide />
 
