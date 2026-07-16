@@ -702,7 +702,7 @@ function ProductEditModal({
                         <>
                           <Plus className="h-4 w-4 text-stone-400 mb-0.5" />
                           <span className="text-[7px] text-stone-400 leading-tight">Image</span>
-                        )}
+                        </>}
                       <input
                         type="file"
                         accept="image/*"
