@@ -424,6 +424,18 @@ export default function AdminOrders() {
                 )}
               </div>
 
+              {/* Payment Screenshot */}
+              {selectedOrder.paymentRef && (
+                <div>
+                  <p className="text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-2">Payment Screenshot</p>
+                  <div className="rounded-xl border border-stone-200 overflow-hidden bg-stone-50">
+                    <a href={selectedOrder.paymentRef} target="_blank" rel="noopener noreferrer">
+                      <img src={selectedOrder.paymentRef} alt="Payment screenshot" className="w-full max-h-64 object-contain cursor-pointer hover:opacity-90 transition" />
+                    </a>
+                  </div>
+                </div>
+              )}
+
               {/* Status Update */}
               <div>
                 <p className="text-[12px] font-semibold text-stone-500 uppercase tracking-wider mb-3">Update Status</p>

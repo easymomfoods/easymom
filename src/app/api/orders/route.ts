@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
       notes,
       couponCode,
       paymentMethod,
+      paymentRef,
       itemsJson,
     } = body;
 
@@ -116,6 +117,7 @@ export async function POST(req: NextRequest) {
         couponCode: appliedCouponCode,
         paymentMethod: paymentMethod === "upi_qr" ? "upi_qr" : "cod",
         paymentStatus: "pending",
+        paymentRef: paymentRef || null,
         itemsJson: JSON.stringify(
           items.map((i) => {
             const p = productMap.get(i.productId);

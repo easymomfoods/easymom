@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -14,6 +14,9 @@ import {
   ArrowRight,
   Package,
   IndianRupee,
+  Copy,
+  Upload,
+  ImageIcon,
 } from "lucide-react";
 import { useUI } from "@/lib/ui-store";
 import { useCart, cartSubtotal, cartCount } from "@/lib/store";
@@ -38,6 +41,11 @@ export function Checkout() {
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "upi_qr">("cod");
   const [upiSettings, setUpiSettings] = useState<{ upiId: string; qrImage: string } | null>(null);
   const [placedOrder, setPlacedOrder] = useState<{ id: string; total: number } | null>(null);
+  const [upiCopied, setUpiCopied] = useState(false);
+  const [paymentScreenshot, setPaymentScreenshot] = useState("");
+  const [screenshotUploading, setScreenshotUploading] = useState(false);
+  const [screenshotError, setScreenshotError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const subtotal = cartSubtotal(lines);
   const discount = coupon ? Math.round((subtotal * coupon.discountPct) / 100) : 0;
@@ -62,6 +70,31 @@ export function Checkout() {
     setStep("details");
   };
 
+  const copyUpiId = async () => {
+    try {
+      await navigator.clipboard.writeText(upiSettings?.upiId || "");
+      setUpiCopied(true);
+      setTimeout(() => setUpiCopied(false), 2000);
+    } catch {}
+  };
+
+  const uploadScreenshot = async (file: File) => {
+    if (!file.type.startsWith("image/")) { setScreenshotError("Only image files allowed"); return; }
+    if (file.size > 5 * 1024 * 1024) { setScreenshotError("File too large (max 5MB)"); return; }
+    setScreenshotUploading(true);
+    setScreenshotError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folder", "easymom/payments");
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      if (data.ok) setPaymentScreenshot(data.url);
+      else setScreenshotError(data.error || "Upload failed");
+    } catch { setScreenshotError("Upload failed — check connection"); }
+    setScreenshotUploading(false);
+  };
+
   const placeOrder = async () => {
     setStep("processing");
     try {
@@ -77,6 +110,7 @@ export function Checkout() {
           total,
           couponCode: coupon?.code,
           paymentMethod,
+          paymentRef: paymentScreenshot || undefined,
           itemsJson: JSON.stringify(lines),
         }),
       });
@@ -301,10 +335,19 @@ export function Checkout() {
                               <p className="text-[13px] font-semibold text-amber-800 mb-2">UPI Payment Instructions</p>
                               <ol className="text-[12px] text-amber-700 space-y-1.5 list-decimal list-inside">
                                 <li>Open any UPI app (Google Pay, PhonePe, Paytm, etc.)</li>
-                                <li>Scan the QR code or send payment to UPI ID: <strong>{upiSettings?.upiId || "easymom@upi"}</strong></li>
+                                <li>
+                                  Send payment to UPI ID: <strong>{upiSettings?.upiId || "easymom@upi"}</strong>
+                                  <button
+                                    onClick={copyUpiId}
+                                    className="inline-flex items-center gap-1 ml-2 px-2 py-0.5 rounded-md bg-amber-200/60 hover:bg-amber-200 text-[11px] font-medium text-amber-800 transition"
+                                  >
+                                    {upiCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                                    {upiCopied ? "Copied" : "Copy"}
+                                  </button>
+                                </li>
                                 <li>Enter amount: <strong>{inr(total)}</strong></li>
-                                <li>In reference/note, type your order ID (shown after placing order)</li>
-                                <li>Click &quot;I&apos;ve paid&quot; below after completing payment</li>
+                                <li>Take a screenshot of the payment confirmation</li>
+                                <li>Upload the screenshot below (required)</li>
                               </ol>
                               <div className="mt-3">
                                 <p className="text-[12px] font-medium text-amber-800 mb-2">Scan this QR to pay:</p>
@@ -312,6 +355,61 @@ export function Checkout() {
                                   <img src={upiSettings.qrImage} alt="UPI QR Code" className="w-full h-full object-contain" />
                                 </div>
                               </div>
+
+                              {/* Screenshot Upload */}
+                              <div className="mt-4">
+                                <p className="text-[12px] font-semibold text-amber-800 mb-2">
+                                  Upload Payment Screenshot <span className="text-red-500">*</span>
+                                </p>
+                                {paymentScreenshot ? (
+                                  <div className="relative inline-block">
+                                    <div className="w-36 h-36 rounded-xl border border-amber-200 overflow-hidden bg-white">
+                                      <img src={paymentScreenshot} alt="Payment screenshot" className="w-full h-full object-contain" />
+                                    </div>
+                                    <button
+                                      onClick={() => setPaymentScreenshot("")}
+                                      className="absolute -top-2 -right-2 p-1 rounded-full bg-red-500 text-white hover:bg-red-600 shadow-sm"
+                                    >
+                                      <X className="h-3 w-3" />
+                                    </button>
+                                    <p className="mt-1 text-[11px] text-green-600 font-medium flex items-center gap-1">
+                                      <Check className="h-3 w-3" /> Uploaded
+                                    </p>
+                                  </div>
+                                ) : (
+                                  <div
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="w-36 h-36 rounded-xl border-2 border-dashed border-amber-300 bg-amber-100/30 flex flex-col items-center justify-center gap-1.5 cursor-pointer hover:bg-amber-100/50 transition"
+                                  >
+                                    {screenshotUploading ? (
+                                      <Loader2 className="h-6 w-6 animate-spin text-amber-600" />
+                                    ) : (
+                                      <>
+                                        <Upload className="h-6 w-6 text-amber-500" />
+                                        <span className="text-[11px] text-amber-600 font-medium leading-tight text-center px-2">
+                                          Tap to upload screenshot
+                                        </span>
+                                      </>
+                                    )}
+                                  </div>
+                                )}
+                                <input
+                                  ref={fileInputRef}
+                                  type="file"
+                                  accept="image/*"
+                                  capture="environment"
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) uploadScreenshot(file);
+                                    e.target.value = "";
+                                  }}
+                                />
+                                {screenshotError && (
+                                  <p className="mt-1.5 text-[11px] text-red-500">{screenshotError}</p>
+                                )}
+                              </div>
+
                               <div className="mt-3 flex items-center gap-2 text-[11px] text-amber-600">
                                 <ShieldCheck className="h-3.5 w-3.5" />
                                 Your order will be confirmed after payment verification
@@ -321,7 +419,8 @@ export function Checkout() {
 
                           <button
                             onClick={placeOrder}
-                            className="flex w-full items-center justify-center gap-2 rounded-[4px] bg-primary py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90"
+                            disabled={paymentMethod === "upi_qr" && !paymentScreenshot}
+                            className="flex w-full items-center justify-center gap-2 rounded-[4px] bg-primary py-3.5 text-[14px] font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {paymentMethod === "cod" ? `Place Order — ${inr(total)}` : `I've Paid — ${inr(total)}`}
                           </button>
