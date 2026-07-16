@@ -389,7 +389,7 @@ function ProductEditModal({
     categoryId: product?.categoryId || "",
     price: product?.price || 129,
     mrp: product?.mrp || 199,
-    weight: product?.weight || "100 g",
+    weight: product?.weight || "450 g",
     img: product?.img || "",
     shortDesc: product?.shortDesc || "",
     description: product?.description || "",
@@ -532,7 +532,7 @@ function ProductEditModal({
             </div>
             <div>
               <label className={labelCls}>Weight</label>
-              <input type="text" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} className={inputCls} placeholder="100 g" />
+              <input type="text" value={form.weight} onChange={(e) => setForm({ ...form, weight: e.target.value })} className={inputCls} placeholder="450 g" />
             </div>
             <div>
               <label className={labelCls}>Spice Level</label>
