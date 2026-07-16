@@ -278,6 +278,7 @@ export function CartDrawer() {
                       <span className="flex items-center gap-1.5 text-muted-foreground"><Truck className="h-3 w-3" /> Shipping</span>
                       <span className="font-medium text-leaf">Free</span>
                     </div>
+                    <p className="text-[11px] text-muted-foreground pt-1">Available in Mangalore, Bangalore & Kasaragod only.</p>
                   </div>
                   <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                     <span className="text-[14px] font-semibold text-foreground">Total</span>
