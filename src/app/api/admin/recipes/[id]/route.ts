@@ -29,6 +29,7 @@ export async function PUT(
       },
     });
     await cacheDel("recipes");
+    await cacheDel("init");
     return NextResponse.json({ ok: true, recipe: { ...recipe, steps: JSON.parse(recipe.steps) } });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
@@ -45,6 +46,7 @@ export async function DELETE(
     const { id } = await params;
     await db.recipe.delete({ where: { id } });
     await cacheDel("recipes");
+    await cacheDel("init");
     return NextResponse.json({ ok: true });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";

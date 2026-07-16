@@ -73,6 +73,7 @@ export async function PUT(
     } catch { /* freeItem columns may not exist yet */ }
 
     await cacheDel("products*");
+    await cacheDel("init");
 
     return NextResponse.json({ ok: true, product: {
       ...product,
@@ -101,6 +102,7 @@ export async function DELETE(
     const { id } = await params;
     await db.product.delete({ where: { id } });
     await cacheDel("products*");
+    await cacheDel("init");
     return NextResponse.json({ ok: true });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";

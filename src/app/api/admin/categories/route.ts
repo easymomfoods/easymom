@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
       },
     });
     await cacheDel("categories");
+    await cacheDel("init");
     return NextResponse.json({ ok: true, category });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";

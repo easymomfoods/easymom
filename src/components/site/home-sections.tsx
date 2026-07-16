@@ -14,6 +14,7 @@ import {
 import { PackageIcon, LeafIcon, CircularArrowIcon, MortarIcon, FlameIcon, ShieldIcon } from "./icons";
 import { categories, products, recipes, testimonials, brandValues, type Product } from "@/lib/data";
 import { useUI } from "@/lib/ui-store";
+import { useHomepageData } from "@/lib/page-data-context";
 import { ProductCard } from "./product-card";
 import { inr } from "@/lib/format";
 
@@ -29,15 +30,17 @@ const DEFAULT_CATEGORIES = categories;
 export function Categories() {
   const go = useUI((s) => s.go);
   const [dbCategories, setDbCategories] = React.useState(DEFAULT_CATEGORIES);
+  const initData = useHomepageData();
 
   React.useEffect(() => {
+    if (initData?.categories?.length) { setDbCategories(initData.categories); return; }
     fetch("/api/categories")
       .then((r) => r.json())
       .then((d) => {
         if (d.categories && d.categories.length > 0) setDbCategories(d.categories);
       })
       .catch((e) => { console.error(e); });
-  }, []);
+  }, [initData]);
 
   return (
     <section className="mx-auto max-w-[1280px] px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
@@ -104,8 +107,24 @@ export function FeaturedProducts() {
   const [productSlugs, setProductSlugs] = React.useState<string[]>(FALLBACK_FEATURED.productSlugs);
   const [dbProducts, setDbProducts] = React.useState<any[]>([]);
   const [loaded, setLoaded] = React.useState(false);
+  const initData = useHomepageData();
 
   React.useEffect(() => {
+    if (initData) {
+      const sc = initData.siteContent?.featured;
+      if (sc) {
+        try {
+          const parsed = JSON.parse(sc);
+          if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+          if (parsed.title) setTitle(parsed.title);
+          if (parsed.description) setDescription(parsed.description);
+          if (parsed.productSlugs) setProductSlugs(parsed.productSlugs);
+        } catch (e) { console.error(e); }
+      }
+      if (initData.products?.length) setDbProducts(initData.products);
+      setLoaded(true);
+      return;
+    }
     Promise.all([
       fetch("/api/site-content/featured").then((r) => r.json()),
       fetch("/api/products").then((r) => r.json()),
@@ -126,7 +145,7 @@ export function FeaturedProducts() {
         setLoaded(true);
       })
       .catch((e) => { console.error(e); setLoaded(true); });
-  }, []);
+  }, [initData]);
 
   const featured = productSlugs.length > 0
     ? productSlugs
@@ -217,8 +236,25 @@ export function BrandStory() {
   const [description, setDescription] = React.useState(FALLBACK_BRAND_STORY.description);
   const [bottomMarqueeText, setBottomMarqueeText] = React.useState(FALLBACK_BRAND_STORY.bottomMarqueeText);
   const [features, setFeatures] = React.useState(FALLBACK_BRAND_STORY.features);
+  const initData = useHomepageData();
 
   React.useEffect(() => {
+    if (initData?.siteContent?.["brand-story"]) {
+      try {
+        const parsed = JSON.parse(initData.siteContent["brand-story"]);
+        if (parsed.marqueeText) setMarqueeText(parsed.marqueeText);
+        if (parsed.heroImage) setHeroImage(parsed.heroImage);
+        if (parsed.heroAlt) setHeroAlt(parsed.heroAlt);
+        if (parsed.cookTime) setCookTime(parsed.cookTime);
+        if (parsed.cookTimeLabel) setCookTimeLabel(parsed.cookTimeLabel);
+        if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+        if (parsed.title) setTitle(parsed.title);
+        if (parsed.description) setDescription(parsed.description);
+        if (parsed.bottomMarqueeText) setBottomMarqueeText(parsed.bottomMarqueeText);
+        if (parsed.features) setFeatures(parsed.features);
+      } catch (e) { console.error(e); }
+      return;
+    }
     fetch("/api/site-content/brand-story")
       .then((r) => r.json())
       .then((d) => {
@@ -239,7 +275,7 @@ export function BrandStory() {
         }
       })
       .catch((e) => { console.error(e); });
-  }, []);
+  }, [initData]);
 
   React.useEffect(() => {
     if (!revealRef.current) return;
@@ -357,6 +393,13 @@ export function BrandStory() {
             >
               {description}
             </p>
+            <p
+              data-reveal
+              className="text-[11px] font-semibold uppercase tracking-[0.15em] text-primary/80"
+              style={{ transition: "opacity 0.7s ease 0.25s, transform 0.7s ease 0.25s", opacity: 0, transform: "translateY(20px)" }}
+            >
+              Founded by Mahammad Sinan
+            </p>
           </div>
         </div>
       </div>
@@ -450,8 +493,24 @@ export function Recipes() {
   const [recipeIds, setRecipeIds] = React.useState<string[]>(FALLBACK_RECIPES_SECTION.recipeIds);
   const [dbRecipes, setDbRecipes] = React.useState<any[]>([]);
   const [dbProducts, setDbProducts] = React.useState<any[]>([]);
+  const initData = useHomepageData();
 
   React.useEffect(() => {
+    if (initData) {
+      const sc = initData.siteContent?.["recipes-section"];
+      if (sc) {
+        try {
+          const parsed = JSON.parse(sc);
+          if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+          if (parsed.title) setTitle(parsed.title);
+          if (parsed.description) setDescription(parsed.description);
+          if (parsed.recipeIds) setRecipeIds(parsed.recipeIds);
+        } catch (e) { console.error(e); }
+      }
+      if (initData.recipes?.length) setDbRecipes(initData.recipes);
+      if (initData.products?.length) setDbProducts(initData.products);
+      return;
+    }
     Promise.all([
       fetch("/api/site-content/recipes-section").then((r) => r.json()),
       fetch("/api/recipes").then((r) => r.json()),
@@ -471,7 +530,7 @@ export function Recipes() {
         if (productsData.products) setDbProducts(productsData.products);
       })
       .catch((e) => { console.error(e); });
-  }, []);
+  }, [initData]);
 
   React.useEffect(() => {
     if (!ref.current) return;
@@ -632,8 +691,22 @@ export function Testimonials() {
   const [title, setTitle] = React.useState(FALLBACK_TESTIMONIALS_SECTION.title);
   const [description, setDescription] = React.useState(FALLBACK_TESTIMONIALS_SECTION.description);
   const [dbTestimonials, setDbTestimonials] = React.useState<any[]>([]);
+  const initData = useHomepageData();
 
   React.useEffect(() => {
+    if (initData) {
+      const sc = initData.siteContent?.["testimonials-section"];
+      if (sc) {
+        try {
+          const parsed = JSON.parse(sc);
+          if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+          if (parsed.title) setTitle(parsed.title);
+          if (parsed.description) setDescription(parsed.description);
+        } catch (e) { console.error(e); }
+      }
+      if (initData.testimonials?.length) setDbTestimonials(initData.testimonials);
+      return;
+    }
     Promise.all([
       fetch("/api/site-content/testimonials-section").then((r) => r.json()),
       fetch("/api/testimonials").then((r) => r.json()),
@@ -652,7 +725,7 @@ export function Testimonials() {
         }
       })
       .catch((e) => { console.error(e); });
-  }, []);
+  }, [initData]);
 
   React.useEffect(() => {
     if (!ref.current) return;
@@ -818,8 +891,20 @@ export function InstagramFeed() {
   const [followText, setFollowText] = React.useState("Follow EasyMom");
   const [socialLinks, setSocialLinks] = React.useState(["Instagram", "YouTube", "TikTok", "Twitter"]);
   const [igCards, setIgCards] = React.useState(DEFAULT_IG_CARDS);
+  const initData = useHomepageData();
 
   React.useEffect(() => {
+    if (initData?.siteContent?.["instagram-feed"]) {
+      try {
+        const parsed = JSON.parse(initData.siteContent["instagram-feed"]);
+        if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+        if (parsed.title) setTitle(parsed.title);
+        if (parsed.followText) setFollowText(parsed.followText);
+        if (parsed.socialLinks) setSocialLinks(parsed.socialLinks);
+        if (parsed.cards && parsed.cards.length > 0) setIgCards(parsed.cards);
+      } catch (e) { console.error(e); }
+      return;
+    }
     fetch("/api/site-content/instagram-feed")
       .then((r) => r.json())
       .then((d) => {
@@ -835,7 +920,7 @@ export function InstagramFeed() {
         }
       })
       .catch((e) => { console.error(e); });
-  }, []);
+  }, [initData]);
 
   React.useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640);
@@ -1071,8 +1156,16 @@ const TRUST_ICONS: Record<string, typeof LeafIcon> = {
 export function TrustStrip() {
   const ref = React.useRef<HTMLDivElement>(null);
   const [trustItems, setTrustItems] = React.useState(DEFAULT_TRUST_ITEMS);
+  const initData = useHomepageData();
 
   React.useEffect(() => {
+    if (initData?.siteContent?.["trust-strip"]) {
+      try {
+        const parsed = JSON.parse(initData.siteContent["trust-strip"]);
+        if (parsed.items && parsed.items.length > 0) setTrustItems(parsed.items);
+      } catch (e) { console.error(e); }
+      return;
+    }
     fetch("/api/site-content/trust-strip")
       .then((r) => r.json())
       .then((d) => {
@@ -1084,7 +1177,7 @@ export function TrustStrip() {
         }
       })
       .catch((e) => { console.error(e); });
-  }, []);
+  }, [initData]);
 
   React.useEffect(() => {
     if (!ref.current) return;
@@ -1147,8 +1240,18 @@ export function OurProducts() {
   const [eyebrow, setEyebrow] = React.useState("Shop by category");
   const [title, setTitle] = React.useState("Our Products");
   const [items, setItems] = React.useState(FALLBACK_PRODUCTS);
+  const initData = useHomepageData();
 
   React.useEffect(() => {
+    if (initData?.siteContent?.["our-products"]) {
+      try {
+        const parsed = JSON.parse(initData.siteContent["our-products"]);
+        if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
+        if (parsed.title) setTitle(parsed.title);
+        if (parsed.items && parsed.items.length > 0) setItems(parsed.items);
+      } catch (e) { console.error(e); }
+      return;
+    }
     fetch("/api/site-content/our-products")
       .then((r) => r.json())
       .then((d) => {
@@ -1162,7 +1265,7 @@ export function OurProducts() {
         }
       })
       .catch((e) => { console.error(e); });
-  }, []);
+  }, [initData]);
   return (
     <section className="bg-white px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
       <div className="mx-auto max-w-[1280px]">

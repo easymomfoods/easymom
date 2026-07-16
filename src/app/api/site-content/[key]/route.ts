@@ -44,6 +44,7 @@ export async function PUT(
       create: { key, value },
     });
     await cacheDel(`sc:${key}`);
+    await cacheDel("init");
     return NextResponse.json({ ok: true, value: record.value });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";

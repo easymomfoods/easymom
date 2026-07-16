@@ -28,6 +28,7 @@ import {
 } from "@/components/site/views";
 import { LegalView } from "@/components/site/legal-view";
 import TrackOrder from "@/components/site/TrackOrder";
+import { HomepageDataProvider } from "@/lib/page-data-context";
 import {
   HomepageSkeleton,
   ShopSkeleton,
@@ -217,15 +218,17 @@ export default function Home() {
       <main className="flex-1">
         {view.name === "home" && (
           <Suspense fallback={<HomepageSkeleton />}>
-            <Hero />
-            <OurProducts />
-            <FeaturedProducts />
-            <BrandStory />
-            <Recipes />
-            <Testimonials />
-            <InstagramFeed />
-            <AvailableNearYou />
-            <TrustStrip />
+            <HomepageDataProvider>
+              <Hero />
+              <OurProducts />
+              <FeaturedProducts />
+              <BrandStory />
+              <Recipes />
+              <Testimonials />
+              <InstagramFeed />
+              <AvailableNearYou />
+              <TrustStrip />
+            </HomepageDataProvider>
           </Suspense>
         )}
         {view.name === "shop" && (

@@ -26,6 +26,7 @@ export async function PUT(
       },
     });
     await cacheDel("testimonials");
+    await cacheDel("init");
     return NextResponse.json({ ok: true, testimonial });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
@@ -42,6 +43,7 @@ export async function DELETE(
     const { id } = await params;
     await db.testimonial.delete({ where: { id } });
     await cacheDel("testimonials");
+    await cacheDel("init");
     return NextResponse.json({ ok: true });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";

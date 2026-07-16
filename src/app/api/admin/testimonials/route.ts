@@ -37,6 +37,7 @@ export async function POST(req: Request) {
       },
     });
     await cacheDel("testimonials");
+    await cacheDel("init");
     return NextResponse.json({ ok: true, testimonial });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useHomepageData } from "@/lib/page-data-context";
 
 interface HeroData {
   desktopImage: string;
@@ -29,9 +30,25 @@ export function Hero() {
   const heroRef = React.useRef<HTMLDivElement>(null);
   const targetRef = React.useRef(25000);
   const rafRef = React.useRef<number | null>(null);
+  const initData = useHomepageData();
 
   // Load hero content from API
   useEffect(() => {
+    if (initData?.siteContent?.hero) {
+      try {
+        const parsed = JSON.parse(initData.siteContent.hero);
+        setHero({
+          desktopImage: parsed.desktopImage || fallback.desktopImage,
+          mobileImage: parsed.mobileImage || fallback.mobileImage,
+          statNumber: parsed.statNumber?.trim() || fallback.statNumber,
+          statLabel: parsed.statLabel?.trim() || fallback.statLabel,
+          heading: parsed.heading || "",
+          subtitle: parsed.subtitle || "",
+        });
+        setLoaded(true);
+      } catch (e) { console.error(e); }
+      return;
+    }
     fetch("/api/site-content/hero")
       .then((r) => r.json())
       .then((d) => {
@@ -51,7 +68,7 @@ export function Hero() {
       })
       .catch((e) => { console.error(e); })
       .finally(() => setLoaded(true));
-  }, []);
+  }, [initData]);
 
   // Animate stat counter — only after data is loaded so it targets the final value
   useEffect(() => {

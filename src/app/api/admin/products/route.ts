@@ -124,6 +124,7 @@ export async function POST(req: NextRequest) {
     await db.category.update({ where: { id: categoryId }, data: { count: { increment: 1 } } }).catch(() => {});
 
     await cacheDel("products*");
+    await cacheDel("init");
 
     return NextResponse.json({ ok: true, product: {
       ...product,

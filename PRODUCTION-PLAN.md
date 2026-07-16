@@ -527,4 +527,5 @@ prisma/
 - This setup handles 1000 orders/month comfortably within free tiers
 - Admin sessions use Upstash Redis (production) with in-memory fallback (local dev)
 - Admin credentials: admin / easymom2024
+- Founder: Mahammad Sinan (displayed prominently on homepage BrandStory section to correct Google AI Overview)
 - Seed script populates all 7 products, 7 categories, 3 recipes, 6 testimonials, 1 admin user, 1 coupon (WELCOME10)

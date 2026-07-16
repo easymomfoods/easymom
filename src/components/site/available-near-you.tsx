@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { MapPin, Phone, ArrowUpRight } from "lucide-react";
+import { useHomepageData } from "@/lib/page-data-context";
 
 interface Store {
   id: string;
@@ -189,6 +190,7 @@ export default function AvailableNearYou() {
   const containerWidthRef = useRef(0);
   const scrollWidthRef = useRef(0);
   const [locations, setLocations] = useState<LocationGroup[]>(FALLBACK_locations);
+  const initData = useHomepageData();
 
   useEffect(() => {
     const mqMobile = window.matchMedia("(max-width: 768px)");
@@ -207,6 +209,13 @@ export default function AvailableNearYou() {
   }, []);
 
   useEffect(() => {
+    if (initData?.siteContent?.["store-locations"]) {
+      try {
+        const parsed = JSON.parse(initData.siteContent["store-locations"]);
+        if (Array.isArray(parsed) && parsed.length > 0) setLocations(parsed);
+      } catch (e) { console.error(e); }
+      return;
+    }
     fetch("/api/site-content/store-locations")
       .then((r) => r.json())
       .then((d) => {
@@ -218,7 +227,7 @@ export default function AvailableNearYou() {
         }
       })
       .catch((e) => { console.error(e); });
-  }, []);
+  }, [initData]);
 
   useEffect(() => {
     if (!scrollContainerRef.current || !sectionRef.current) return;

@@ -31,6 +31,7 @@ export async function PUT(
       },
     });
     await cacheDel("categories");
+    await cacheDel("init");
     return NextResponse.json({ ok: true, category });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
@@ -52,6 +53,7 @@ export async function DELETE(
     const { id } = await params;
     await db.category.delete({ where: { id } });
     await cacheDel("categories");
+    await cacheDel("init");
     return NextResponse.json({ ok: true });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
