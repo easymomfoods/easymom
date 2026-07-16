@@ -95,10 +95,13 @@ export async function POST(req: NextRequest) {
         tags: JSON.stringify(body.tags || []),
         hue: Number(body.hue) || 0,
         active: body.active !== false,
-        freeItemName: body.freeItemName || null,
-        freeItemImage: body.freeItemImage || null,
       },
     });
+
+    // Raw SQL for freeItem fields
+    if (body.freeItemName || body.freeItemImage) {
+      await db.$executeRawUnsafe("UPDATE Product SET freeItemName = ?, freeItemImage = ? WHERE id = ?", body.freeItemName || null, body.freeItemImage || null, product.id);
+    }
 
     // Increment category count
     await db.category.update({ where: { id: categoryId }, data: { count: { increment: 1 } } }).catch(() => {});

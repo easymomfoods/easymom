@@ -43,8 +43,6 @@ export async function PUT(
     if (body.tags !== undefined) data.tags = JSON.stringify(body.tags);
     if (body.hue !== undefined) data.hue = Number(body.hue);
     if (body.active !== undefined) data.active = body.active;
-    if (body.freeItemName !== undefined) data.freeItemName = body.freeItemName || null;
-    if (body.freeItemImage !== undefined) data.freeItemImage = body.freeItemImage || null;
 
     // Auto-create category if categoryId is changing to a new one
     if (body.categoryId) {
@@ -59,6 +57,13 @@ export async function PUT(
       where: { id },
       data,
     });
+
+    // Raw SQL for freeItem fields (Prisma libsql adapter doesn't know about ALTER TABLE columns)
+    if (body.freeItemName !== undefined || body.freeItemImage !== undefined) {
+      const freeName = body.freeItemName !== undefined ? (body.freeItemName || null) : product.freeItemName;
+      const freeImg = body.freeItemImage !== undefined ? (body.freeItemImage || null) : product.freeItemImage;
+      await db.$executeRawUnsafe("UPDATE Product SET freeItemName = ?, freeItemImage = ? WHERE id = ?", freeName, freeImg, id);
+    }
 
     return NextResponse.json({ ok: true, product: {
       ...product,
