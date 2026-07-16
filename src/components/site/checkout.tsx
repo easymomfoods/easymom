@@ -86,8 +86,7 @@ export function Checkout() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      fd.append("folder", "easymom/payments");
-      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const res = await fetch("/api/upload/payment", { method: "POST", body: fd });
       const data = await res.json();
       if (data.ok) setPaymentScreenshot(data.url);
       else setScreenshotError(data.error || "Upload failed");
