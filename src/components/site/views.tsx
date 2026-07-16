@@ -390,7 +390,8 @@ export function ProductView() {
 
   // Try database first, fallback to hardcoded
   const hardcoded = getProductBySlug(slug);
-  const p = dbProduct || hardcoded;
+  const dbFromList = allProducts.find((x) => x.slug === slug);
+  const p = dbProduct ? { ...dbProduct, ...(dbFromList?.freeItemName ? { freeItemName: dbFromList.freeItemName, freeItemImage: dbFromList.freeItemImage } : {}) } : (dbFromList || hardcoded);
   const labels = useProductLabels();
 
   useEffect(() => {
@@ -402,6 +403,11 @@ export function ProductView() {
       .then((r) => r.json())
       .then((d) => {
         if (d.product) {
+          const listMatch = allProducts.find((x) => x.slug === slug);
+          if (listMatch?.freeItemName) {
+            d.product.freeItemName = listMatch.freeItemName;
+            d.product.freeItemImage = listMatch.freeItemImage;
+          }
           setDbProduct(d.product);
         }
       })
@@ -598,7 +604,7 @@ export function ProductView() {
                   selectedImg === -2 ? "border-leaf shadow-md" : "border-leaf/40 hover:border-leaf/60"
                 }`}
               >
-                <img src={p.freeItemImage} alt={`Free: ${p.freeItemName}`} className="h-full w-full object-cover" loading="eager" />
+                <img src={p.freeItemImage} alt={`Free: ${p.freeItemName}`} className="h-full w-full object-cover animate-fade-in" />
                 <span className="absolute bottom-0 left-0 right-0 bg-leaf/80 text-[9px] text-white text-center py-0.5 font-medium">
                   Free
                 </span>
@@ -667,7 +673,7 @@ export function ProductView() {
           {/* Free item badge */}
           {p.freeItemName && (
             <div className="mt-5 rounded-[6px] border border-leaf/30 bg-leaf/5 p-4 flex items-center gap-3">
-              {p.freeItemImage && <img src={p.freeItemImage} alt={p.freeItemName} className="h-14 w-14 rounded-lg object-cover shrink-0" />}
+              {p.freeItemImage && <img src={p.freeItemImage} alt={p.freeItemName} className="h-14 w-14 rounded-lg object-cover shrink-0 animate-fade-in" />}
               <div>
                 <p className="text-[12px] font-bold uppercase tracking-wide text-leaf">Free Gift</p>
                 <p className="text-[14px] font-semibold text-foreground">{p.freeItemName}</p>
