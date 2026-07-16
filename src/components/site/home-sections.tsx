@@ -1138,8 +1138,8 @@ const FALLBACK_PRODUCTS = [
   { slug: "fish-curry-masala", name: "Fish Curry", img: "/brand/category/product-2.png" },
   { slug: "green-curry", name: "Green Curry", img: "/brand/category/product-3.png" },
   { slug: "palli-curry", name: "Palli Curry", img: "/brand/category/product-4.png" },
-  { slug: "biryani-masala", name: "Biryani Masala", img: "/brand/products/biryani-masala1.png" },
-  { slug: "pepper-chilli-masala", name: "Pepper Chilli Masala", img: "/brand/products/pepper-chilli-masala1.png" },
+  { slug: "biryani-masala", name: "Biryani Masala", img: "/brand/category/product-5.png" },
+  { slug: "pepper-chilli-masala", name: "Pepper Chilli Masala", img: "/brand/category/product-6.png" },
 ];
 
 export function OurProducts() {
