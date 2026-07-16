@@ -115,7 +115,7 @@ export function PageLoader() {
       <img
         src="/brand/easymom-logo.png"
         alt="EasyMom"
-        className="mt-6 h-44 w-auto"
+        className="mt-[7.5rem] h-44 w-auto"
       />
     </div>
   );
