@@ -259,27 +259,12 @@ export default function AvailableNearYou() {
     if (!el) return;
     const child = el.children[index + 1] as HTMLElement;
     if (child) {
-      child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
+      const targetX = -(child as HTMLElement).offsetLeft + (sectionRef.current?.offsetWidth || 0) / 2 - 100;
+      dragOffsetRef.current = 0;
+      x.set(targetX);
     }
     setActiveLocation(index);
-  }, []);
-
-  const onScroll = useCallback(() => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    const scrollPos = el.scrollLeft + el.clientWidth / 2;
-    let bestIdx = 0;
-    let bestDist = Infinity;
-    for (let i = 0; i < locations.length; i++) {
-      const childIdx = i + 1;
-      const child = el.children[childIdx] as HTMLElement;
-      if (child) {
-        const dist = Math.abs(child.offsetLeft - scrollPos);
-        if (dist < bestDist) { bestDist = dist; bestIdx = i; }
-      }
-    }
-    setActiveLocation(bestIdx);
-  }, [locations]);
+  }, [x, scrollDrivenX]);
 
   return (
     <section ref={sectionRef} className="relative bg-white" style={{ height: `${sectionHeight}px` }}>
@@ -304,11 +289,11 @@ export default function AvailableNearYou() {
         {/* Horizontal scroll track */}
         <motion.div
           ref={scrollContainerRef}
-          onScroll={onScroll}
           style={{ x }}
           drag="x"
+          dragElastic={0.05}
           onDragEnd={handleDragEnd}
-          className="flex flex-1 items-center gap-12 overflow-x-auto pl-5 sm:pl-8 md:pl-12 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          className="flex flex-1 items-center gap-12 pl-5 sm:pl-8 md:pl-12"
         >
           <IntroSlide />
 
