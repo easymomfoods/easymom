@@ -121,10 +121,10 @@ export const categories: Category[] = [
   },
   {
     id: "chicken-sukka",
-    name: "Chicken Sukka Masala",
-    tagline: "Dry, bold, Mangalorean",
+    name: "Pepper Chilli Masala",
+    tagline: "Fiery, aromatic, bold",
     description:
-      "Roasted coconut and whole spice blend for a proper Mangalorean chicken sukka — dry, intense, addictive.",
+      "Bold pepper and chilli paste for a fiery, aromatic stir-fry — Mangalore heat in every bite.",
     count: 1,
     accent: "chilli",
     hue: 40,
@@ -201,7 +201,7 @@ export const products: Product[] = [
     categoryId: "fish-curry",
     price: 129,
     mrp: 199,
-    weight: "450 g",
+    weight: "500 g",
     rating: 4.8,
     reviewCount: 178,
     badge: "Signature",
@@ -271,7 +271,7 @@ export const products: Product[] = [
   },
   {
     id: "p6",
-    name: "Chicken Sukka Masala",
+    name: "Pepper Chilli Masala",
     slug: "chicken-sukka-masala",
     categoryId: "chicken-sukka",
     price: 129,
@@ -281,16 +281,16 @@ export const products: Product[] = [
     reviewCount: 145,
     img: "/brand/products/chicken-sukka-masala1.png",
     images: ["/brand/products/chicken-sukka-masala2.png"],
-    shortDesc: "Roasted coconut and whole spice paste for Mangalorean chicken sukka.",
+    shortDesc: "Bold pepper and chilli paste for a fiery, aromatic stir-fry.",
     description:
-      "Roasted coconut and whole spice paste for a proper Mangalorean chicken sukka — dry, intense, addictive. No prep, no oil. Just add chicken, water, and simmer 5 minutes.",
-    ingredients: ["Roasted coconut", "Byadgi chilli", "Coriander", "Cumin", "Fennel", "Curry leaves", "Turmeric"],
+      "Bold pepper and chilli paste for a fiery, aromatic stir-fry. No prep, no oil. Just add chicken, water, and simmer 5 minutes.",
+    ingredients: ["Black pepper", "Byadgi chilli", "Coriander", "Cumin", "Fennel", "Curry leaves", "Turmeric"],
     origin: "Mangalore, Karnataka",
     shelfLife: "6 months",
     spiceLevel: "Hot",
     cookingTime: "5 min",
     servings: "Serves 4",
-    tags: ["sukka", "dry-roast"],
+    tags: ["pepper", "chilli"],
     hue: 40,
   },
   {
@@ -436,9 +436,9 @@ export const testimonials: Testimonial[] = [
     location: "Kochi, Kerala",
     role: "Architect",
     quote:
-      "Clean ingredients, no fillers, actual flavour. The Chicken Sukka is the most fragrant thing in my pantry now.",
+      "Clean ingredients, no fillers, actual flavour. The Pepper Chilli Masala is the most fragrant thing in my pantry now.",
     rating: 5,
-    product: "Chicken Sukka Masala",
+    product: "Pepper Chilli Masala",
   },
 ];
 
