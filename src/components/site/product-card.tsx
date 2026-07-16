@@ -26,7 +26,9 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
   const wished = wishlist.includes(product.id);
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100);
 
-  const images = product.images && product.images.length > 1 ? product.images : null;
+  const allImages = [product.img, ...(product.images || [])].filter(Boolean);
+  const uniqueImages = [...new Set(allImages)];
+  const images = uniqueImages.length > 1 ? uniqueImages : null;
   const [hoverIdx, setHoverIdx] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
