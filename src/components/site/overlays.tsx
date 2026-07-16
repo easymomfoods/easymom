@@ -71,7 +71,7 @@ function CartLineItem({ l }: { l: CartLine }) {
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
-        <span className="text-[11px] text-muted-foreground">{l.isFree ? "Free with " + l.freeItemName?.split(" ")[0] : l.weight}</span>
+        <span className="text-[11px] text-muted-foreground">{l.isFree ? "Free gift" : l.weight}</span>
         <div className="mt-auto flex items-center justify-between pt-2">
           {l.isFree ? (
             <span className="text-[14px] font-semibold text-leaf">FREE</span>

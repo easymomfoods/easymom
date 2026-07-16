@@ -344,7 +344,7 @@ export function Checkout() {
                       </p>
                       <div className="mt-4 max-h-64 space-y-3 overflow-y-auto scroll-elegant">
                         {lines.map((l) => (
-                          <div key={l.productId} className="flex gap-3">
+                          <div key={l.productId} className={`flex gap-3 ${l.isFree ? "bg-leaf/5 rounded-lg p-2 -mx-2" : ""}`}>
                             <div className="h-12 w-12 shrink-0 overflow-hidden rounded-[6px] bg-stone-100">
                               {l.img ? (
                                 <img src={l.img} alt={l.name} className="h-full w-full object-cover" />
@@ -356,10 +356,13 @@ export function Checkout() {
                             </div>
                             <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
                               <div className="min-w-0">
-                                <p className="truncate text-[13px] font-medium text-foreground">{l.name}</p>
-                                <p className="text-[11px] text-muted-foreground">{l.weight} · Qty {l.qty}</p>
+                                <div className="flex items-center gap-2">
+                                  <p className="truncate text-[13px] font-medium text-foreground">{l.name}</p>
+                                  {l.isFree && <span className="shrink-0 rounded bg-leaf px-1.5 py-0.5 text-[9px] font-bold text-white uppercase">FREE</span>}
+                                </div>
+                                <p className="text-[11px] text-muted-foreground">{l.isFree ? "Free gift" : `${l.weight} · Qty ${l.qty}`}</p>
                               </div>
-                              <span className="text-[13px] font-semibold">{inr(l.price * l.qty)}</span>
+                              <span className={`text-[13px] font-semibold ${l.isFree ? "text-leaf" : ""}`}>{l.isFree ? "FREE" : inr(l.price * l.qty)}</span>
                             </div>
                           </div>
                         ))}

@@ -90,10 +90,12 @@ export const useCart = create<CartState>()(
         set((s) => ({
           lines:
             qty <= 0
-              ? s.lines.filter((l) => l.productId !== productId)
-              : s.lines.map((l) =>
-                  l.productId === productId ? { ...l, qty: Math.min(99, qty) } : l
-                ),
+              ? s.lines.filter((l) => l.productId !== productId && l.productId !== `${productId}-free`)
+              : s.lines.map((l) => {
+                  if (l.productId === productId) return { ...l, qty: Math.min(99, qty) };
+                  if (l.productId === `${productId}-free`) return { ...l, qty: Math.min(99, qty) };
+                  return l;
+                }),
         })),
       clear: () => set({ lines: [], coupon: null }),
       toggleWishlist: (productId) =>
@@ -129,7 +131,7 @@ export const useCart = create<CartState>()(
 );
 
 export function cartCount(lines: CartLine[]) {
-  return lines.reduce((n, l) => n + l.qty, 0);
+  return lines.reduce((n, l) => l.isFree ? n : n + l.qty, 0);
 }
 export function cartSubtotal(lines: CartLine[]) {
   return lines.reduce((n, l) => n + l.qty * l.price, 0);

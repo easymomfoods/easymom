@@ -67,6 +67,8 @@ type ProductData = {
   tags: string[];
   hue: number;
   active?: boolean;
+  freeItemName?: string | null;
+  freeItemImage?: string | null;
   createdAt?: string;
 };
 

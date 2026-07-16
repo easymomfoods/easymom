@@ -47,15 +47,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
     }
 
-    // Recalculate prices from database
-    const productIds = items.map((i) => i.productId);
+    // Recalculate prices from database (skip free items — they have -free suffix)
+    const parentIds = items.filter((i) => !i.productId.endsWith("-free")).map((i) => i.productId);
     const dbProducts = await db.product.findMany({
-      where: { id: { in: productIds }, active: true },
+      where: { id: { in: parentIds }, active: true },
     });
     const productMap = new Map(dbProducts.map((p) => [p.id, p]));
 
     let serverSubtotal = 0;
     for (const item of items) {
+      if (item.productId.endsWith("-free")) continue; // free items have price 0
       const product = productMap.get(item.productId);
       if (!product) {
         return NextResponse.json({ error: `Product not found: ${item.productId}` }, { status: 400 });
@@ -118,12 +119,16 @@ export async function POST(req: NextRequest) {
         itemsJson: JSON.stringify(
           items.map((i) => {
             const p = productMap.get(i.productId);
+            const isFree = i.productId.endsWith("-free");
             return {
               productId: i.productId,
-              name: p?.name || "",
-              price: p?.price || 0,
+              name: isFree ? (i as any).name || "Free Item" : (p?.name || ""),
+              price: 0,
               qty: Math.max(1, Math.min(99, Math.floor(i.qty))),
-              img: p?.img || "",
+              img: isFree ? (i as any).img || "" : (p?.img || ""),
+              weight: isFree ? "Free" : (p?.weight || ""),
+              isFree,
+              freeItemName: isFree ? (i as any).freeItemName : undefined,
             };
           })
         ),

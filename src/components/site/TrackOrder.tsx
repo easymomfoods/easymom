@@ -191,13 +191,16 @@ export default function TrackOrder() {
 
             {/* Items */}
             <div className="mt-4 divide-y divide-border border-t border-border">
-              {items.map((item: { name: string; qty: number; price: number; weight: string }, i: number) => (
-                <div key={i} className="flex items-center justify-between py-3">
+              {items.map((item: { name: string; qty: number; price: number; weight: string; isFree?: boolean }, i: number) => (
+                <div key={i} className={`flex items-center justify-between py-3 ${item.isFree ? "bg-leaf/5" : ""}`}>
                   <div>
-                    <p className="text-[13px] font-medium text-foreground">{item.name}</p>
-                    <p className="text-[11px] text-muted-foreground">{item.weight} × {item.qty}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-[13px] font-medium text-foreground">{item.name}</p>
+                      {item.isFree && <span className="rounded bg-leaf px-1.5 py-0.5 text-[9px] font-bold text-white uppercase">FREE</span>}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">{item.isFree ? "Free gift" : `${item.weight} × ${item.qty}`}</p>
                   </div>
-                  <span className="text-[13px] font-medium text-foreground">{inr(item.price * item.qty)}</span>
+                  <span className={`text-[13px] font-medium ${item.isFree ? "text-leaf" : "text-foreground"}`}>{item.isFree ? "FREE" : inr(item.price * item.qty)}</span>
                 </div>
               ))}
             </div>
