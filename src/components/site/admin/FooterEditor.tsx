@@ -5,7 +5,6 @@ import {
   Save,
   RotateCcw,
   Instagram,
-  Twitter,
   Youtube,
   Mail,
   Phone,
@@ -31,7 +30,6 @@ const defaults: FooterData = {
   socials: [
     { platform: "instagram", label: "Instagram", href: "https://www.instagram.com/easymomfoods/" },
     { platform: "youtube", label: "YouTube", href: "#" },
-    { platform: "twitter", label: "Twitter", href: "#" },
   ],
   fssai: "21225066000075",
 };
@@ -45,7 +43,6 @@ const textareaCls =
 const SOCIAL_ICONS: Record<string, typeof Instagram> = {
   instagram: Instagram,
   youtube: Youtube,
-  twitter: Twitter,
 };
 
 export default function FooterEditor() {

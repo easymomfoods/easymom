@@ -2,7 +2,6 @@
 
 import {
   Instagram,
-  Twitter,
   Youtube,
   Mail,
   Phone,
@@ -43,7 +42,6 @@ const POLICY_LINKS = [
 const SOCIAL_ICONS: Record<string, typeof Instagram> = {
   instagram: Instagram,
   youtube: Youtube,
-  twitter: Twitter,
   facebook: Instagram,
   whatsapp: Phone,
 };
@@ -56,7 +54,6 @@ const DEFAULTS = {
   socials: [
     { platform: "instagram", label: "Instagram", href: "https://www.instagram.com/easymomfoods/" },
     { platform: "youtube", label: "YouTube", href: "#" },
-    { platform: "twitter", label: "Twitter", href: "#" },
   ],
   whatsapp: "",
   fssai: "21225066000075",
@@ -75,7 +72,6 @@ export function Footer() {
       const socials: any[] = [];
       if (sc.social_instagram) socials.push({ platform: "instagram", label: "Instagram", href: sc.social_instagram });
       if (sc.social_youtube) socials.push({ platform: "youtube", label: "YouTube", href: sc.social_youtube });
-      if (sc.social_twitter) socials.push({ platform: "twitter", label: "Twitter", href: sc.social_twitter });
       if (sc.social_facebook) socials.push({ platform: "facebook", label: "Facebook", href: sc.social_facebook });
       if (socials.length > 0) parsed.socials = socials;
       if (sc.whatsapp_number) parsed.whatsapp = `https://wa.me/91${sc.whatsapp_number}`;
@@ -86,16 +82,14 @@ export function Footer() {
       fetch("/api/site-content/footer").then((r) => r.json()),
       fetch("/api/site-content/social_instagram").then((r) => r.json()),
       fetch("/api/site-content/social_facebook").then((r) => r.json()),
-      fetch("/api/site-content/social_twitter").then((r) => r.json()),
       fetch("/api/site-content/social_youtube").then((r) => r.json()),
       fetch("/api/site-content/whatsapp_number").then((r) => r.json()),
     ])
-      .then(([footer, ig, fb, tw, yt, wa]) => {
+      .then(([footer, ig, fb, yt, wa]) => {
         const parsed = footer.value ? (() => { try { return JSON.parse(footer.value); } catch { return {}; } })() : {};
         const socials = [
           ig.value ? { platform: "instagram", label: "Instagram", href: ig.value } : null,
           yt.value ? { platform: "youtube", label: "YouTube", href: yt.value } : null,
-          tw.value ? { platform: "twitter", label: "Twitter", href: tw.value } : null,
           fb.value ? { platform: "facebook", label: "Facebook", href: fb.value } : null,
         ].filter(Boolean);
         if (socials.length > 0) parsed.socials = socials;

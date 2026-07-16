@@ -889,7 +889,7 @@ export function InstagramFeed() {
   const [eyebrow, setEyebrow] = React.useState("@easymomfoods");
   const [title, setTitle] = React.useState("Instagram Feeds");
   const [followText, setFollowText] = React.useState("Follow EasyMom");
-  const [socialLinks, setSocialLinks] = React.useState(["Instagram", "YouTube", "TikTok", "Twitter"]);
+  const [socialLinks, setSocialLinks] = React.useState(["Instagram", "YouTube", "TikTok"]);
   const [igCards, setIgCards] = React.useState(DEFAULT_IG_CARDS);
   const initData = useHomepageData();
 

@@ -11,7 +11,6 @@ const SETTINGS_KEYS = [
   "maintenance_mode",
   "social_instagram",
   "social_facebook",
-  "social_twitter",
   "social_youtube",
   "whatsapp_number",
 ];
@@ -346,16 +345,6 @@ export default function AdminSettings() {
               onChange={(e) => update("social_facebook", e.target.value)}
               className={inputCls}
               placeholder="https://facebook.com/easymomfoods"
-            />
-          </div>
-          <div>
-            <label className={labelCls}>Twitter / X URL</label>
-            <input
-              type="url"
-              value={fields.social_twitter || ""}
-              onChange={(e) => update("social_twitter", e.target.value)}
-              className={inputCls}
-              placeholder="https://x.com/easymomfoods"
             />
           </div>
           <div>
