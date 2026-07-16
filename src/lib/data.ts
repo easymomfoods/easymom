@@ -309,7 +309,7 @@ export const products: Product[] = [
     description:
       "A peanut and roasted spice paste for a rich, creamy chicken or meat curry — Andhra-style comfort food. No prep, no oil. Just add protein and water, simmer 5 minutes.",
     ingredients: ["Peanut", "Coriander", "Red chilli", "Cumin", "Garlic", "Curry leaves", "Turmeric"],
-    origin: "Andhra Pradesh",
+    origin: "Mangalore, Karnataka",
     shelfLife: "6 months",
     spiceLevel: "Medium",
     cookingTime: "5 min",
