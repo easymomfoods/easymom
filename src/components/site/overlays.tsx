@@ -304,7 +304,7 @@ export function CartDrawer() {
                     </span>
                   </button>
                   <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                    Guest checkout · No account needed · Razorpay secured
+                    Guest checkout · No account needed · Securely Pay
                   </p>
                 </div>
               </>

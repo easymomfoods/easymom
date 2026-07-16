@@ -377,7 +377,7 @@ export function Checkout() {
                       </div>
                       <div className="mt-5 space-y-2 rounded-[6px] border border-border bg-card p-3 text-[12px] text-muted-foreground">
                         <p className="flex items-center gap-2"><Truck className="h-4 w-4 text-primary" /> Dispatched within 24 hours</p>
-                        <p className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Razorpay secured · 256-bit encrypted</p>
+                        <p className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Securely Pay · 256-bit encrypted</p>
                       </div>
                     </div>
                   </motion.div>
