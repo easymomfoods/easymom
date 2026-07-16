@@ -137,7 +137,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         )}
         {/* free item blink */}
         {product.active && hasFreeItem && (
-          <div className="absolute left-3 bottom-14 z-20">
+          <div className="absolute left-3 bottom-3 z-20">
             <span className="inline-block rounded bg-leaf/90 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white animate-pulse">
               Free — {product.freeItemName}
             </span>
