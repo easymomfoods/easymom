@@ -67,6 +67,10 @@ export async function PUT(
 
     return NextResponse.json({ ok: true, product: {
       ...product,
+      ...await (async () => {
+        const rows = await db.$executeRawUnsafe("SELECT freeItemName, freeItemImage FROM Product WHERE id = ?", id) as unknown[];
+        return rows.length > 0 ? rows[0] : {};
+      })(),
       images: JSON.parse(product.images || "[]"),
       ingredients: JSON.parse(product.ingredients || "[]"),
       tags: JSON.parse(product.tags || "[]"),

@@ -23,7 +23,18 @@ export async function GET() {
       tags: JSON.parse(p.tags || "[]"),
     }));
 
-    return NextResponse.json({ products: parsed });
+    // Fetch freeItem fields (added via ALTER TABLE, Prisma doesn't know them)
+    const freeRows = await db.$executeRawUnsafe("SELECT id, freeItemName, freeItemImage FROM Product WHERE freeItemName IS NOT NULL") as unknown[];
+    const freeMap = new Map<string, { freeItemName: string; freeItemImage: string }>();
+    for (const row of freeRows as { id: string; freeItemName: string; freeItemImage: string }[]) {
+      freeMap.set(row.id, { freeItemName: row.freeItemName, freeItemImage: row.freeItemImage });
+    }
+    const merged = parsed.map((p) => {
+      const free = freeMap.get(p.id);
+      return free ? { ...p, ...free } : p;
+    });
+
+    return NextResponse.json({ products: merged });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({ error: msg }, { status: 500 });
@@ -108,6 +119,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, product: {
       ...product,
+      freeItemName: body.freeItemName || null,
+      freeItemImage: body.freeItemImage || null,
       images: JSON.parse(product.images || "[]"),
       ingredients: JSON.parse(product.ingredients || "[]"),
       tags: JSON.parse(product.tags || "[]"),

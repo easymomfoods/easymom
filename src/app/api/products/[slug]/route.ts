@@ -24,6 +24,13 @@ export async function GET(
       tags: JSON.parse(product.tags || "[]"),
     };
 
+    // Fetch freeItem fields
+    const freeRows = await db.$executeRawUnsafe("SELECT freeItemName, freeItemImage FROM Product WHERE id = ?", product.id) as unknown[];
+    if (freeRows.length > 0) {
+      const free = freeRows[0] as { freeItemName: string; freeItemImage: string };
+      if (free.freeItemName) { parsed.freeItemName = free.freeItemName; parsed.freeItemImage = free.freeItemImage; }
+    }
+
     return NextResponse.json({ product: parsed });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
