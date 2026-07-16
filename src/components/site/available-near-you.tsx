@@ -73,6 +73,8 @@ function StorePlaceholder({ name, index }: { name: string; index: number }) {
 }
 
 function StoreCard({ store, large }: { store: Store; large?: boolean }) {
+  const [imgLoaded, setImgLoaded] = React.useState(false);
+
   return (
     <div
       className={`group relative flex shrink-0 flex-col ${
@@ -85,7 +87,20 @@ function StoreCard({ store, large }: { store: Store; large?: boolean }) {
         }`}
       >
         {store.image ? (
-          <img src={store.image} alt={store.name} className="h-full w-full object-cover" loading="lazy" />
+          <>
+            {!imgLoaded && (
+              <div className="absolute inset-0">
+                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+              </div>
+            )}
+            <img
+              src={store.image}
+              alt={store.name}
+              className={`h-full w-full object-cover transition-opacity duration-300 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+              loading="lazy"
+              onLoad={() => setImgLoaded(true)}
+            />
+          </>
         ) : (
           <StorePlaceholder name={store.name} index={parseInt(store.storeNumber) || 0} />
         )}
