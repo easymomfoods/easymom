@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { MapPin, Phone, ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useHomepageData } from "@/lib/page-data-context";
 
@@ -185,6 +186,7 @@ export default function AvailableNearYou() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [locations, setLocations] = useState<LocationGroup[]>(FALLBACK_locations);
+  const lastManualScroll = useRef(0);
   const initData = useHomepageData();
 
   useEffect(() => {
@@ -230,7 +232,6 @@ export default function AvailableNearYou() {
   const scrollToLocation = useCallback((index: number) => {
     const el = scrollContainerRef.current;
     if (!el) return;
-
     const child = el.children[index + 1] as HTMLElement;
     if (child) {
       child.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" });
@@ -241,6 +242,7 @@ export default function AvailableNearYou() {
   const onScroll = useCallback(() => {
     const el = scrollContainerRef.current;
     if (!el) return;
+    lastManualScroll.current = Date.now();
     const scrollPos = el.scrollLeft + el.clientWidth / 2;
     let bestIdx = 0;
     let bestDist = Infinity;
@@ -255,93 +257,132 @@ export default function AvailableNearYou() {
     setActiveLocation(bestIdx);
   }, [locations]);
 
+  // ── Scroll-driven: vertical scroll → horizontal scrollLeft ──
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [scrollWidth, setScrollWidth] = useState(0);
+
+  useEffect(() => {
+    if (!scrollContainerRef.current || !sectionRef.current) return;
+    const measure = () => {
+      if (scrollContainerRef.current && sectionRef.current) {
+        setContainerWidth(sectionRef.current.offsetWidth);
+        setScrollWidth(scrollContainerRef.current.scrollWidth);
+      }
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [locations]);
+
+  const horizontalDistance = Math.max(scrollWidth - containerWidth, 0);
+  const sectionHeight = horizontalDistance > 0
+    ? horizontalDistance + (typeof window !== "undefined" ? window.innerHeight : 800) + 200
+    : 800;
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
+
+  const scrollLeftTarget = useTransform(scrollYProgress, [0, 1], [0, horizontalDistance]);
+
+  useEffect(() => {
+    const unsubscribe = scrollLeftTarget.on("change", (val) => {
+      if (Date.now() - lastManualScroll.current < 600) return;
+      const el = scrollContainerRef.current;
+      if (el) el.scrollLeft = val;
+    });
+    return unsubscribe;
+  }, [scrollLeftTarget]);
+  // ── end scroll-driven ──
+
   return (
-    <section ref={sectionRef} className="relative bg-white py-16 sm:py-20 lg:py-28">
-      {/* Arrow buttons */}
-      {canScrollLeft && (
-        <button
-          onClick={() => scrollBy("left")}
-          className="absolute left-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-md backdrop-blur-sm transition hover:bg-white md:flex"
-          aria-label="Scroll left"
-        >
-          <ChevronLeft className="h-5 w-5 text-stone-700" />
-        </button>
-      )}
-      {canScrollRight && (
-        <button
-          onClick={() => scrollBy("right")}
-          className="absolute right-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-md backdrop-blur-sm transition hover:bg-white md:flex"
-          aria-label="Scroll right"
-        >
-          <ChevronRight className="h-5 w-5 text-stone-700" />
-        </button>
-      )}
-
-      {/* Location nav */}
-      <div className="mb-8 flex items-center gap-1.5 px-5 sm:px-8 md:px-12">
-        {locations.map((loc, i) => (
+    <section ref={sectionRef} className="relative bg-white" style={{ height: `${sectionHeight}px` }}>
+      <div className="sticky top-0 flex h-screen flex-col overflow-hidden pt-16">
+        {/* Arrow buttons */}
+        {canScrollLeft && (
           <button
-            key={loc.id}
-            onClick={() => scrollToLocation(i)}
-            className={`rounded-[3px] px-3.5 py-2 text-[12px] font-medium transition ${
-              activeLocation === i
-                ? "bg-[#891816] text-white"
-                : "bg-stone-100 text-stone-600 hover:bg-stone-200"
-            }`}
+            onClick={() => scrollBy("left")}
+            className="absolute left-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-md backdrop-blur-sm transition hover:bg-white md:flex"
+            aria-label="Scroll left"
           >
-            {loc.label}
+            <ChevronLeft className="h-5 w-5 text-stone-700" />
           </button>
-        ))}
-      </div>
+        )}
+        {canScrollRight && (
+          <button
+            onClick={() => scrollBy("right")}
+            className="absolute right-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/80 shadow-md backdrop-blur-sm transition hover:bg-white md:flex"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="h-5 w-5 text-stone-700" />
+          </button>
+        )}
 
-      {/* Horizontal scroll track */}
-      <div
-        ref={scrollContainerRef}
-        onScroll={onScroll}
-        className="flex items-start gap-12 overflow-x-auto px-5 pb-4 sm:px-8 md:px-12 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
-        style={{ scrollSnapType: "x mandatory" }}
-      >
-        <div style={{ scrollSnapAlign: "start" }}>
-          <IntroSlide />
+        {/* Location nav */}
+        <div className="flex items-center gap-1.5 bg-white/80 px-5 py-3 backdrop-blur-md sm:px-8 md:px-12">
+          {locations.map((loc, i) => (
+            <button
+              key={loc.id}
+              onClick={() => scrollToLocation(i)}
+              className={`rounded-[3px] px-3.5 py-2 text-[12px] font-medium transition ${
+                activeLocation === i
+                  ? "bg-[#891816] text-white"
+                  : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+              }`}
+            >
+              {loc.label}
+            </button>
+          ))}
         </div>
 
-        {locations.map((loc, locIdx) => (
-          <React.Fragment key={loc.id}>
-            {/* Location divider */}
-            <div
-              style={{ scrollSnapAlign: "start" }}
-              className="flex shrink-0 flex-col items-center justify-center px-2"
-            >
-              <div className="h-16 w-px bg-stone-200" />
-              <span className="my-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 [writing-mode:vertical-lr]">
-                {loc.label}
-              </span>
-              <div className="h-16 w-px bg-stone-200" />
-            </div>
+        {/* Horizontal scroll track */}
+        <div
+          ref={scrollContainerRef}
+          onScroll={onScroll}
+          className="flex flex-1 items-start gap-12 overflow-x-auto px-5 pb-4 sm:px-8 md:px-12 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          style={{ scrollSnapType: "x mandatory" }}
+        >
+          <div style={{ scrollSnapAlign: "start" }}>
+            <IntroSlide />
+          </div>
 
-            {/* Store cards */}
-            <div
-              style={{ scrollSnapAlign: "start" }}
-              className="flex shrink-0 items-center gap-6"
-            >
-              {loc.stores.map((store, storeIdx) => {
-                const isLarge = storeIdx % 3 === 0;
-                const isOffset = storeIdx % 2 === 1;
-                return (
-                  <div
-                    key={store.id}
-                    className={`shrink-0 ${isOffset ? "mt-10" : "mb-10"}`}
-                  >
-                    <StoreCard store={store} large={isLarge} />
-                  </div>
-                );
-              })}
-            </div>
-          </React.Fragment>
-        ))}
+          {locations.map((loc, locIdx) => (
+            <React.Fragment key={loc.id}>
+              <div
+                style={{ scrollSnapAlign: "start" }}
+                className="flex shrink-0 flex-col items-center justify-center px-2"
+              >
+                <div className="h-16 w-px bg-stone-200" />
+                <span className="my-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-400 [writing-mode:vertical-lr]">
+                  {loc.label}
+                </span>
+                <div className="h-16 w-px bg-stone-200" />
+              </div>
 
-        <div style={{ scrollSnapAlign: "start" }}>
-          <EndSlide />
+              <div
+                style={{ scrollSnapAlign: "start" }}
+                className="flex shrink-0 items-center gap-6"
+              >
+                {loc.stores.map((store, storeIdx) => {
+                  const isLarge = storeIdx % 3 === 0;
+                  const isOffset = storeIdx % 2 === 1;
+                  return (
+                    <div
+                      key={store.id}
+                      className={`shrink-0 ${isOffset ? "mt-10" : "mb-10"}`}
+                    >
+                      <StoreCard store={store} large={isLarge} />
+                    </div>
+                  );
+                })}
+              </div>
+            </React.Fragment>
+          ))}
+
+          <div style={{ scrollSnapAlign: "start" }}>
+            <EndSlide />
+          </div>
         </div>
       </div>
     </section>
