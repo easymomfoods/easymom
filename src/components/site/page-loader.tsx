@@ -112,10 +112,11 @@ export function PageLoader() {
         </svg>
       </div>
 
-      <p className="mt-40 flex items-center text-[28px] font-bold tracking-tight">
-        <span className="text-stone-900">Easy</span>
-        <span className="text-[#891816]">Mom</span>
-      </p>
+      <img
+        src="/brand/easymom-logo.png"
+        alt="EasyMom"
+        className="mt-40 h-20 w-auto"
+      />
     </div>
   );
 }
