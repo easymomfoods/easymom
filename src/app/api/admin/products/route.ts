@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { cacheDel } from "@/lib/cache";
 
 export const runtime = "nodejs";
 
@@ -121,6 +122,8 @@ export async function POST(req: NextRequest) {
 
     // Increment category count
     await db.category.update({ where: { id: categoryId }, data: { count: { increment: 1 } } }).catch(() => {});
+
+    await cacheDel("products*");
 
     return NextResponse.json({ ok: true, product: {
       ...product,

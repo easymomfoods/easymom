@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { cacheGet, cacheSet, CACHE_TTL } from "@/lib/cache";
 
 export const runtime = "nodejs";
 
@@ -9,6 +10,10 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+    const cacheKey = `product:${slug}`;
+    const cached = await cacheGet<any>(cacheKey);
+    if (cached) return NextResponse.json({ product: cached });
+
     const product = await db.product.findUnique({
       where: { slug },
     });
@@ -24,6 +29,7 @@ export async function GET(
       tags: JSON.parse(product.tags || "[]"),
     };
 
+    await cacheSet(cacheKey, parsed, CACHE_TTL.PRODUCTS);
     return NextResponse.json({ product: parsed });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";

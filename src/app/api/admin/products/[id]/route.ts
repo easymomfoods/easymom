@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { cacheDel } from "@/lib/cache";
 
 export const runtime = "nodejs";
 
@@ -71,6 +72,8 @@ export async function PUT(
       if (Array.isArray(rows) && rows.length > 0) freeFields = rows[0] as Record<string, string>;
     } catch { /* freeItem columns may not exist yet */ }
 
+    await cacheDel("products*");
+
     return NextResponse.json({ ok: true, product: {
       ...product,
       ...freeFields,
@@ -97,6 +100,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     await db.product.delete({ where: { id } });
+    await cacheDel("products*");
     return NextResponse.json({ ok: true });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";

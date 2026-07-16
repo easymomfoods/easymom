@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { cacheGet, cacheSet, CACHE_TTL } from "@/lib/cache";
 
 export const runtime = "nodejs";
 
 export async function GET() {
   try {
+    const cached = await cacheGet<any[]>("products");
+    if (cached) return NextResponse.json({ products: cached });
+
     const products = await db.product.findMany({
       orderBy: { createdAt: "desc" },
     });
@@ -32,6 +36,7 @@ export async function GET() {
       }
     } catch { /* freeItem columns may not exist yet */ }
 
+    await cacheSet("products", merged, CACHE_TTL.PRODUCTS);
     return NextResponse.json({ products: merged });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
