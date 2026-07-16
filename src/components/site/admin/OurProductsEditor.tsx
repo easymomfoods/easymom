@@ -209,7 +209,7 @@ export default function OurProductsEditor() {
               {data.title}
             </h2>
           </div>
-          <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+          <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-6 lg:gap-4">
             {data.items.map((p, i) => (
               <div
                 key={i}
@@ -274,7 +274,7 @@ export default function OurProductsEditor() {
               </h3>
               <button
                 onClick={addItem}
-                disabled={data.items.length >= 4}
+                disabled={data.items.length >= 6}
                 className="flex items-center gap-2 px-3 py-2 text-[13px] font-medium text-[#891816] bg-[#891816]/8 rounded-lg hover:bg-[#891816]/15 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <Plus className="h-4 w-4" />

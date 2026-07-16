@@ -1169,13 +1169,15 @@ export function OurProducts() {
           eyebrow={eyebrow}
           title={title}
         />
-        <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+        <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-6 lg:gap-4">
           {items.map((p, i) => {
             const shadows = [
               "8px 8px 50px 20px rgba(137,24,22,0.35)",
               "-6px 10px 25px 6px rgba(137,24,22,0.15)",
               "0 8px 40px 14px rgba(137,24,22,0.25)",
               "-10px -4px 60px 25px rgba(137,24,22,0.40)",
+              "6px -6px 30px 10px rgba(137,24,22,0.20)",
+              "-8px 8px 40px 15px rgba(137,24,22,0.30)",
             ];
             return (
               <motion.button
