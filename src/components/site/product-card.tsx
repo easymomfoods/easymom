@@ -67,6 +67,8 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
       <div
         className={cn("relative block aspect-[4/5] w-full overflow-hidden", !product.active && "pointer-events-none")}
         onClick={product.active ? () => go({ name: "product", slug: product.slug }) : undefined}
+        onMouseEnter={handleEnter}
+        onMouseLeave={handleLeave}
         role={product.active ? "button" : undefined}
         style={product.active ? { cursor: "pointer" } : undefined}
       >
