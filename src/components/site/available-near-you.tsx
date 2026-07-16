@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { motion, useScroll, useTransform, useMotionValue } from "framer-motion";
+import { motion, useScroll, useTransform, useMotionValue, useMotionValueEvent } from "framer-motion";
 import { MapPin, Phone, ArrowUpRight } from "lucide-react";
 import { useHomepageData } from "@/lib/page-data-context";
 
@@ -184,7 +184,7 @@ export default function AvailableNearYou() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeLocation, setActiveLocation] = useState(0);
   const [locations, setLocations] = useState<LocationGroup[]>(FALLBACK_locations);
-  const dragOffsetRef = useRef(0);
+  const dragOffset = useMotionValue(0);
   const initData = useHomepageData();
 
   useEffect(() => {
@@ -238,20 +238,16 @@ export default function AvailableNearYou() {
 
   const x = useMotionValue(0);
 
-  useEffect(() => {
-    const unsub = scrollDrivenX.on("change", (scrollVal) => {
-      x.set(scrollVal + dragOffsetRef.current);
-    });
-    return unsub;
-  }, [scrollDrivenX, x]);
+  // Keep x = scrollDrivenX + dragOffset whenever scrollDrivenX changes
+  useMotionValueEvent(scrollDrivenX, "change", (scrollVal) => {
+    x.set(scrollVal + dragOffset.get());
+  });
 
   const handleDragEnd = useCallback(
-    (_: any, info: { offset: { x: number }; velocity: { x: number } }) => {
-      dragOffsetRef.current += info.offset.x;
-      const targetX = scrollDrivenX.get() + dragOffsetRef.current;
-      x.set(targetX);
+    (_: any, info: { offset: { x: number } }) => {
+      dragOffset.set(dragOffset.get() + info.offset.x);
     },
-    [scrollDrivenX, x]
+    [dragOffset]
   );
 
   const scrollToLocation = useCallback((index: number) => {
@@ -259,12 +255,14 @@ export default function AvailableNearYou() {
     if (!el) return;
     const child = el.children[index + 1] as HTMLElement;
     if (child) {
-      const targetX = -(child as HTMLElement).offsetLeft + (sectionRef.current?.offsetWidth || 0) / 2 - 100;
-      dragOffsetRef.current = 0;
-      x.set(targetX);
+      const targetX =
+        -(child as HTMLElement).offsetLeft +
+        (sectionRef.current?.offsetWidth || 0) / 2 -
+        100;
+      dragOffset.set(targetX - scrollDrivenX.get());
     }
     setActiveLocation(index);
-  }, [x, scrollDrivenX]);
+  }, [scrollDrivenX, dragOffset]);
 
   return (
     <section ref={sectionRef} className="relative bg-white" style={{ height: `${sectionHeight}px` }}>
@@ -291,7 +289,7 @@ export default function AvailableNearYou() {
           ref={scrollContainerRef}
           style={{ x }}
           drag="x"
-          dragElastic={0.05}
+          dragMomentum={false}
           onDragEnd={handleDragEnd}
           className="flex flex-1 items-center gap-12 pl-5 sm:pl-8 md:pl-12"
         >
