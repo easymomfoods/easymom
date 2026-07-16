@@ -166,7 +166,7 @@ function EndSlide() {
     <div className="flex h-full w-[60vw] max-w-[400px] shrink-0 flex-col justify-center pl-12 md:pl-20">
       <div className="h-px w-12 bg-stone-200" />
       <p className="mt-6 text-[13px] leading-relaxed text-stone-400">
-        Can't find a store near you? Reach out — we're expanding fast.
+        Can't find a store near you? We supply to local stores — let us know and we'll try to set one up near you.
       </p>
       <a
         href="mailto:easymomfoods@gmail.com"
