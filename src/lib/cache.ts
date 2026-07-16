@@ -7,8 +7,8 @@ const redis = new Redis({
 
 export async function cacheGet<T>(key: string): Promise<T | null> {
   try {
-    const data = await redis.get(key);
-    return data as T | null;
+    const data = await redis.get<T>(key);
+    return data ?? null;
   } catch {
     return null;
   }
@@ -16,7 +16,7 @@ export async function cacheGet<T>(key: string): Promise<T | null> {
 
 export async function cacheSet(key: string, data: unknown, ttlSeconds = 60): Promise<void> {
   try {
-    await redis.set(key, JSON.stringify(data), { ex: ttlSeconds });
+    await redis.set(key, data, { ex: ttlSeconds });
   } catch {
     // silently fail — cache is optional
   }
@@ -35,4 +35,6 @@ export const CACHE_TTL = {
   PRODUCTS: 60,
   CATEGORIES: 120,
   SITE_CONTENT: 180,
+  RECIPES: 180,
+  TESTIMONIALS: 300,
 };

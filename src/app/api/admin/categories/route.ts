@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { cacheDel } from "@/lib/cache";
 
 export const runtime = "nodejs";
 
@@ -41,6 +42,7 @@ export async function POST(req: NextRequest) {
         sortOrder: Number(body.sortOrder) || 0,
       },
     });
+    await cacheDel("categories");
     return NextResponse.json({ ok: true, category });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";

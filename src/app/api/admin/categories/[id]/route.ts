@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { cacheDel } from "@/lib/cache";
 
 export const runtime = "nodejs";
 
@@ -29,6 +30,7 @@ export async function PUT(
         sortOrder: Number(body.sortOrder) || 0,
       },
     });
+    await cacheDel("categories");
     return NextResponse.json({ ok: true, category });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
@@ -49,6 +51,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     await db.category.delete({ where: { id } });
+    await cacheDel("categories");
     return NextResponse.json({ ok: true });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from '@/lib/auth';
+import { cacheDel } from '@/lib/cache';
 
 export const runtime = "nodejs";
 
@@ -42,9 +43,11 @@ export async function POST(req: Request) {
         active: body.active !== false,
       } as never,
     });
+    await cacheDel("recipes");
     return NextResponse.json({ ok: true, recipe: { ...recipe, steps: JSON.parse(recipe.steps) } });
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
+

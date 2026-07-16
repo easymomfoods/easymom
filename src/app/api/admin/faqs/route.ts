@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from '@/lib/auth';
+import { cacheDel } from '@/lib/cache';
 
 export const runtime = "nodejs";
 
@@ -43,3 +44,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
+
