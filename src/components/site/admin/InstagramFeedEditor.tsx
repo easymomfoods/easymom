@@ -32,7 +32,7 @@ const defaults: IGData = {
   eyebrow: "@easymomfoods",
   title: "Instagram Feeds",
   followText: "Follow EasyMom",
-  socialLinks: ["Instagram", "YouTube", "TikTok"],
+  socialLinks: ["Instagram", "YouTube"],
   cards: [
     { id: "ig1", img: "/brand/products/red-curry1.png", label: "Red Curry", url: "https://www.instagram.com/easymomfoods/" },
     { id: "ig2", img: "/brand/products/green-curry1.png", label: "Green Curry", url: "https://www.instagram.com/easymomfoods/" },
