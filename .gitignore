@@ -69,3 +69,6 @@ prisma/db/*.db-shm
 
 # Temp debug/test scripts (committed cleaned up)
 *.mts.bak
+
+# Meta Ads master plan (sensitive strategy doc)
+META-ADS-PLAN.md
