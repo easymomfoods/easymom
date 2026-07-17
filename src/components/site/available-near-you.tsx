@@ -213,6 +213,7 @@ export default function AvailableNearYou() {
   }, [initData]);
 
   const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") return;
     isDown.current = true;
     startX.current = e.clientX;
     const el = scrollRef.current;
@@ -225,7 +226,7 @@ export default function AvailableNearYou() {
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!isDown.current) return;
+    if (!isDown.current || e.pointerType !== "mouse") return;
     const dx = e.clientX - startX.current;
     const el = scrollRef.current;
     if (el) el.scrollLeft = startScrollLeft.current - dx;
@@ -237,8 +238,8 @@ export default function AvailableNearYou() {
     }
   };
 
-  const onPointerUp = () => {
-    if (!isDown.current) return;
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (!isDown.current || e.pointerType !== "mouse") return;
     isDown.current = false;
     if (Math.abs(velX.current) > 2) {
       const el = scrollRef.current;
@@ -305,7 +306,7 @@ export default function AvailableNearYou() {
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
           onScroll={onScroll}
-          className="flex flex-1 cursor-grab touch-pan-y items-center gap-12 overflow-x-auto pl-5 sm:pl-8 md:pl-12 active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          className="flex flex-1 cursor-grab items-center gap-12 overflow-x-auto pl-5 sm:pl-8 md:pl-12 active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           <IntroSlide />
 
