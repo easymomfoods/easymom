@@ -60,6 +60,7 @@ export default function InstagramFeedEditor() {
         if (d.value) {
           try {
             const parsed = JSON.parse(d.value);
+            if (parsed.socialLinks) parsed.socialLinks = parsed.socialLinks.filter((s: string) => !["TikTok", "Twitter"].includes(s));
             setData({ ...defaults, ...parsed });
           } catch (e) { console.error(e); }
         }

@@ -900,7 +900,7 @@ export function InstagramFeed() {
         if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
         if (parsed.title) setTitle(parsed.title);
         if (parsed.followText) setFollowText(parsed.followText);
-        if (parsed.socialLinks) setSocialLinks(parsed.socialLinks);
+        if (parsed.socialLinks) setSocialLinks(parsed.socialLinks.filter((s: string) => !["TikTok", "Twitter"].includes(s)));
         if (parsed.cards && parsed.cards.length > 0) setIgCards(parsed.cards);
       } catch (e) { console.error(e); }
       return;
@@ -914,7 +914,7 @@ export function InstagramFeed() {
             if (parsed.eyebrow) setEyebrow(parsed.eyebrow);
             if (parsed.title) setTitle(parsed.title);
             if (parsed.followText) setFollowText(parsed.followText);
-            if (parsed.socialLinks) setSocialLinks(parsed.socialLinks);
+            if (parsed.socialLinks) setSocialLinks(parsed.socialLinks.filter((s: string) => !["TikTok", "Twitter"].includes(s)));
             if (parsed.cards && parsed.cards.length > 0) setIgCards(parsed.cards);
           } catch (e) { console.error(e); }
         }
