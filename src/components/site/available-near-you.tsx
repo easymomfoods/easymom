@@ -306,7 +306,7 @@ export default function AvailableNearYou() {
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
           onScroll={onScroll}
-          className="flex flex-1 cursor-grab items-center gap-12 overflow-x-auto pl-5 sm:pl-8 md:pl-12 active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          className="flex flex-1 cursor-grab touch-manipulation items-center gap-12 overflow-x-auto pl-5 sm:pl-8 md:pl-12 active:cursor-grabbing [-webkit-overflow-scrolling:touch] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           <IntroSlide />
 
