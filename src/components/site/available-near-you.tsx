@@ -168,9 +168,13 @@ function EndSlide() {
       <p className="mt-6 text-[13px] leading-relaxed text-stone-400">
         Can't find a store near you? We supply to local stores — let us know and we'll try to set one up near you.
       </p>
-      <p className="mt-6 text-[13px] text-stone-500">
-        Call or WhatsApp: <a href="tel:+919901261232" className="font-medium text-[#891816] hover:underline">+91 99012 61232</a>
-      </p>
+      <a
+        href="tel:+919901261232"
+        className="mt-6 inline-flex items-center gap-1.5 text-[13px] font-medium text-[#891816] hover:underline"
+      >
+        Get in touch <ArrowUpRight className="h-3.5 w-3.5" />
+      </a>
+      <p className="mt-2 text-[12px] text-stone-400">+91 99012 61232</p>
     </div>
   );
 }
