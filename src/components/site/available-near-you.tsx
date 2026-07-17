@@ -256,7 +256,7 @@ export default function AvailableNearYou() {
   const scrollToLocation = (index: number) => {
     const el = scrollRef.current;
     if (!el) return;
-    const child = el.children[index + 1] as HTMLElement;
+    const child = el.querySelector<HTMLElement>(`[data-loc-idx="${index}"]`);
     if (child) {
       child.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
     }
@@ -267,14 +267,13 @@ export default function AvailableNearYou() {
     const el = scrollRef.current;
     if (!el) return;
     const center = el.scrollLeft + el.clientWidth / 2;
+    const locEls = el.querySelectorAll<HTMLElement>("[data-loc-idx]");
     let bestIdx = 0, bestDist = Infinity;
-    for (let i = 0; i < locations.length; i++) {
-      const child = el.children[i + 1] as HTMLElement;
-      if (child) {
-        const dist = Math.abs(child.offsetLeft - center);
-        if (dist < bestDist) { bestDist = dist; bestIdx = i; }
-      }
-    }
+    locEls.forEach((child) => {
+      const idx = parseInt(child.dataset.locIdx || "0");
+      const dist = Math.abs(child.offsetLeft + child.offsetWidth / 2 - center);
+      if (dist < bestDist) { bestDist = dist; bestIdx = idx; }
+    });
     setActiveLocation(bestIdx);
   };
 
@@ -311,7 +310,7 @@ export default function AvailableNearYou() {
           <IntroSlide />
 
           {locations.map((loc, locIdx) => (
-            <React.Fragment key={loc.id}>
+            <div key={loc.id} data-loc-idx={locIdx} className="flex shrink-0 items-center gap-12">
               {/* Location divider */}
               <div className="flex h-full shrink-0 flex-col items-center justify-center px-4">
                 <div className="h-16 w-px bg-stone-200" />
@@ -334,7 +333,7 @@ export default function AvailableNearYou() {
                   </div>
                 );
               })}
-            </React.Fragment>
+            </div>
           ))}
 
           <EndSlide />
