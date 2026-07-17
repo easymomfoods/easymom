@@ -169,7 +169,7 @@ function EndSlide() {
         Can't find a store near you? We supply to local stores — let us know and we'll try to set one up near you.
       </p>
       <a
-        href="mailto:easymomfoods@gmail.com"
+        href="tel:+919901261232"
         className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-[#891816] hover:underline"
       >
         Get in touch <ArrowUpRight className="h-3.5 w-3.5" />
