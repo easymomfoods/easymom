@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
         source: "/((?!api).*)",
         headers: [
           { key: "Access-Control-Allow-Origin", value: "https://easymom.co.in" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
           {
             key: "Content-Security-Policy",
             value: [
