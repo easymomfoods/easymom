@@ -548,8 +548,23 @@ export function ProductView() {
   const related = allProducts.filter((x) => x.categoryId === p.categoryId && x.id !== p.id).slice(0, 4);
   const discount = Math.round(((p.mrp - p.price) / p.mrp) * 100);
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://easymom.co.in" },
+      { "@type": "ListItem", position: 2, name: "Shop", item: "https://easymom.co.in/shop" },
+      { "@type": "ListItem", position: 3, name: category?.name || "Shop", item: `https://easymom.co.in/shop/${p.categoryId}` },
+      { "@type": "ListItem", position: 4, name: p.name, item: `https://easymom.co.in/product/${p.slug}` },
+    ],
+  };
+
   return (
     <div className="mx-auto max-w-[1280px] px-4 pb-20 pt-24 sm:px-6 lg:px-8 lg:pt-28">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <nav className="mb-6 flex items-center gap-1.5 text-[12px] text-muted-foreground">
         <button onClick={() => go({ name: "home" })} className="hover:text-foreground">Home</button>
         <ChevronRight className="h-3 w-3" />
