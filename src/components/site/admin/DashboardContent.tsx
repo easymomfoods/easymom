@@ -103,12 +103,12 @@ export default function DashboardContent() {
   };
 
   const defaultProductImages: Record<string, string> = {
-    "Green Curry": "/brand/products/green-curry1.png",
-    "Ghee Roast Masala": "/brand/products/ghee-roast1.png",
-    "Red Curry": "/brand/products/red-curry1.png",
-    "Fish Curry Masala": "/brand/products/fish-curry1.png",
-    "Pepper Chilli Masala": "/brand/products/pepper-chilli-masala1.png",
-    "Palli Curry": "/brand/products/palli-curry1.png",
+    "Green Curry": "/brand/products/green-curry1.webp",
+    "Ghee Roast Masala": "/brand/products/ghee-roast1.webp",
+    "Red Curry": "/brand/products/red-curry1.webp",
+    "Fish Curry Masala": "/brand/products/fish-curry1.webp",
+    "Pepper Chilli Masala": "/brand/products/pepper-chilli-masala1.webp",
+    "Palli Curry": "/brand/products/palli-curry1.webp",
   };
 
   if (loading) {
@@ -135,7 +135,7 @@ export default function DashboardContent() {
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-[#1a0f0a] via-[#2a1810] to-[#1a0f0a] min-h-[200px] lg:min-h-[240px]">
         <div className="absolute inset-0">
           <img
-            src="/brand/products/fish-curry1.png"
+            src="/brand/products/fish-curry1.webp"
             alt=""
             className="w-full h-full object-cover opacity-40 mix-blend-luminosity"
           />
@@ -227,7 +227,7 @@ export default function DashboardContent() {
                   className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50/50 transition-colors cursor-pointer"
                 >
                   <div className="h-10 w-10 rounded-lg bg-stone-100 overflow-hidden shrink-0">
-                    <img src={p.img || defaultProductImages[p.name] || "/brand/products/green-curry1.png"} alt={p.name} className="h-full w-full object-cover" />
+                    <img src={p.img || defaultProductImages[p.name] || "/brand/products/green-curry1.webp"} alt={p.name} className="h-full w-full object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-medium text-stone-900 truncate">{p.name}</p>

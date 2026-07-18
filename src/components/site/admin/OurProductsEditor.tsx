@@ -47,12 +47,12 @@ const defaults: OurProductsData = {
   eyebrow: "Shop by category",
   title: "Our Products",
   items: [
-    { slug: "red-curry", name: "Red Curry", img: "/brand/category/product-1.png" },
-    { slug: "fish-curry-masala", name: "Fish Curry", img: "/brand/category/product-2.png" },
-    { slug: "green-curry", name: "Green Curry", img: "/brand/category/product-3.png" },
-    { slug: "palli-curry", name: "Palli Curry", img: "/brand/category/product-4.png" },
-    { slug: "biryani-masala", name: "Biryani Masala", img: "/brand/category/product-5.png" },
-    { slug: "pepper-chilli-masala", name: "Pepper Chilli Masala", img: "/brand/category/product-6.png" },
+    { slug: "red-curry", name: "Red Curry", img: "/brand/category/product-1.webp" },
+    { slug: "fish-curry-masala", name: "Fish Curry", img: "/brand/category/product-2.webp" },
+    { slug: "green-curry", name: "Green Curry", img: "/brand/category/product-3.webp" },
+    { slug: "palli-curry", name: "Palli Curry", img: "/brand/category/product-4.webp" },
+    { slug: "biryani-masala", name: "Biryani Masala", img: "/brand/category/product-5.webp" },
+    { slug: "pepper-chilli-masala", name: "Pepper Chilli Masala", img: "/brand/category/product-6.webp" },
   ],
 };
 

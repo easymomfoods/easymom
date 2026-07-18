@@ -13,8 +13,8 @@ interface HeroData {
 }
 
 const fallback: HeroData = {
-  desktopImage: "/brand/easymom-banner.png",
-  mobileImage: "/brand/easymom-hero-mobile.png",
+  desktopImage: "/brand/easymom-banner.webp",
+  mobileImage: "/brand/easymom-hero-mobile.webp",
   statNumber: "25,000+",
   statLabel: "Kitchens trust us",
   heading: "",

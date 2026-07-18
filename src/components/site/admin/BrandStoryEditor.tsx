@@ -46,10 +46,10 @@ const defaults: BrandStoryData = {
   description: "The all-in-one masala paste includes onions, tomatoes, and essential spices. No chopping, no grinding, no oil. Just add your protein, water, and EasyMom — dinner in 5 minutes.",
   bottomMarqueeText: "No prep · No oil · Ready in 5 minutes · All-in-one paste · Nothing to hide",
   features: [
-    { title: "No prep needed", body: "The all-in-one masala paste already includes onions, tomatoes, and essential spices. No chopping, no grinding, no measuring.", icon: "mortar", img: "/brand/box/box1.png" },
-    { title: "Oil-free cooking", body: "The core cooking method requires no extra oil. Simply add your protein, water, and the paste — healthier without compromise.", icon: "leaf", img: "/brand/box/box2.png" },
-    { title: "Nothing to hide", body: "No fillers, no added colours, no preservatives. Read the back of the pouch — it reads like a recipe, because it is one.", icon: "shield", img: "/brand/box/box3.png" },
-    { title: "Ready in 5 minutes", body: "Cook restaurant-style curries in 5–10 minutes. Add protein, water, EasyMom paste, and simmer. Dinner is done.", icon: "flame", img: "/brand/box/box4.png" },
+    { title: "No prep needed", body: "The all-in-one masala paste already includes onions, tomatoes, and essential spices. No chopping, no grinding, no measuring.", icon: "mortar", img: "/brand/box/box1.webp" },
+    { title: "Oil-free cooking", body: "The core cooking method requires no extra oil. Simply add your protein, water, and the paste — healthier without compromise.", icon: "leaf", img: "/brand/box/box2.webp" },
+    { title: "Nothing to hide", body: "No fillers, no added colours, no preservatives. Read the back of the pouch — it reads like a recipe, because it is one.", icon: "shield", img: "/brand/box/box3.webp" },
+    { title: "Ready in 5 minutes", body: "Cook restaurant-style curries in 5–10 minutes. Add protein, water, EasyMom paste, and simmer. Dinner is done.", icon: "flame", img: "/brand/box/box4.webp" },
   ],
 };
 

@@ -820,13 +820,13 @@ export function Testimonials() {
 }
 
 const DEFAULT_IG_CARDS = [
-  { id: "ig1", img: "/brand/products/red-curry1.png", label: "Red Curry", url: "https://www.instagram.com/easymomfoods/" },
-  { id: "ig2", img: "/brand/products/green-curry1.png", label: "Green Curry", url: "https://www.instagram.com/easymomfoods/" },
-  { id: "ig3", img: "/brand/products/pepper-chilli-masala1.png", label: "Pepper Chilli Masala", url: "https://www.instagram.com/easymomfoods/" },
-  { id: "ig4", img: "/brand/instagram_image4.png", label: "EasyMom", url: "https://www.instagram.com/easymomfoods/" },
-  { id: "ig5", img: "/brand/products/ghee-roast1.png", label: "Ghee Roast", url: "https://www.instagram.com/easymomfoods/" },
-  { id: "ig6", img: "/brand/products/fish-curry1.png", label: "Fish Curry", url: "https://www.instagram.com/easymomfoods/" },
-  { id: "ig7", img: "/brand/products/palli-curry1.png", label: "Palli Curry", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig1", img: "/brand/products/red-curry1.webp", label: "Red Curry", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig2", img: "/brand/products/green-curry1.webp", label: "Green Curry", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig3", img: "/brand/products/pepper-chilli-masala1.webp", label: "Pepper Chilli Masala", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig4", img: "/brand/instagram_image4.webp", label: "EasyMom", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig5", img: "/brand/products/ghee-roast1.webp", label: "Ghee Roast", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig6", img: "/brand/products/fish-curry1.webp", label: "Fish Curry", url: "https://www.instagram.com/easymomfoods/" },
+  { id: "ig7", img: "/brand/products/palli-curry1.webp", label: "Palli Curry", url: "https://www.instagram.com/easymomfoods/" },
 ];
 
 const CARD_W = 200;
@@ -1227,12 +1227,12 @@ export function TrustStrip() {
 }
 
 const FALLBACK_PRODUCTS = [
-  { slug: "red-curry", name: "Red Curry", img: "/brand/category/product-1.png" },
-  { slug: "fish-curry-masala", name: "Fish Curry", img: "/brand/category/product-2.png" },
-  { slug: "green-curry", name: "Green Curry", img: "/brand/category/product-3.png" },
-  { slug: "palli-curry", name: "Palli Curry", img: "/brand/category/product-4.png" },
-  { slug: "biryani-masala", name: "Biryani Masala", img: "/brand/category/product-5.png" },
-  { slug: "pepper-chilli-masala", name: "Pepper Chilli Masala", img: "/brand/category/product-6.png" },
+  { slug: "red-curry", name: "Red Curry", img: "/brand/category/product-1.webp" },
+  { slug: "fish-curry-masala", name: "Fish Curry", img: "/brand/category/product-2.webp" },
+  { slug: "green-curry", name: "Green Curry", img: "/brand/category/product-3.webp" },
+  { slug: "palli-curry", name: "Palli Curry", img: "/brand/category/product-4.webp" },
+  { slug: "biryani-masala", name: "Biryani Masala", img: "/brand/category/product-5.webp" },
+  { slug: "pepper-chilli-masala", name: "Pepper Chilli Masala", img: "/brand/category/product-6.webp" },
 ];
 
 export function OurProducts() {

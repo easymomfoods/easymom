@@ -56,12 +56,12 @@ export default function AdminLogin({ onLogin }: { onLogin: () => void }) {
         <div className="absolute inset-0 flex items-center justify-center opacity-15">
           <div className="grid grid-cols-3 gap-6 rotate-[-8deg] scale-125">
             {[
-              "/brand/products/green-curry1.png",
-              "/brand/products/ghee-roast1.png",
-              "/brand/products/red-curry1.png",
-              "/brand/products/fish-curry1.png",
-              "/brand/products/pepper-chilli-masala1.png",
-              "/brand/products/palli-curry1.png",
+              "/brand/products/green-curry1.webp",
+              "/brand/products/ghee-roast1.webp",
+              "/brand/products/red-curry1.webp",
+              "/brand/products/fish-curry1.webp",
+              "/brand/products/pepper-chilli-masala1.webp",
+              "/brand/products/palli-curry1.webp",
             ].map((src, i) => (
               <div key={i} className="w-32 h-40 rounded-lg overflow-hidden bg-white/10 backdrop-blur-sm">
                 <img src={src} alt="" className="w-full h-full object-cover" />

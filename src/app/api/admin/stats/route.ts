@@ -52,7 +52,7 @@ export async function GET() {
         for (const item of items) {
           const name = item.name || "Unknown";
           if (!productSales[name]) {
-            productSales[name] = { name, count: 0, img: item.img || "/brand/products/green-curry1.png" };
+            productSales[name] = { name, count: 0, img: item.img || "/brand/products/green-curry1.webp" };
           }
           productSales[name].count += item.qty || 1;
         }
