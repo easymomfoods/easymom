@@ -1017,7 +1017,14 @@ export function InstagramFeed() {
                 }}
                 onHoverStart={() => !isMobile && animDone && setHovered(i)}
                 onHoverEnd={() => !isMobile && setHovered(null)}
-                onTap={() => isMobile && animDone && setHovered(hovered === i ? null : i)}
+                onTap={() => {
+                  if (!isMobile || !animDone) return;
+                  if (hovered === i) {
+                    window.open(card.url || "https://www.instagram.com/easymomfoods/", "_blank", "noopener,noreferrer");
+                  } else {
+                    setHovered(i);
+                  }
+                }}
               >
                 {isMobile ? (
                 <div
@@ -1119,18 +1126,28 @@ export function InstagramFeed() {
             <div className="h-px w-12 bg-zinc-300" />
           </div>
           <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
-            {socialLinks.map((name, i) => (
-              <React.Fragment key={name}>
-                {i > 0 && <span className="hidden text-zinc-200 sm:block">·</span>}
-                <a
-                  href="#"
-                  className="group relative text-[14px] font-medium text-zinc-700 transition-colors hover:text-zinc-900"
-                >
-                  {name}
-                  <span className="absolute -bottom-1 left-0 h-px w-0 bg-zinc-900 transition-all duration-300 group-hover:w-full" />
-                </a>
-              </React.Fragment>
-            ))}
+            {socialLinks.map((name, i) => {
+              const url =
+                name === "Instagram"
+                  ? "https://www.instagram.com/easymomfoods/"
+                  : name === "YouTube"
+                    ? "https://www.youtube.com/@easymomfoods"
+                    : "#";
+              return (
+                <React.Fragment key={name}>
+                  {i > 0 && <span className="hidden text-zinc-200 sm:block">·</span>}
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative text-[14px] font-medium text-zinc-700 transition-colors hover:text-zinc-900"
+                  >
+                    {name}
+                    <span className="absolute -bottom-1 left-0 h-px w-0 bg-zinc-900 transition-all duration-300 group-hover:w-full" />
+                  </a>
+                </React.Fragment>
+              );
+            })}
           </div>
         </div>
       </div>
