@@ -85,7 +85,6 @@ export const metadata: Metadata = {
     follow: true,
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
-  alternates: { canonical: "https://easymom.co.in" },
   other: {
     "google-site-verification": "uVqmWt6SbFPRRDvePiswBqx0tDLKGQhqWRBug1kkwUI",
   },

@@ -93,6 +93,15 @@ export function SeoHead() {
     setMeta("twitter:title", meta.title);
     setMeta("twitter:description", meta.description);
     setMeta("twitter:image", `https://easymom.co.in${meta.image}`);
+
+    // Set canonical URL
+    let canonical = document.querySelector("link[rel='canonical']") as HTMLLinkElement;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.setAttribute("rel", "canonical");
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute("href", window.location.href);
   }, [view.name, (view as any).slug]);
 
   return null;
